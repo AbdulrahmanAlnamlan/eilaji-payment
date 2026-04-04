@@ -12,134 +12,137 @@
     .logo{display:flex;align-items:center;gap:12px}
     .logo-text-ar{font-size:20px;font-weight:800;color:#0F172A}
     .logo-text-en{font-size:9px;color:#94A3B8;letter-spacing:3px}
-    .lang-btn{padding:7px 16px;background:#F1F5F9;border:none;border-radius:50px;font-size:13px;font-weight:700;color:#475569;cursor:pointer;font-family:'Cairo',sans-serif}
+    .lang-btn{padding:7px 18px;background:#EFF8FF;border:1.5px solid #BAE6FD;border-radius:50px;font-size:13px;font-weight:700;color:#0EA5E9;cursor:pointer;font-family:'Cairo',sans-serif;transition:all .2s}
+    .lang-btn:hover{background:#0EA5E9;color:#fff}
     .hero{background:linear-gradient(135deg,#0EA5E9,#06B6D4);padding:48px 24px 40px;text-align:center;color:white}
     .hero h1{font-size:28px;font-weight:800;margin-bottom:10px}
     .hero p{font-size:15px;opacity:.88;line-height:1.7}
     .main{max-width:560px;margin:0 auto;padding:28px 20px 60px}
     .plans{display:flex;flex-direction:column;gap:14px;margin-bottom:28px}
-    .plan{background:#fff;border-radius:16px;padding:20px;border:2px solid #E2E8F0;cursor:pointer;transition:all .2s;position:relative;box-shadow:0 1px 8px rgba(0,0,0,0.05)}
-    .plan:hover{border-color:#0EA5E9;transform:translateY(-1px)}
+    .plan{background:#fff;border-radius:16px;padding:20px;border:2px solid #E2E8F0;cursor:pointer;transition:all .2s;position:relative;box-shadow:0 1px 8px rgba(0,0,0,0.05);user-select:none}
+    .plan:hover{border-color:#0EA5E9;transform:translateY(-1px);box-shadow:0 4px 16px rgba(14,165,233,.15)}
     .plan.selected{border-color:#0EA5E9;background:#EFF8FF}
-    .popular-badge{position:absolute;top:-11px;right:20px;background:#0EA5E9;color:white;font-size:11px;font-weight:700;padding:3px 12px;border-radius:50px}
-    .save-badge{background:#DCFCE7;color:#166534;font-size:10px;font-weight:700;padding:2px 9px;border-radius:50px;display:inline-block;margin-bottom:6px}
-    .plan-header{display:flex;justify-content:space-between;align-items:flex-start}
-    .plan-name{font-size:16px;font-weight:800;color:#0F172A}
-    .plan-price{font-size:28px;font-weight:800;color:#0EA5E9}
-    .plan-period{font-size:12px;color:#64748b;margin-top:3px}
-    .plan-keep{background:#F0FDF4;border:1px solid #A7F3D0;border-radius:8px;padding:7px 12px;font-size:12px;font-weight:700;color:#166534;margin-top:12px;text-align:center}
-    .radio{width:20px;height:20px;border-radius:50%;border:2px solid #CBD5E1;background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:4px}
+    .popular-badge{position:absolute;top:-12px;right:20px;background:#0EA5E9;color:white;font-size:11px;font-weight:700;padding:4px 14px;border-radius:50px}
+    .save-badge{background:#DCFCE7;color:#166534;font-size:10px;font-weight:700;padding:2px 10px;border-radius:50px;display:inline-block;margin-bottom:8px}
+    .plan-header{display:flex;justify-content:space-between;align-items:center}
+    .plan-name{font-size:16px;font-weight:800;color:#0F172A;margin-bottom:4px}
+    .plan-price{font-size:30px;font-weight:800;color:#0EA5E9;line-height:1}
+    .plan-period{font-size:12px;color:#64748b;margin-top:4px}
+    .radio{width:22px;height:22px;border-radius:50%;border:2px solid #CBD5E1;background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
     .radio.checked{border-color:#0EA5E9;background:#0EA5E9}
-    .radio.checked::after{content:'';width:8px;height:8px;border-radius:50%;background:white}
+    .radio.checked::after{content:'';width:9px;height:9px;border-radius:50%;background:white;display:block}
     .features{background:#fff;border-radius:16px;padding:20px;margin-bottom:24px;box-shadow:0 1px 8px rgba(0,0,0,0.05)}
-    .features h3{font-size:14px;font-weight:800;margin-bottom:14px;color:#0F172A}
-    .feature-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px}
-    .check{width:20px;height:20px;border-radius:50%;background:#0EA5E9;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-size:10px;color:white;font-weight:800}
+    .features h3{font-size:15px;font-weight:800;margin-bottom:16px;color:#0F172A}
+    .feature-row{display:flex;align-items:flex-start;gap:12px;margin-bottom:13px}
+    .check{width:22px;height:22px;border-radius:50%;background:#0EA5E9;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;color:white;font-weight:800}
     .feature-title{font-size:13px;font-weight:700;color:#0F172A}
-    .feature-desc{font-size:11px;color:#64748b;margin-top:1px}
+    .feature-desc{font-size:11px;color:#64748b;margin-top:2px}
     .form-section{background:#fff;border-radius:16px;padding:20px;margin-bottom:24px;box-shadow:0 1px 8px rgba(0,0,0,0.05)}
-    .form-section h3{font-size:14px;font-weight:800;margin-bottom:16px}
+    .form-section h3{font-size:15px;font-weight:800;margin-bottom:16px}
     .form-group{margin-bottom:14px}
-    .form-label{font-size:11px;font-weight:700;color:#64748b;margin-bottom:6px;display:block;letter-spacing:.5px}
-    .form-input{width:100%;padding:12px 14px;border:1.5px solid #E2E8F0;border-radius:10px;font-size:14px;color:#0F172A;font-family:'Cairo',sans-serif;outline:none;background:#FAFBFC}
-    .form-input:focus{border-color:#0EA5E9}
+    .form-label{font-size:11px;font-weight:700;color:#64748b;margin-bottom:6px;display:block;letter-spacing:.5px;text-transform:uppercase}
+    .form-input{width:100%;padding:13px 14px;border:1.5px solid #E2E8F0;border-radius:10px;font-size:14px;color:#0F172A;font-family:'Cairo',sans-serif;outline:none;background:#FAFBFC;transition:border .2s}
+    .form-input:focus{border-color:#0EA5E9;background:#fff}
     .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .pay-btn{width:100%;padding:17px;background:linear-gradient(135deg,#0EA5E9,#06B6D4);border:none;border-radius:14px;color:white;font-size:17px;font-weight:800;cursor:pointer;font-family:'Cairo',sans-serif;box-shadow:0 4px 20px rgba(14,165,233,.35);margin-bottom:14px}
-    .pay-btn:hover{transform:translateY(-1px)}
+    .pay-btn{width:100%;padding:17px;background:linear-gradient(135deg,#0EA5E9,#06B6D4);border:none;border-radius:14px;color:white;font-size:17px;font-weight:800;cursor:pointer;font-family:'Cairo',sans-serif;box-shadow:0 4px 20px rgba(14,165,233,.35);margin-bottom:14px;transition:all .2s}
+    .pay-btn:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(14,165,233,.45)}
     .pay-btn:disabled{opacity:.7;cursor:not-allowed;transform:none}
     .secure-note{text-align:center;font-size:11px;color:#94A3B8;margin-bottom:24px}
-    .payment-methods{display:flex;justify-content:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
-    .pm-badge{background:#F8FAFC;border:1px solid #E2E8F0;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;color:#475569}
-    .success-screen{display:none;text-align:center;padding:48px 24px}
-    .success-icon{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#10B981,#059669);display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 20px}
+    .payment-methods{display:flex;justify-content:center;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+    .pm-badge{background:#F8FAFC;border:1px solid #E2E8F0;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:600;color:#475569}
+    .success-screen{display:none;text-align:center;padding:60px 24px}
+    .success-icon{width:84px;height:84px;border-radius:50%;background:linear-gradient(135deg,#10B981,#059669);display:flex;align-items:center;justify-content:center;font-size:38px;margin:0 auto 20px}
     .success-screen h2{font-size:24px;font-weight:800;margin-bottom:10px}
-    .success-screen p{color:#64748b;line-height:1.7}
-    .footer{background:#0F172A;color:rgba(255,255,255,.5);text-align:center;padding:20px;font-size:11px;line-height:1.8}
-    .spinner{display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,.4);border-top-color:white;border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle;margin-left:8px}
+    .success-screen p{color:#64748b;line-height:1.8}
+    .open-btn{display:inline-block;margin-top:28px;background:#0EA5E9;color:white;padding:14px 36px;border-radius:50px;text-decoration:none;font-weight:800;font-size:16px;box-shadow:0 4px 16px rgba(14,165,233,.35)}
+    .footer{background:#0F172A;color:rgba(255,255,255,.5);text-align:center;padding:20px;font-size:11px;line-height:1.9}
+    .footer a{color:rgba(255,255,255,.5);text-decoration:none}
+    .spinner{display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,.4);border-top-color:white;border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle;margin-right:8px}
     @keyframes spin{to{transform:rotate(360deg)}}
+    @media(max-width:400px){.form-row{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
 
+<!-- Header -->
 <div class="header">
   <div class="logo">
-    <svg width="42" height="42" viewBox="0 0 400 400" fill="none">
-      <rect width="400" height="400" rx="90" fill="url(#lg)"/>
+    <svg width="40" height="40" viewBox="0 0 400 400" fill="none">
       <defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0EA5E9"/><stop offset="100%" stop-color="#06B6D4"/></linearGradient></defs>
+      <rect width="400" height="400" rx="90" fill="url(#lg)"/>
       <rect x="58" y="152" width="284" height="96" rx="48" fill="white"/>
       <path d="M200 152 h94 a48 48 0 0 1 0 96 H200 Z" fill="rgba(6,182,212,0.18)"/>
       <line x1="200" y1="156" x2="200" y2="244" stroke="rgba(14,165,233,0.35)" stroke-width="3"/>
       <path d="M74 200 L112 200 L128 174 L156 228 L174 200 L326 200" stroke="rgba(14,165,233,0.85)" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
     <div>
-      <div class="logo-text-ar">علاجي</div>
+      <div class="logo-text-ar" id="logo-name">علاجي</div>
       <div class="logo-text-en">EILAJI</div>
     </div>
   </div>
-  <button class="lang-btn" onclick="toggleLang()" id="lang-btn">EN</button>
+  <button class="lang-btn" id="lang-btn">EN</button>
 </div>
 
+<!-- Hero -->
 <div class="hero">
   <h1 id="hero-title">اشترك في علاجي بريميوم</h1>
   <p id="hero-sub">لا تفوّت أي جرعة بعد الآن. تنبيهات ذكية، مواعيد طبية، وأدوية غير محدودة.</p>
 </div>
 
+<!-- Main -->
 <div class="main" id="main-content">
+
+  <!-- Plans -->
   <div class="plans">
 
-    <!-- Monthly -->
-    <div class="plan" id="plan-monthly" onclick="selectPlan('monthly')">
+    <div class="plan" id="plan-monthly">
       <div class="plan-header">
         <div>
           <div class="plan-name" id="name-monthly">شهري</div>
-          <div class="plan-price" id="price-monthly">٣٠ ر.ق</div>
-          <div class="plan-period" id="period-monthly">شهرياً · ‎~٨٫٢٠ دولار</div>
+          <div class="plan-price" id="price-monthly">30 <span style="font-size:16px">ر.ق</span></div>
+          <div class="plan-period" id="period-monthly">شهرياً</div>
         </div>
         <div class="radio" id="radio-monthly"></div>
       </div>
-      <div class="plan-keep" id="keep-monthly">تحتفظ بـ ٢٩٫٢٥ ر.ق (٩٧٫٥٪)</div>
     </div>
 
-    <!-- 3 Months -->
-    <div class="plan selected" id="plan-3months" onclick="selectPlan('3months')">
+    <div class="plan selected" id="plan-3months">
       <div class="popular-badge" id="popular-badge">الأكثر شيوعاً</div>
       <div class="save-badge" id="save-3m">وفّر ١٧٪</div>
       <div class="plan-header">
         <div>
           <div class="plan-name" id="name-3months">٣ أشهر</div>
-          <div class="plan-price" id="price-3months">٧٥ ر.ق</div>
-          <div class="plan-period" id="period-3months">كل ٣ أشهر · ‎~٢٠٫٦٠ دولار</div>
+          <div class="plan-price" id="price-3months">75 <span style="font-size:16px">ر.ق</span></div>
+          <div class="plan-period" id="period-3months">كل ٣ أشهر</div>
         </div>
         <div class="radio checked" id="radio-3months"></div>
       </div>
-      <div class="plan-keep" id="keep-3months">تحتفظ بـ ٧٣٫١٣ ر.ق (٩٧٫٥٪)</div>
     </div>
 
-    <!-- Yearly -->
-    <div class="plan" id="plan-yearly" onclick="selectPlan('yearly')">
+    <div class="plan" id="plan-yearly">
       <div class="save-badge" id="save-yr">وفّر ٣١٪</div>
       <div class="plan-header">
         <div>
           <div class="plan-name" id="name-yearly">سنوي</div>
-          <div class="plan-price" id="price-yearly">٢٥٠ ر.ق</div>
-          <div class="plan-period" id="period-yearly">سنوياً · ‎~٦٨٫٦٠ دولار</div>
+          <div class="plan-price" id="price-yearly">250 <span style="font-size:16px">ر.ق</span></div>
+          <div class="plan-period" id="period-yearly">سنوياً</div>
         </div>
         <div class="radio" id="radio-yearly"></div>
       </div>
-      <div class="plan-keep" id="keep-yearly">تحتفظ بـ ٢٤٣٫٧٥ ر.ق (٩٧٫٥٪)</div>
     </div>
+
   </div>
 
   <!-- Features -->
   <div class="features">
     <h3 id="feat-title">ما تحصل عليه مع علاجي بريميوم</h3>
     <div id="feat-list">
-      <div class="feature-row"><div class="check">✓</div><div><div class="feature-title">تنبيهات دواء كإنذار</div><div class="feature-desc">صوت عالٍ يعمل حتى على الصامت</div></div></div>
-      <div class="feature-row"><div class="check">✓</div><div><div class="feature-title">تذكير جرعة فائتة</div><div class="feature-desc">تنبيه تلقائي بعد ٣٠ دقيقة</div></div></div>
-      <div class="feature-row"><div class="check">✓</div><div><div class="feature-title">مواعيد طبية</div><div class="feature-desc">تنبيه ٢٤ ساعة وساعة واحدة قبل الموعد</div></div></div>
-      <div class="feature-row"><div class="check">✓</div><div><div class="feature-title">أدوية غير محدودة</div><div class="feature-desc">أضف أي عدد من الأدوية</div></div></div>
-      <div class="feature-row"><div class="check">✓</div><div><div class="feature-title">عربي وإنجليزي</div><div class="feature-desc">دعم كامل للغة العربية RTL</div></div></div>
-      <div class="feature-row"><div class="check">✓</div><div><div class="feature-title">سجل ٣٠ يوماً</div><div class="feature-desc">تقويم بصري لجميع جرعاتك</div></div></div>
+      <div class="feature-row"><div class="check">✓</div><div><div class="feature-title" id="f1t">تنبيهات دواء كإنذار</div><div class="feature-desc" id="f1d">صوت عالٍ يعمل حتى على الصامت</div></div></div>
+      <div class="feature-row"><div class="check">✓</div><div><div class="feature-title" id="f2t">تذكير جرعة فائتة</div><div class="feature-desc" id="f2d">تنبيه تلقائي بعد ٣٠ دقيقة</div></div></div>
+      <div class="feature-row"><div class="check">✓</div><div><div class="feature-title" id="f3t">مواعيد طبية</div><div class="feature-desc" id="f3d">تنبيه ٢٤ ساعة وساعة واحدة قبل الموعد</div></div></div>
+      <div class="feature-row"><div class="check">✓</div><div><div class="feature-title" id="f4t">أدوية غير محدودة</div><div class="feature-desc" id="f4d">أضف أي عدد من الأدوية</div></div></div>
+      <div class="feature-row"><div class="check">✓</div><div><div class="feature-title" id="f5t">عربي وإنجليزي</div><div class="feature-desc" id="f5d">دعم كامل للغة العربية</div></div></div>
+      <div class="feature-row"><div class="check">✓</div><div><div class="feature-title" id="f6t">سجل ٣٠ يوماً</div><div class="feature-desc" id="f6d">تقويم بصري لجميع جرعاتك</div></div></div>
     </div>
   </div>
 
@@ -170,159 +173,207 @@
     <div class="pm-badge">mada</div>
   </div>
 
-  <button class="pay-btn" id="pay-btn" onclick="startPayment()">
-    <span id="btn-text">اشترك الآن — ٧٥ ر.ق</span>
+  <button class="pay-btn" id="pay-btn">
+    <span id="btn-text">اشترك الآن — 75 ر.ق</span>
   </button>
   <div class="secure-note" id="secure-note">🔒 دفع آمن عبر Tap Payments · يمكنك الإلغاء في أي وقت</div>
+
 </div>
 
-<!-- Success -->
+<!-- Success Screen -->
 <div class="success-screen" id="success-screen">
   <div class="success-icon">✓</div>
   <h2 id="suc-title">تم الاشتراك بنجاح!</h2>
   <p id="suc-body">مرحباً بك في علاجي بريميوم.<br/>افتح التطبيق للاستمتاع بجميع المزايا.</p>
-  <br/><br/>
-  <a href="eilaji://" id="open-btn" style="background:#0EA5E9;color:white;padding:14px 32px;border-radius:50px;text-decoration:none;font-weight:800;font-size:16px">افتح علاجي</a>
+  <a href="eilaji://" class="open-btn" id="open-btn">افتح علاجي</a>
 </div>
 
+<!-- Footer -->
 <div class="footer">
-  <div>eilaji.app · <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="81e0edefe0ecede0efb1b0b2c1e6ece0e8edafe2eeec">[email&#160;protected]</a></div>
-  <div style="margin-top:4px">سياسة الخصوصية · شروط الاستخدام</div>
-  <div style="margin-top:4px">© 2025 علاجي. جميع الحقوق محفوظة.</div>
+  <div>eilaji.app · alnamlan013@gmail.com</div>
+  <div style="margin-top:4px" id="footer-links">سياسة الخصوصية · شروط الاستخدام</div>
+  <div style="margin-top:4px">© 2026 علاجي. جميع الحقوق محفوظة.</div>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-const TAP_KEY     = 'pk_test_sg0Pq7TtvJUVObZ9X4rxBcAQ';
-const SUPA_URL    = 'https://czcjiushtbftxuzbbqjg.supabase.co';
-const SUPA_KEY    = 'sb_publishable_C4aO9p8EaFLedF4Q8vN4og_YBzgEcm6';
-let lang          = 'ar';
-let selectedPlan  = '3months';
+<script>
+  const TAP_KEY = 'pk_test_sg0Pq7TtvJUVObZ9X4rxBcAQ';
+  let lang = 'ar';
+  let selectedPlan = '3months';
 
-const PLANS = {
-  monthly:  { arName:'شهري',   enName:'Monthly',  price:30,  arPrice:'٣٠',arCurrency:'ر.ق',  arPeriod:'شهرياً · ~٨٫٢٠ دولار',        enPeriod:'per month · ~$8.20',    arKeep:'تحتفظ بـ ٢٩٫٢٥ ر.ق (٩٧٫٥٪)', enKeep:'You keep: 29.25 QAR (97.5%)' },
-  '3months':{ arName:'٣ أشهر', enName:'3 Months', price:75,  arPrice:'٧٥', arCur:'ر.ق', arPeriod:'كل ٣ أشهر · ~٢٠٫٦٠ دولار',   enPeriod:'every 3 months · ~$20.60', arKeep:'تحتفظ بـ ٧٣٫١٣ ر.ق (٩٧٫٥٪)', enKeep:'You keep: 73.13 QAR (97.5%)' },
-  yearly:   { arName:'سنوي',   enName:'Yearly',   price:250, arPrice:'٢٥٠', arCur:'ر.ق', arPeriod:'سنوياً · ~٦٨٫٦٠ دولار',        enPeriod:'per year · ~$68.60',    arKeep:'تحتفظ بـ ٢٤٣٫٧٥ ر.ق (٩٧٫٥٪)',enKeep:'You keep: 243.75 QAR (97.5%)' },
-};
+  const PLANS = {
+    monthly:  { price: 30,  arName:'شهري',   enName:'Monthly',  arPeriod:'شهرياً',         enPeriod:'per month',       arPrice:'30 ر.ق',  enPrice:'30 QAR'  },
+    '3months':{ price: 75,  arName:'٣ أشهر', enName:'3 Months', arPeriod:'كل ٣ أشهر',     enPeriod:'every 3 months',  arPrice:'75 ر.ق',  enPrice:'75 QAR'  },
+    yearly:   { price: 250, arName:'سنوي',   enName:'Yearly',   arPeriod:'سنوياً',         enPeriod:'per year',        arPrice:'250 ر.ق', enPrice:'250 QAR' },
+  };
 
-function selectPlan(plan) {
-  selectedPlan = plan;
-  ['monthly','3months','yearly'].forEach(p => {
-    document.getElementById('plan-'+p).classList.remove('selected');
-    const r = document.getElementById('radio-'+p);
-    r.classList.remove('checked');
-    r.innerHTML = '';
-  });
-  document.getElementById('plan-'+plan).classList.add('selected');
-  const r = document.getElementById('radio-'+plan);
-  r.classList.add('checked');
-  const p = PLANS[plan];
-  const dispPrice = lang==='ar' ? p.arPrice : p.price;
-  document.getElementById('btn-text').textContent =
-    (lang==='ar' ? 'اشترك الآن — ' : 'Subscribe Now — ') + dispPrice + (lang==='ar' ? ' ر.ق' : ' QAR');
-}
-
-function toggleLang() {
-  lang = lang==='ar' ? 'en' : 'ar';
-  document.documentElement.lang = lang;
-  document.documentElement.dir  = lang==='ar' ? 'rtl' : 'ltr';
-  document.getElementById('lang-btn').textContent = lang==='ar' ? 'EN' : 'عربي';
-
-  if (lang==='en') {
-    document.getElementById('hero-title').textContent = 'Subscribe to Eilaji Premium';
-    document.getElementById('hero-sub').textContent   = 'Never miss a dose. Smart alarms, appointments, unlimited medicines.';
-    document.getElementById('popular-badge').textContent = 'Most Popular';
-    document.getElementById('save-3m').textContent    = 'Save 17%';
-    document.getElementById('save-yr').textContent    = 'Save 31%';
-    document.getElementById('feat-title').textContent = 'What you get with Eilaji Premium';
-    document.getElementById('feat-list').innerHTML    = `
-      <div class="feature-row"><div class="check">✓</div><div><div class="feature-title">Alarm-style medicine reminders</div><div class="feature-desc">Loud alarm even on silent mode</div></div></div>
-      <div class="feature-row"><div class="check">✓</div><div><div class="feature-title">Missed dose follow-up</div><div class="feature-desc">Auto-alert 30 minutes after missed dose</div></div></div>
-      <div class="feature-row"><div class="check">✓</div><div><div class="feature-title">Appointment reminders</div><div class="feature-desc">Alert 24 hours and 1 hour before</div></div></div>
-      <div class="feature-row"><div class="check">✓</div><div><div class="feature-title">Unlimited medicines</div><div class="feature-desc">Add as many as you need</div></div></div>
-      <div class="feature-row"><div class="check">✓</div><div><div class="feature-title">Arabic + English</div><div class="feature-desc">Full bilingual RTL support</div></div></div>
-      <div class="feature-row"><div class="check">✓</div><div><div class="feature-title">30-day history</div><div class="feature-desc">Visual calendar of all your doses</div></div></div>`;
-    document.getElementById('form-title').textContent = 'Your Information';
-    document.getElementById('lbl-name').textContent   = 'Full Name';
-    document.getElementById('lbl-email').textContent  = 'Email';
-    document.getElementById('lbl-phone').textContent  = 'Phone';
-    document.getElementById('secure-note').textContent= '🔒 Secure payment via Tap Payments · Cancel anytime';
-    ['monthly','3months','yearly'].forEach(p => {
-      document.getElementById('name-'+p).textContent   = PLANS[p].enName;
-      document.getElementById('price-'+p).textContent  = PLANS[p].price + ' QAR';
-      document.getElementById('period-'+p).textContent = PLANS[p].enPeriod;
-      document.getElementById('keep-'+p).textContent   = PLANS[p].enKeep;
+  // ── Plan selection ────────────────────────────────────────────────
+  function selectPlan(plan) {
+    selectedPlan = plan;
+    ['monthly','3months','yearly'].forEach(function(p) {
+      document.getElementById('plan-' + p).classList.remove('selected');
+      var r = document.getElementById('radio-' + p);
+      r.classList.remove('checked');
     });
-  } else {
-    document.getElementById('hero-title').textContent = 'اشترك في علاجي بريميوم';
-    document.getElementById('hero-sub').textContent   = 'لا تفوّت أي جرعة بعد الآن. تنبيهات ذكية، مواعيد طبية، وأدوية غير محدودة.';
-    document.getElementById('popular-badge').textContent = 'الأكثر شيوعاً';
-    document.getElementById('save-3m').textContent    = 'وفّر ١٧٪';
-    document.getElementById('save-yr').textContent    = 'وفّر ٣١٪';
-    document.getElementById('feat-title').textContent = 'ما تحصل عليه مع علاجي بريميوم';
-    document.getElementById('feat-list').innerHTML    = `
-      <div class="feature-row"><div class="check">✓</div><div><div class="feature-title">تنبيهات دواء كإنذار</div><div class="feature-desc">صوت عالٍ يعمل حتى على الصامت</div></div></div>
-      <div class="feature-row"><div class="check">✓</div><div><div class="feature-title">تذكير جرعة فائتة</div><div class="feature-desc">تنبيه تلقائي بعد ٣٠ دقيقة</div></div></div>
-      <div class="feature-row"><div class="check">✓</div><div><div class="feature-title">مواعيد طبية</div><div class="feature-desc">تنبيه ٢٤ ساعة وساعة واحدة قبل الموعد</div></div></div>
-      <div class="feature-row"><div class="check">✓</div><div><div class="feature-title">أدوية غير محدودة</div><div class="feature-desc">أضف أي عدد من الأدوية</div></div></div>
-      <div class="feature-row"><div class="check">✓</div><div><div class="feature-title">عربي وإنجليزي</div><div class="feature-desc">دعم كامل للغة العربية RTL</div></div></div>
-      <div class="feature-row"><div class="check">✓</div><div><div class="feature-title">سجل ٣٠ يوماً</div><div class="feature-desc">تقويم بصري لجميع جرعاتك</div></div></div>`;
-    document.getElementById('form-title').textContent = 'بيانات المشترك';
-    document.getElementById('lbl-name').textContent   = 'الاسم الكامل';
-    document.getElementById('lbl-email').textContent  = 'البريد الإلكتروني';
-    document.getElementById('lbl-phone').textContent  = 'رقم الهاتف';
-    document.getElementById('secure-note').textContent= '🔒 دفع آمن عبر Tap Payments · يمكنك الإلغاء في أي وقت';
-    ['monthly','3months','yearly'].forEach(p => {
-      document.getElementById('name-'+p).textContent   = PLANS[p].arName;
-      document.getElementById('price-'+p).textContent  = PLANS[p].arPrice + ' ر.ق';
-      document.getElementById('period-'+p).textContent = PLANS[p].arPeriod;
-      document.getElementById('keep-'+p).textContent   = PLANS[p].arKeep;
-    });
+    document.getElementById('plan-' + plan).classList.add('selected');
+    document.getElementById('radio-' + plan).classList.add('checked');
+    updateBtn();
   }
-  selectPlan(selectedPlan);
-}
 
-async function startPayment() {
-  const name  = document.getElementById('inp-name').value.trim();
-  const email = document.getElementById('inp-email').value.trim();
-  const phone = document.getElementById('inp-phone').value.trim();
-  if (!name || !email) {
-    alert(lang==='ar' ? 'يرجى إدخال الاسم والبريد الإلكتروني' : 'Please enter name and email');
-    return;
+  function updateBtn() {
+    var p = PLANS[selectedPlan];
+    var txt = lang === 'ar'
+      ? 'اشترك الآن — ' + p.arPrice
+      : 'Subscribe Now — ' + p.enPrice;
+    document.getElementById('btn-text').textContent = txt;
   }
-  const btn = document.getElementById('pay-btn');
-  btn.disabled = true;
-  document.getElementById('btn-text').innerHTML = (lang==='ar'?'جارٍ المعالجة':'Processing')+'<span class="spinner"></span>';
-  try {
-    const plan = PLANS[selectedPlan];
-    const res  = await fetch('https://api.tap.company/v2/charges', {
-      method:'POST',
-      headers:{'Authorization':'Bearer '+TAP_KEY,'Content-Type':'application/json'},
-      body: JSON.stringify({
-        amount: plan.price, currency:'QAR',
-        customer:{ first_name:name.split(' ')[0], last_name:name.split(' ').slice(1).join(' ')||'-', email, phone:{country_code:'974',number:phone.replace(/\D/g,'').slice(-8)} },
-        source:{ id:'src_all' },
-        redirect:{ url: window.location.href+'?success=1&plan='+selectedPlan+'&email='+encodeURIComponent(email) },
-        description: 'Eilaji '+plan.enName+' Subscription',
-        metadata:{ plan:selectedPlan, lang, name, email },
-      }),
-    });
-    const charge = await res.json();
-    if (charge.transaction?.url) { window.location.href = charge.transaction.url; }
-    else throw new Error(charge.message||'Payment failed');
-  } catch(err) {
-    alert(lang==='ar'?'حدث خطأ. يرجى المحاولة مرة أخرى.':'An error occurred. Please try again.');
-    btn.disabled = false;
-    selectPlan(selectedPlan);
-  }
-}
 
-async function handleReturn() {
-  const p = new URLSearchParams(window.location.search);
-  if (p.get('success')==='1') {
-    document.getElementById('main-content').style.display='none';
-    document.getElementById('success-screen').style.display='block';
+  // ── Language toggle ───────────────────────────────────────────────
+  function toggleLang() {
+    lang = lang === 'ar' ? 'en' : 'ar';
+    var isAr = lang === 'ar';
+    document.documentElement.lang = lang;
+    document.documentElement.dir  = isAr ? 'rtl' : 'ltr';
+    document.getElementById('lang-btn').textContent = isAr ? 'EN' : 'عربي';
+    document.getElementById('logo-name').textContent = isAr ? 'علاجي' : 'Eilaji';
+
+    // Hero
+    document.getElementById('hero-title').textContent = isAr ? 'اشترك في علاجي بريميوم' : 'Subscribe to Eilaji Premium';
+    document.getElementById('hero-sub').textContent   = isAr ? 'لا تفوّت أي جرعة بعد الآن. تنبيهات ذكية، مواعيد طبية، وأدوية غير محدودة.' : 'Never miss a dose again. Smart alarms, medical appointments, unlimited medicines.';
+
+    // Badges
+    document.getElementById('popular-badge').textContent = isAr ? 'الأكثر شيوعاً' : 'Most Popular';
+    document.getElementById('save-3m').textContent = isAr ? 'وفّر ١٧٪' : 'Save 17%';
+    document.getElementById('save-yr').textContent = isAr ? 'وفّر ٣١٪' : 'Save 31%';
+
+    // Plan names & periods
+    ['monthly','3months','yearly'].forEach(function(p) {
+      var pl = PLANS[p];
+      document.getElementById('name-' + p).textContent   = isAr ? pl.arName   : pl.enName;
+      document.getElementById('period-' + p).textContent = isAr ? pl.arPeriod : pl.enPeriod;
+    });
+
+    // Features
+    document.getElementById('feat-title').textContent = isAr ? 'ما تحصل عليه مع علاجي بريميوم' : 'What you get with Eilaji Premium';
+    var feats = isAr ? [
+      ['تنبيهات دواء كإنذار','صوت عالٍ يعمل حتى على الصامت'],
+      ['تذكير جرعة فائتة','تنبيه تلقائي بعد ٣٠ دقيقة'],
+      ['مواعيد طبية','تنبيه ٢٤ ساعة وساعة واحدة قبل الموعد'],
+      ['أدوية غير محدودة','أضف أي عدد من الأدوية'],
+      ['عربي وإنجليزي','دعم كامل للغة العربية'],
+      ['سجل ٣٠ يوماً','تقويم بصري لجميع جرعاتك'],
+    ] : [
+      ['Alarm-style medicine reminders','Loud alarm even on silent mode'],
+      ['Missed dose follow-up','Auto-alert 30 minutes after missed dose'],
+      ['Medical appointments','Alert 24 hours and 1 hour before'],
+      ['Unlimited medicines','Add as many as you need'],
+      ['Arabic + English','Full bilingual RTL support'],
+      ['30-day history','Visual calendar of all your doses'],
+    ];
+    var ids = ['f1','f2','f3','f4','f5','f6'];
+    ids.forEach(function(id, i) {
+      document.getElementById(id+'t').textContent = feats[i][0];
+      document.getElementById(id+'d').textContent = feats[i][1];
+    });
+
+    // Form
+    document.getElementById('form-title').textContent = isAr ? 'بيانات المشترك'      : 'Your Information';
+    document.getElementById('lbl-name').textContent   = isAr ? 'الاسم الكامل'        : 'FULL NAME';
+    document.getElementById('lbl-email').textContent  = isAr ? 'البريد الإلكتروني'   : 'EMAIL';
+    document.getElementById('lbl-phone').textContent  = isAr ? 'رقم الهاتف'          : 'PHONE';
+    document.getElementById('inp-name').placeholder   = isAr ? 'عبدالرحمن الأحمد'   : 'John Smith';
+
+    // Secure note & footer
+    document.getElementById('secure-note').textContent = isAr ? '🔒 دفع آمن عبر Tap Payments · يمكنك الإلغاء في أي وقت' : '🔒 Secure payment via Tap Payments · Cancel anytime';
+    document.getElementById('footer-links').textContent = isAr ? 'سياسة الخصوصية · شروط الاستخدام' : 'Privacy Policy · Terms of Use';
+
+    // Success screen
+    document.getElementById('suc-title').textContent = isAr ? 'تم الاشتراك بنجاح!' : 'Subscription Successful!';
+    document.getElementById('suc-body').innerHTML    = isAr ? 'مرحباً بك في علاجي بريميوم.<br/>افتح التطبيق للاستمتاع بجميع المزايا.' : 'Welcome to Eilaji Premium.<br/>Open the app to enjoy all features.';
+    document.getElementById('open-btn').textContent  = isAr ? 'افتح علاجي' : 'Open Eilaji';
+
+    updateBtn();
+  }
+
+  // ── Payment ───────────────────────────────────────────────────────
+  async function startPayment() {
+    var name  = document.getElementById('inp-name').value.trim();
+    var email = document.getElementById('inp-email').value.trim();
+    var phone = document.getElementById('inp-phone').value.trim();
+
+    if (!name || !email) {
+      alert(lang === 'ar' ? 'يرجى إدخال الاسم والبريد الإلكتروني' : 'Please enter your name and email');
+      return;
+    }
+
+    var btn = document.getElementById('pay-btn');
+    btn.disabled = true;
+    document.getElementById('btn-text').innerHTML =
+      '<span class="spinner"></span>' + (lang === 'ar' ? 'جارٍ المعالجة...' : 'Processing...');
+
     try {
-      await fetch(SUPA_URL+'/rest/v1/subscription_events',{
-        method:'POST',
-        headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
-        body:JSON.stringify({event_type:'web_purchase',plan:p.get('plan'),store:
+      var plan = PLANS[selectedPlan];
+      var res  = await fetch('https://api.tap.company/v2/charges', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + TAP_KEY, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: plan.price,
+          currency: 'QAR',
+          customer: {
+            first_name: name.split(' ')[0],
+            last_name:  name.split(' ').slice(1).join(' ') || '-',
+            email: email,
+            phone: { country_code: '974', number: phone.replace(/\D/g,'').slice(-8) }
+          },
+          source: { id: 'src_all' },
+          redirect: { url: window.location.origin + window.location.pathname + '?success=1&plan=' + selectedPlan + '&email=' + encodeURIComponent(email) },
+          description: 'Eilaji ' + plan.enName + ' Subscription',
+          metadata: { plan: selectedPlan, lang: lang, name: name }
+        })
+      });
+      var charge = await res.json();
+      if (charge.transaction && charge.transaction.url) {
+        window.location.href = charge.transaction.url;
+      } else {
+        throw new Error(charge.message || 'Payment failed');
+      }
+    } catch(err) {
+      alert(lang === 'ar' ? 'حدث خطأ. يرجى المحاولة مرة أخرى.' : 'An error occurred. Please try again.');
+      btn.disabled = false;
+      updateBtn();
+    }
+  }
+
+  // ── Handle return from Tap ────────────────────────────────────────
+  function handleReturn() {
+    var params = new URLSearchParams(window.location.search);
+    if (params.get('success') === '1') {
+      document.getElementById('main-content').style.display = 'none';
+      document.getElementById('success-screen').style.display = 'block';
+      window.scrollTo(0, 0);
+    }
+  }
+
+  // ── Init ──────────────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', function() {
+    // Wire up plan clicks
+    ['monthly','3months','yearly'].forEach(function(p) {
+      document.getElementById('plan-' + p).addEventListener('click', function() {
+        selectPlan(p);
+      });
+    });
+
+    // Wire up lang button
+    document.getElementById('lang-btn').addEventListener('click', toggleLang);
+
+    // Wire up pay button
+    document.getElementById('pay-btn').addEventListener('click', startPayment);
+
+    // Check if returning from payment
+    handleReturn();
+
+    // Set initial button text
+    updateBtn();
+  });
+</script>
+</body>
+</html>
