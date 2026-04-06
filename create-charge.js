@@ -1,7 +1,4 @@
 // ⚠️  IMPORTANT: Replace TAP_SECRET below with your actual Tap secret key.
-// Get it from: business.tap.company → Settings → API Credentials → Secret Key
-// It starts with: sk_test_... (for testing) or sk_live_... (for live)
-
 const TAP_SECRET = 'sk_live_Hc3XoBk1eLWip0j7OQRdElCA';
 
 export default async function handler(req, res) {
@@ -14,38 +11,38 @@ export default async function handler(req, res) {
   try {
     const { name, email, phone, phoneCode, plan, amount } = req.body;
 
-    // Clean phone: digits only, max 8 digits for local number
-    const localNumber = String(phone).replace(/\D/g, '');
-    const countryCode = String(phoneCode || '974').replace(/\D/g, '');
+    // Clean inputs
+    const nameParts = String(name || '').trim().split(' ');
+    const firstName = nameParts[0] || 'Customer';
+    const lastName  = nameParts.slice(1).join(' ') || firstName;
 
-    const nameParts  = String(name).trim().split(' ');
-    const firstName  = nameParts[0] || name;
-    const lastName   = nameParts.slice(1).join(' ') || firstName;
+    // Phone: digits only, remove leading zeros
+    const rawPhone   = String(phone || '').replace(/\D/g, '');
+    const rawCode    = String(phoneCode || '974').replace(/\D/g, '');
 
     const redirectUrl = 'https://eilaji-payment.vercel.app/?success=1&plan=' +
-      encodeURIComponent(plan) + '&email=' + encodeURIComponent(email);
+      encodeURIComponent(plan || '') + '&email=' + encodeURIComponent(email || '');
 
     const body = {
-      amount:      Number(amount),
-      currency:    'QAR',
+      amount:       Number(amount),
+      currency:     'QAR',
       threeDSecure: true,
-      save_card:   false,
-      description: 'Eilaji ' + plan + ' Subscription',
-      metadata:    { plan, name, email },
+      save_card:    false,
+      description:  'Eilaji ' + (plan || '') + ' Subscription',
       customer: {
         first_name: firstName,
         last_name:  lastName,
-        email:      email,
+        email:      String(email || '').trim(),
         phone: {
-          country_code: countryCode,
-          number:       localNumber,
+          country_code: rawCode,
+          number:       rawPhone,
         },
       },
-      merchant:  { id: '21094672' },
-      source:    { id: 'src_all' },
-      redirect:  { url: redirectUrl },
-      post:      { url: redirectUrl },
+      source:   { id: 'src_all' },
+      redirect: { url: redirectUrl },
     };
+
+    console.log('Tap request body:', JSON.stringify(body, null, 2));
 
     const response = await fetch('https://api.tap.company/v2/charges', {
       method:  'POST',
@@ -58,17 +55,20 @@ export default async function handler(req, res) {
 
     const charge = await response.json();
 
+    console.log('Tap response:', JSON.stringify(charge, null, 2));
+
     if (charge && charge.transaction && charge.transaction.url) {
       return res.status(200).json({ url: charge.transaction.url });
     }
 
-    // Return full Tap error for debugging
+    // Return full Tap error so we can see what's wrong
     return res.status(400).json({
-      error: charge.message || charge.description || 'Payment failed',
-      tap:   charge,
+      error:   charge.message || charge.description || JSON.stringify(charge),
+      details: charge,
     });
 
   } catch (err) {
+    console.error('Server error:', err);
     return res.status(500).json({ error: err.message });
   }
 }
