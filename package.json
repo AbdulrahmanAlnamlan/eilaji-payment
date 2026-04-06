@@ -1,8 +1,4 @@
 {
   "name": "eilaji-payment",
-  "version": "1.0.0",
-  "type": "module",
-  "engines": {
-    "node": "18.x"
-  }
+  "version": "1.0.0"
 }
