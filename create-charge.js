@@ -1,4 +1,3 @@
-// ⚠️  IMPORTANT: Replace TAP_SECRET below with your actual Tap secret key.
 const TAP_SECRET = 'sk_live_Hc3XoBk1eLWip0j7OQRdElCA';
 
 export default async function handler(req, res) {
