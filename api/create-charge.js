@@ -1,4 +1,4 @@
-const TAP_SECRET = 'sk_live_Hc3XoBk1eLWip0j7OQRdElCA';
+const TAP_SECRET = 'sk_test_YNWTmzgcVJZvdtAErXk5KU2';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
