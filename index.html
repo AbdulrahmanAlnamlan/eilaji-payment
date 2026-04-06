@@ -43,6 +43,10 @@
     .form-label{font-size:11px;font-weight:700;color:#64748b;margin-bottom:6px;display:block;letter-spacing:.5px;text-transform:uppercase}
     .form-input{width:100%;padding:13px 14px;border:1.5px solid #E2E8F0;border-radius:10px;font-size:14px;color:#0F172A;font-family:'Cairo',sans-serif;outline:none;background:#FAFBFC;transition:border .2s}
     .form-input:focus{border-color:#0EA5E9;background:#fff}
+    .phone-row{display:flex;gap:8px;align-items:stretch}
+    .code-btn{padding:0 14px;border:1.5px solid #E2E8F0;border-radius:10px;background:#FAFBFC;cursor:pointer;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;color:#0F172A;white-space:nowrap;display:flex;align-items:center;gap:6px;transition:border .2s;min-width:90px;justify-content:center}
+    .code-btn:hover{border-color:#0EA5E9}
+    .code-btn .arrow{font-size:10px;color:#94A3B8}
     .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     .pay-btn{width:100%;padding:17px;background:linear-gradient(135deg,#0EA5E9,#06B6D4);border:none;border-radius:14px;color:white;font-size:17px;font-weight:800;cursor:pointer;font-family:'Cairo',sans-serif;box-shadow:0 4px 20px rgba(14,165,233,.35);margin-bottom:14px;transition:all .2s}
     .pay-btn:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(14,165,233,.45)}
@@ -50,13 +54,30 @@
     .secure-note{text-align:center;font-size:11px;color:#94A3B8;margin-bottom:24px}
     .payment-methods{display:flex;justify-content:center;gap:8px;margin-bottom:16px;flex-wrap:wrap}
     .pm-badge{background:#F8FAFC;border:1px solid #E2E8F0;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:600;color:#475569}
+    /* Country picker modal */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;align-items:flex-end;justify-content:center}
+    .modal-overlay.open{display:flex}
+    .modal-sheet{background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:560px;max-height:75vh;display:flex;flex-direction:column}
+    .modal-header{padding:16px 20px;border-bottom:1px solid #F1F5F9;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+    .modal-title{font-size:17px;font-weight:800;color:#0F172A}
+    .modal-close{background:none;border:none;font-size:24px;color:#94A3B8;cursor:pointer;line-height:1}
+    .modal-search{padding:12px 16px;border-bottom:1px solid #F1F5F9;flex-shrink:0}
+    .modal-search input{width:100%;padding:10px 14px;border:1.5px solid #E2E8F0;border-radius:10px;font-size:14px;font-family:'Cairo',sans-serif;outline:none}
+    .modal-search input:focus{border-color:#0EA5E9}
+    .modal-list{overflow-y:auto;flex:1}
+    .country-item{display:flex;align-items:center;justify-content:space-between;padding:13px 20px;border-bottom:1px solid #F8FAFC;cursor:pointer;transition:background .15s}
+    .country-item:hover{background:#EFF8FF}
+    .country-left{display:flex;align-items:center;gap:12px}
+    .country-flag{font-size:22px}
+    .country-name{font-size:14px;font-weight:600;color:#0F172A}
+    .country-code{font-size:14px;font-weight:700;color:#0EA5E9}
+    /* Success */
     .success-screen{display:none;text-align:center;padding:60px 24px}
     .success-icon{width:84px;height:84px;border-radius:50%;background:linear-gradient(135deg,#10B981,#059669);display:flex;align-items:center;justify-content:center;font-size:38px;margin:0 auto 20px}
     .success-screen h2{font-size:24px;font-weight:800;margin-bottom:10px}
     .success-screen p{color:#64748b;line-height:1.8}
-    .open-btn{display:inline-block;margin-top:28px;background:#0EA5E9;color:white;padding:14px 36px;border-radius:50px;text-decoration:none;font-weight:800;font-size:16px;box-shadow:0 4px 16px rgba(14,165,233,.35)}
+    .open-btn{display:inline-block;margin-top:28px;background:#0EA5E9;color:white;padding:14px 36px;border-radius:50px;text-decoration:none;font-weight:800;font-size:16px}
     .footer{background:#0F172A;color:rgba(255,255,255,.5);text-align:center;padding:20px;font-size:11px;line-height:1.9}
-    .footer a{color:rgba(255,255,255,.5);text-decoration:none}
     .spinner{display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,.4);border-top-color:white;border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle;margin-right:8px}
     @keyframes spin{to{transform:rotate(360deg)}}
     @media(max-width:400px){.form-row{grid-template-columns:1fr}}
@@ -94,12 +115,11 @@
 
   <!-- Plans -->
   <div class="plans">
-
     <div class="plan" id="plan-monthly">
       <div class="plan-header">
         <div>
           <div class="plan-name" id="name-monthly">شهري</div>
-          <div class="plan-price" id="price-monthly">30 <span style="font-size:16px">ر.ق</span></div>
+          <div class="plan-price" id="price-monthly">29 <span style="font-size:16px">ر.ق</span></div>
           <div class="plan-period" id="period-monthly">شهرياً</div>
         </div>
         <div class="radio" id="radio-monthly"></div>
@@ -108,7 +128,7 @@
 
     <div class="plan selected" id="plan-3months">
       <div class="popular-badge" id="popular-badge">الأكثر شيوعاً</div>
-      <div class="save-badge" id="save-3m">وفّر ١٧٪</div>
+      <div class="save-badge" id="save-3m">وفّر ١٤٪</div>
       <div class="plan-header">
         <div>
           <div class="plan-name" id="name-3months">٣ أشهر</div>
@@ -120,23 +140,22 @@
     </div>
 
     <div class="plan" id="plan-yearly">
-      <div class="save-badge" id="save-yr">وفّر ٣١٪</div>
+      <div class="save-badge" id="save-yr">وفّر ٤٣٪</div>
       <div class="plan-header">
         <div>
           <div class="plan-name" id="name-yearly">سنوي</div>
-          <div class="plan-price" id="price-yearly">250 <span style="font-size:16px">ر.ق</span></div>
+          <div class="plan-price" id="price-yearly">199 <span style="font-size:16px">ر.ق</span></div>
           <div class="plan-period" id="period-yearly">سنوياً</div>
         </div>
         <div class="radio" id="radio-yearly"></div>
       </div>
     </div>
-
   </div>
 
   <!-- Features -->
   <div class="features">
     <h3 id="feat-title">ما تحصل عليه مع علاجي بريميوم</h3>
-    <div id="feat-list">
+    <div>
       <div class="feature-row"><div class="check">✓</div><div><div class="feature-title" id="f1t">تنبيهات دواء كإنذار</div><div class="feature-desc" id="f1d">صوت عالٍ يعمل حتى على الصامت</div></div></div>
       <div class="feature-row"><div class="check">✓</div><div><div class="feature-title" id="f2t">تذكير جرعة فائتة</div><div class="feature-desc" id="f2d">تنبيه تلقائي بعد ٣٠ دقيقة</div></div></div>
       <div class="feature-row"><div class="check">✓</div><div><div class="feature-title" id="f3t">مواعيد طبية</div><div class="feature-desc" id="f3d">تنبيه ٢٤ ساعة وساعة واحدة قبل الموعد</div></div></div>
@@ -153,14 +172,19 @@
       <label class="form-label" id="lbl-name">الاسم الكامل</label>
       <input class="form-input" id="inp-name" type="text" placeholder="عبدالرحمن الأحمد"/>
     </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label" id="lbl-email">البريد الإلكتروني</label>
-        <input class="form-input" id="inp-email" type="email" placeholder="name@example.com" dir="ltr"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label" id="lbl-phone">رقم الهاتف</label>
-        <input class="form-input" id="inp-phone" type="tel" placeholder="+974 5000 0000" dir="ltr"/>
+    <div class="form-group">
+      <label class="form-label" id="lbl-email">البريد الإلكتروني</label>
+      <input class="form-input" id="inp-email" type="email" placeholder="name@example.com" dir="ltr"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label" id="lbl-phone">رقم الهاتف</label>
+      <div class="phone-row">
+        <button class="code-btn" id="code-btn" type="button">
+          <span id="code-flag">🇶🇦</span>
+          <span id="code-val">+974</span>
+          <span class="arrow">▼</span>
+        </button>
+        <input class="form-input" id="inp-phone" type="tel" placeholder="5000 0000" dir="ltr" style="flex:1"/>
       </div>
     </div>
   </div>
@@ -177,10 +201,9 @@
     <span id="btn-text">اشترك الآن — 75 ر.ق</span>
   </button>
   <div class="secure-note" id="secure-note">🔒 دفع آمن عبر Tap Payments · يمكنك الإلغاء في أي وقت</div>
-
 </div>
 
-<!-- Success Screen -->
+<!-- Success -->
 <div class="success-screen" id="success-screen">
   <div class="success-icon">✓</div>
   <h2 id="suc-title">تم الاشتراك بنجاح!</h2>
@@ -200,24 +223,115 @@
   </div>
 </div>
 
-<script>
-  const TAP_KEY = 'pk_test_sg0Pq7TtvJUVObZ9X4rxBcAQ';
-  let lang = 'ar';
-  let selectedPlan = '3months';
+<!-- Country Picker Modal -->
+<div class="modal-overlay" id="country-modal">
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title">اختر رمز الدولة</span>
+      <button class="modal-close" id="modal-close">✕</button>
+    </div>
+    <div class="modal-search">
+      <input type="text" id="country-search" placeholder="ابحث عن دولة..." />
+    </div>
+    <div class="modal-list" id="country-list"></div>
+  </div>
+</div>
 
-  const PLANS = {
-    monthly:  { price: 30,  arName:'شهري',   enName:'Monthly',  arPeriod:'شهرياً',         enPeriod:'per month',       arPrice:'30 ر.ق',  enPrice:'30 QAR'  },
-    '3months':{ price: 75,  arName:'٣ أشهر', enName:'3 Months', arPeriod:'كل ٣ أشهر',     enPeriod:'every 3 months',  arPrice:'75 ر.ق',  enPrice:'75 QAR'  },
-    yearly:   { price: 250, arName:'سنوي',   enName:'Yearly',   arPeriod:'سنوياً',         enPeriod:'per year',        arPrice:'250 ر.ق', enPrice:'250 QAR' },
+<script>
+  var lang = 'ar';
+  var selectedPlan = '3months';
+  var selectedCode = '+974';
+  var selectedFlag = '🇶🇦';
+
+  var PLANS = {
+    monthly:   { price: 29,  arName:'شهري',   enName:'Monthly',  arPeriod:'شهرياً',     enPeriod:'per month',      arPrice:'29 ر.ق',  enPrice:'29 QAR'  },
+    '3months': { price: 75,  arName:'٣ أشهر', enName:'3 Months', arPeriod:'كل ٣ أشهر', enPeriod:'every 3 months', arPrice:'75 ر.ق',  enPrice:'75 QAR'  },
+    yearly:    { price: 199, arName:'سنوي',   enName:'Yearly',   arPeriod:'سنوياً',     enPeriod:'per year',       arPrice:'199 ر.ق', enPrice:'199 QAR' },
   };
+
+  var COUNTRIES = [
+    {name:'Qatar',           ar:'قطر',              code:'+974', flag:'🇶🇦'},
+    {name:'UAE',             ar:'الإمارات',          code:'+971', flag:'🇦🇪'},
+    {name:'Saudi Arabia',    ar:'السعودية',          code:'+966', flag:'🇸🇦'},
+    {name:'Kuwait',          ar:'الكويت',            code:'+965', flag:'🇰🇼'},
+    {name:'Bahrain',         ar:'البحرين',           code:'+973', flag:'🇧🇭'},
+    {name:'Oman',            ar:'عُمان',             code:'+968', flag:'🇴🇲'},
+    {name:'Jordan',          ar:'الأردن',            code:'+962', flag:'🇯🇴'},
+    {name:'Egypt',           ar:'مصر',               code:'+20',  flag:'🇪🇬'},
+    {name:'Lebanon',         ar:'لبنان',             code:'+961', flag:'🇱🇧'},
+    {name:'Iraq',            ar:'العراق',            code:'+964', flag:'🇮🇶'},
+    {name:'Palestine',       ar:'فلسطين',            code:'+970', flag:'🇵🇸'},
+    {name:'Syria',           ar:'سوريا',             code:'+963', flag:'🇸🇾'},
+    {name:'Yemen',           ar:'اليمن',             code:'+967', flag:'🇾🇪'},
+    {name:'Libya',           ar:'ليبيا',             code:'+218', flag:'🇱🇾'},
+    {name:'Tunisia',         ar:'تونس',              code:'+216', flag:'🇹🇳'},
+    {name:'Algeria',         ar:'الجزائر',           code:'+213', flag:'🇩🇿'},
+    {name:'Morocco',         ar:'المغرب',            code:'+212', flag:'🇲🇦'},
+    {name:'Sudan',           ar:'السودان',           code:'+249', flag:'🇸🇩'},
+    {name:'Turkey',          ar:'تركيا',             code:'+90',  flag:'🇹🇷'},
+    {name:'Pakistan',        ar:'باكستان',           code:'+92',  flag:'🇵🇰'},
+    {name:'India',           ar:'الهند',             code:'+91',  flag:'🇮🇳'},
+    {name:'Bangladesh',      ar:'بنغلاديش',          code:'+880', flag:'🇧🇩'},
+    {name:'Philippines',     ar:'الفلبين',           code:'+63',  flag:'🇵🇭'},
+    {name:'Sri Lanka',       ar:'سريلانكا',          code:'+94',  flag:'🇱🇰'},
+    {name:'Nepal',           ar:'نيبال',             code:'+977', flag:'🇳🇵'},
+    {name:'Indonesia',       ar:'إندونيسيا',         code:'+62',  flag:'🇮🇩'},
+    {name:'Malaysia',        ar:'ماليزيا',           code:'+60',  flag:'🇲🇾'},
+    {name:'Singapore',       ar:'سنغافورة',          code:'+65',  flag:'🇸🇬'},
+    {name:'Thailand',        ar:'تايلاند',           code:'+66',  flag:'🇹🇭'},
+    {name:'United Kingdom',  ar:'المملكة المتحدة',   code:'+44',  flag:'🇬🇧'},
+    {name:'United States',   ar:'الولايات المتحدة',  code:'+1',   flag:'🇺🇸'},
+    {name:'Canada',          ar:'كندا',              code:'+1',   flag:'🇨🇦'},
+    {name:'Australia',       ar:'أستراليا',          code:'+61',  flag:'🇦🇺'},
+    {name:'France',          ar:'فرنسا',             code:'+33',  flag:'🇫🇷'},
+    {name:'Germany',         ar:'ألمانيا',           code:'+49',  flag:'🇩🇪'},
+    {name:'Italy',           ar:'إيطاليا',           code:'+39',  flag:'🇮🇹'},
+    {name:'Spain',           ar:'إسبانيا',           code:'+34',  flag:'🇪🇸'},
+    {name:'Netherlands',     ar:'هولندا',            code:'+31',  flag:'🇳🇱'},
+    {name:'Russia',          ar:'روسيا',             code:'+7',   flag:'🇷🇺'},
+    {name:'China',           ar:'الصين',             code:'+86',  flag:'🇨🇳'},
+    {name:'Japan',           ar:'اليابان',           code:'+81',  flag:'🇯🇵'},
+    {name:'South Korea',     ar:'كوريا الجنوبية',    code:'+82',  flag:'🇰🇷'},
+    {name:'Ethiopia',        ar:'إثيوبيا',           code:'+251', flag:'🇪🇹'},
+    {name:'Nigeria',         ar:'نيجيريا',           code:'+234', flag:'🇳🇬'},
+    {name:'Kenya',           ar:'كينيا',             code:'+254', flag:'🇰🇪'},
+    {name:'South Africa',    ar:'جنوب أفريقيا',      code:'+27',  flag:'🇿🇦'},
+    {name:'Brazil',          ar:'البرازيل',          code:'+55',  flag:'🇧🇷'},
+    {name:'Mexico',          ar:'المكسيك',           code:'+52',  flag:'🇲🇽'},
+    {name:'Iran',            ar:'إيران',             code:'+98',  flag:'🇮🇷'},
+  ];
+
+  // ── Render country list ───────────────────────────────────────────
+  function renderCountries(filter) {
+    var list = document.getElementById('country-list');
+    var filtered = COUNTRIES.filter(function(c) {
+      if (!filter) return true;
+      var q = filter.toLowerCase();
+      return c.name.toLowerCase().includes(q) || c.ar.includes(filter) || c.code.includes(filter);
+    });
+    list.innerHTML = filtered.map(function(c) {
+      return '<div class="country-item" data-code="' + c.code + '" data-flag="' + c.flag + '">' +
+        '<div class="country-left"><span class="country-flag">' + c.flag + '</span>' +
+        '<span class="country-name">' + (lang === 'ar' ? c.ar : c.name) + '</span></div>' +
+        '<span class="country-code">' + c.code + '</span></div>';
+    }).join('');
+    list.querySelectorAll('.country-item').forEach(function(el) {
+      el.addEventListener('click', function() {
+        selectedCode = el.dataset.code;
+        selectedFlag = el.dataset.flag;
+        document.getElementById('code-val').textContent  = selectedCode;
+        document.getElementById('code-flag').textContent = selectedFlag;
+        document.getElementById('country-modal').classList.remove('open');
+      });
+    });
+  }
 
   // ── Plan selection ────────────────────────────────────────────────
   function selectPlan(plan) {
     selectedPlan = plan;
     ['monthly','3months','yearly'].forEach(function(p) {
       document.getElementById('plan-' + p).classList.remove('selected');
-      var r = document.getElementById('radio-' + p);
-      r.classList.remove('checked');
+      document.getElementById('radio-' + p).classList.remove('checked');
     });
     document.getElementById('plan-' + plan).classList.add('selected');
     document.getElementById('radio-' + plan).classList.add('checked');
@@ -226,10 +340,8 @@
 
   function updateBtn() {
     var p = PLANS[selectedPlan];
-    var txt = lang === 'ar'
-      ? 'اشترك الآن — ' + p.arPrice
-      : 'Subscribe Now — ' + p.enPrice;
-    document.getElementById('btn-text').textContent = txt;
+    document.getElementById('btn-text').textContent =
+      (lang === 'ar' ? 'اشترك الآن — ' + p.arPrice : 'Subscribe Now — ' + p.enPrice);
   }
 
   // ── Language toggle ───────────────────────────────────────────────
@@ -238,27 +350,18 @@
     var isAr = lang === 'ar';
     document.documentElement.lang = lang;
     document.documentElement.dir  = isAr ? 'rtl' : 'ltr';
-    document.getElementById('lang-btn').textContent = isAr ? 'EN' : 'عربي';
+    document.getElementById('lang-btn').textContent  = isAr ? 'EN' : 'عربي';
     document.getElementById('logo-name').textContent = isAr ? 'علاجي' : 'Eilaji';
-
-    // Hero
     document.getElementById('hero-title').textContent = isAr ? 'اشترك في علاجي بريميوم' : 'Subscribe to Eilaji Premium';
     document.getElementById('hero-sub').textContent   = isAr ? 'لا تفوّت أي جرعة بعد الآن. تنبيهات ذكية، مواعيد طبية، وأدوية غير محدودة.' : 'Never miss a dose again. Smart alarms, medical appointments, unlimited medicines.';
-
-    // Badges
     document.getElementById('popular-badge').textContent = isAr ? 'الأكثر شيوعاً' : 'Most Popular';
-    document.getElementById('save-3m').textContent = isAr ? 'وفّر ١٧٪' : 'Save 17%';
-    document.getElementById('save-yr').textContent = isAr ? 'وفّر ٣١٪' : 'Save 31%';
-
-    // Plan names & periods
+    document.getElementById('save-3m').textContent = isAr ? 'وفّر ١٤٪' : 'Save 14%';
+    document.getElementById('save-yr').textContent = isAr ? 'وفّر ٤٣٪' : 'Save 43%';
     ['monthly','3months','yearly'].forEach(function(p) {
       var pl = PLANS[p];
       document.getElementById('name-' + p).textContent   = isAr ? pl.arName   : pl.enName;
       document.getElementById('period-' + p).textContent = isAr ? pl.arPeriod : pl.enPeriod;
     });
-
-    // Features
-    document.getElementById('feat-title').textContent = isAr ? 'ما تحصل عليه مع علاجي بريميوم' : 'What you get with Eilaji Premium';
     var feats = isAr ? [
       ['تنبيهات دواء كإنذار','صوت عالٍ يعمل حتى على الصامت'],
       ['تذكير جرعة فائتة','تنبيه تلقائي بعد ٣٠ دقيقة'],
@@ -267,35 +370,30 @@
       ['عربي وإنجليزي','دعم كامل للغة العربية'],
       ['سجل ٣٠ يوماً','تقويم بصري لجميع جرعاتك'],
     ] : [
-      ['Alarm-style medicine reminders','Loud alarm even on silent mode'],
+      ['Alarm-style reminders','Loud alarm even on silent mode'],
       ['Missed dose follow-up','Auto-alert 30 minutes after missed dose'],
       ['Medical appointments','Alert 24 hours and 1 hour before'],
       ['Unlimited medicines','Add as many as you need'],
       ['Arabic + English','Full bilingual RTL support'],
       ['30-day history','Visual calendar of all your doses'],
     ];
-    var ids = ['f1','f2','f3','f4','f5','f6'];
-    ids.forEach(function(id, i) {
+    ['f1','f2','f3','f4','f5','f6'].forEach(function(id, i) {
       document.getElementById(id+'t').textContent = feats[i][0];
       document.getElementById(id+'d').textContent = feats[i][1];
     });
-
-    // Form
-    document.getElementById('form-title').textContent = isAr ? 'بيانات المشترك'      : 'Your Information';
-    document.getElementById('lbl-name').textContent   = isAr ? 'الاسم الكامل'        : 'FULL NAME';
-    document.getElementById('lbl-email').textContent  = isAr ? 'البريد الإلكتروني'   : 'EMAIL';
-    document.getElementById('lbl-phone').textContent  = isAr ? 'رقم الهاتف'          : 'PHONE';
-    document.getElementById('inp-name').placeholder   = isAr ? 'عبدالرحمن الأحمد'   : 'John Smith';
-
-    // Secure note & footer
+    document.getElementById('form-title').textContent  = isAr ? 'بيانات المشترك'      : 'Your Information';
+    document.getElementById('lbl-name').textContent    = isAr ? 'الاسم الكامل'        : 'FULL NAME';
+    document.getElementById('lbl-email').textContent   = isAr ? 'البريد الإلكتروني'   : 'EMAIL';
+    document.getElementById('lbl-phone').textContent   = isAr ? 'رقم الهاتف'          : 'PHONE';
+    document.getElementById('modal-title').textContent = isAr ? 'اختر رمز الدولة'     : 'Select Country Code';
+    document.getElementById('country-search').placeholder = isAr ? 'ابحث عن دولة...' : 'Search country...';
+    document.getElementById('inp-name').placeholder    = isAr ? 'عبدالرحمن الأحمد'   : 'John Smith';
     document.getElementById('secure-note').textContent = isAr ? '🔒 دفع آمن عبر Tap Payments · يمكنك الإلغاء في أي وقت' : '🔒 Secure payment via Tap Payments · Cancel anytime';
     document.getElementById('footer-links').textContent = isAr ? 'سياسة الخصوصية · شروط الاستخدام' : 'Privacy Policy · Terms of Use';
-
-    // Success screen
-    document.getElementById('suc-title').textContent = isAr ? 'تم الاشتراك بنجاح!' : 'Subscription Successful!';
-    document.getElementById('suc-body').innerHTML    = isAr ? 'مرحباً بك في علاجي بريميوم.<br/>افتح التطبيق للاستمتاع بجميع المزايا.' : 'Welcome to Eilaji Premium.<br/>Open the app to enjoy all features.';
-    document.getElementById('open-btn').textContent  = isAr ? 'افتح علاجي' : 'Open Eilaji';
-
+    document.getElementById('suc-title').textContent   = isAr ? 'تم الاشتراك بنجاح!'  : 'Subscription Successful!';
+    document.getElementById('suc-body').innerHTML      = isAr ? 'مرحباً بك في علاجي بريميوم.<br/>افتح التطبيق للاستمتاع بجميع المزايا.' : 'Welcome to Eilaji Premium.<br/>Open the app to enjoy all features.';
+    document.getElementById('open-btn').textContent    = isAr ? 'افتح علاجي'          : 'Open Eilaji';
+    renderCountries(document.getElementById('country-search').value);
     updateBtn();
   }
 
@@ -304,81 +402,73 @@
     var name  = document.getElementById('inp-name').value.trim();
     var email = document.getElementById('inp-email').value.trim();
     var phone = document.getElementById('inp-phone').value.trim();
-
     if (!name || !email) {
       alert(lang === 'ar' ? 'يرجى إدخال الاسم والبريد الإلكتروني' : 'Please enter your name and email');
       return;
     }
-
     var btn = document.getElementById('pay-btn');
     btn.disabled = true;
     document.getElementById('btn-text').innerHTML =
       '<span class="spinner"></span>' + (lang === 'ar' ? 'جارٍ المعالجة...' : 'Processing...');
-
     try {
       var plan = PLANS[selectedPlan];
-      var res  = await fetch('https://api.tap.company/v2/charges', {
+      var res  = await fetch('/api/create-charge', {
         method: 'POST',
-        headers: { 'Authorization': 'Bearer ' + TAP_KEY, 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          amount: plan.price,
-          currency: 'QAR',
-          customer: {
-            first_name: name.split(' ')[0],
-            last_name:  name.split(' ').slice(1).join(' ') || '-',
-            email: email,
-            phone: { country_code: '974', number: phone.replace(/\D/g,'').slice(-8) }
-          },
-          source: { id: 'src_all' },
-          redirect: { url: window.location.origin + window.location.pathname + '?success=1&plan=' + selectedPlan + '&email=' + encodeURIComponent(email) },
-          description: 'Eilaji ' + plan.enName + ' Subscription',
-          metadata: { plan: selectedPlan, lang: lang, name: name }
-        })
+          name: name, email: email, phone: phone,
+          phoneCode: selectedCode,
+          plan: selectedPlan, amount: plan.price, lang: lang,
+        }),
       });
-      var charge = await res.json();
-      if (charge.transaction && charge.transaction.url) {
-        window.location.href = charge.transaction.url;
+      var data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
       } else {
-        throw new Error(charge.message || 'Payment failed');
+        throw new Error(data.error || 'Payment failed');
       }
     } catch(err) {
-      alert(lang === 'ar' ? 'حدث خطأ. يرجى المحاولة مرة أخرى.' : 'An error occurred. Please try again.');
+      alert(lang === 'ar' ? 'حدث خطأ: ' + err.message : 'Error: ' + err.message);
       btn.disabled = false;
       updateBtn();
     }
   }
 
-  // ── Handle return from Tap ────────────────────────────────────────
+  // ── Success return ────────────────────────────────────────────────
   function handleReturn() {
-    var params = new URLSearchParams(window.location.search);
-    if (params.get('success') === '1') {
+    var p = new URLSearchParams(window.location.search);
+    if (p.get('success') === '1') {
       document.getElementById('main-content').style.display = 'none';
       document.getElementById('success-screen').style.display = 'block';
       window.scrollTo(0, 0);
     }
   }
 
-  // ── Init ──────────────────────────────────────────────────────────
+  // ── Init ─────────────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', function() {
-    // Wire up plan clicks
     ['monthly','3months','yearly'].forEach(function(p) {
-      document.getElementById('plan-' + p).addEventListener('click', function() {
-        selectPlan(p);
-      });
+      document.getElementById('plan-' + p).addEventListener('click', function() { selectPlan(p); });
     });
-
-    // Wire up lang button
     document.getElementById('lang-btn').addEventListener('click', toggleLang);
-
-    // Wire up pay button
     document.getElementById('pay-btn').addEventListener('click', startPayment);
-
-    // Check if returning from payment
+    document.getElementById('code-btn').addEventListener('click', function() {
+      renderCountries('');
+      document.getElementById('country-modal').classList.add('open');
+    });
+    document.getElementById('modal-close').addEventListener('click', function() {
+      document.getElementById('country-modal').classList.remove('open');
+    });
+    document.getElementById('country-modal').addEventListener('click', function(e) {
+      if (e.target === this) this.classList.remove('open');
+    });
+    document.getElementById('country-search').addEventListener('input', function() {
+      renderCountries(this.value);
+    });
+    renderCountries('');
     handleReturn();
-
-    // Set initial button text
     updateBtn();
   });
 </script>
 </body>
 </html>
+
