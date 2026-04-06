@@ -1,6 +1,6 @@
-const TAP_SECRET = 'sk_test_YNWTmzgcVJZvdtAErXk5KU2';
+const TAP_SECRET = 'sk_live_Hc3XoBk1eLWip0j7OQRdEICA';
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -10,11 +10,14 @@ module.exports = async function handler(req, res) {
   try {
     const { name, email, phone, phoneCode, plan, amount } = req.body;
 
+    // Clean inputs
     const nameParts = String(name || '').trim().split(' ');
     const firstName = nameParts[0] || 'Customer';
     const lastName  = nameParts.slice(1).join(' ') || firstName;
-    const rawPhone  = String(phone || '').replace(/\D/g, '');
-    const rawCode   = String(phoneCode || '974').replace(/\D/g, '');
+
+    // Phone: digits only, remove leading zeros
+    const rawPhone   = String(phone || '').replace(/\D/g, '');
+    const rawCode    = String(phoneCode || '974').replace(/\D/g, '');
 
     const redirectUrl = 'https://eilaji-payment.vercel.app/?success=1&plan=' +
       encodeURIComponent(plan || '') + '&email=' + encodeURIComponent(email || '');
@@ -38,6 +41,8 @@ module.exports = async function handler(req, res) {
       redirect: { url: redirectUrl },
     };
 
+    console.log('Tap request body:', JSON.stringify(body, null, 2));
+
     const response = await fetch('https://api.tap.company/v2/charges', {
       method:  'POST',
       headers: {
@@ -49,16 +54,20 @@ module.exports = async function handler(req, res) {
 
     const charge = await response.json();
 
+    console.log('Tap response:', JSON.stringify(charge, null, 2));
+
     if (charge && charge.transaction && charge.transaction.url) {
       return res.status(200).json({ url: charge.transaction.url });
     }
 
+    // Return full Tap error so we can see what's wrong
     return res.status(400).json({
       error:   charge.message || charge.description || JSON.stringify(charge),
       details: charge,
     });
 
   } catch (err) {
+    console.error('Server error:', err);
     return res.status(500).json({ error: err.message });
   }
-};
+}
