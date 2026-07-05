@@ -6,12 +6,12 @@ and emblem on the left/top. Category codes (per the MOI plate taxonomy):
 
     Q   private car / rental / electric      PR  private passenger transport
     TK  private truck                        BS  private bus
-    BN  private transport (flatbed/بركدون)   PT  public bus (tourism)
-    MH  mobile home                          FD  flatbed private transport
+    BN  breakdown/recovery truck (باركدون)   PT  public / tourism bus
+    MH  mobile home (منزل متنقل)             FD  flatbed tow truck (سطحة)
     LI  limousine                            MO  motorcycle
     TR  trailer / semi-trailer               TX  taxi
     TE  temporary exit                       EN  temporary entry
-    EX  export                               UE  under-test
+    EX  export                               UE  under-test (dealer/trial)
     EV  machinery / equipment                NV  off-road-only vehicles
     AQ  antique vehicles                     DP  disability
     CV  commercial                           GV  government
