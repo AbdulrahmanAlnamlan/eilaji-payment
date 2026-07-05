@@ -66,6 +66,37 @@ python -m speeddet.cli run \
 The same pipeline runs; only the detector changes. Swap `yolov8n.pt` for a
 model fine-tuned on local vehicles/plates for best results.
 
+## Running on a live camera (RTSP / USB)
+
+`--video` also accepts an RTSP/HTTP URL or a camera index. Live mode is
+auto-detected: timestamps switch to the wall clock (IP cameras routinely report
+a bogus FPS — 0, 90000, … — and trusting it would silently corrupt every speed
+reading), and dropped frames trigger reconnect attempts instead of ending the
+run.
+
+```bash
+# IP camera (any ONVIF/RTSP cam — check the camera manual for the stream URL)
+python -m speeddet.cli run \
+    --video "rtsp://user:pass@192.168.1.50:554/stream1" \
+    --calibration my_calib.json \
+    --detector yolo --max-seconds 120
+
+# USB webcam for a desk test
+python -m speeddet.cli run --video 0 --calibration my_calib.json --detector yolo
+```
+
+Field-test checklist:
+1. **Mount the camera rigidly** (pole/overpass/tripod) with a clear view of
+   ≥30–60 m of road. Any camera movement invalidates the calibration.
+2. **Calibrate that exact view**: grab one frame, pick 4+ pixel points whose
+   ground positions you can measure (lane-line dashes have standardised
+   length/gap; or tape-measure a rectangle on the tarmac), and put them in the
+   calibration JSON. Check `reprojection_error()` is a few pixels at most.
+3. **Validate before trusting it**: drive a car through the view at a known
+   GPS/cruise-control speed and compare. Do this at 2–3 different speeds.
+4. Start with `--max-seconds 60 --no-clips` to confirm detection/tracking look
+   right in `annotated.mp4`, then enable clips.
+
 ## Calibration — the accuracy-critical part
 
 Speed is only as good as the pixel→metre mapping. `calibration.py` uses a planar

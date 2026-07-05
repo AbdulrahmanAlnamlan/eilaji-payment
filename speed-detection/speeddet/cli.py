@@ -79,7 +79,12 @@ def cmd_run(args) -> None:
         clip_seconds=args.clip_seconds,
     )
     pipeline = SpeedPipeline(detector=detector, calibrator=calib, config=cfg)
-    result = pipeline.run_video(args.video)
+    result = pipeline.run_video(
+        args.video,
+        live=True if args.live else None,
+        max_frames=args.max_frames,
+        max_seconds=args.max_seconds,
+    )
     _print_result(result)
 
 
@@ -118,9 +123,16 @@ def build_parser() -> argparse.ArgumentParser:
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="command", required=True)
 
-    r = sub.add_parser("run", help="run the pipeline on a video")
-    r.add_argument("--video", required=True)
+    r = sub.add_parser("run", help="run the pipeline on a video file, RTSP stream, or camera")
+    r.add_argument("--video", required=True,
+                   help="video file, RTSP/HTTP URL, or camera index (e.g. 0)")
     r.add_argument("--calibration", required=True)
+    r.add_argument("--live", action="store_true",
+                   help="force live mode (wall-clock timestamps, reconnect); "
+                        "auto-enabled for RTSP URLs and camera indices")
+    r.add_argument("--max-seconds", type=float, default=None,
+                   help="stop after this many seconds (useful for live tests)")
+    r.add_argument("--max-frames", type=int, default=None)
     r.add_argument("--detector", default="yolo", choices=["yolo", "color"])
     r.add_argument("--model", default="yolov8n.pt", help="YOLO weights (yolo detector)")
     r.add_argument("--conf", type=float, default=0.35)

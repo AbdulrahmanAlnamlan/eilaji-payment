@@ -76,13 +76,42 @@ class SpeedPipeline:
         self.max_speed_by_track: Dict[int, float] = {}
 
     # ------------------------------------------------------------------ #
-    def run_video(self, video_path: str | Path) -> PipelineResult:
+    def run_video(
+        self,
+        source: str | int | Path,
+        live: Optional[bool] = None,
+        max_frames: Optional[int] = None,
+        max_seconds: Optional[float] = None,
+    ) -> PipelineResult:
+        """Run the pipeline over a video file OR a live camera/stream.
+
+        ``source`` accepts a file path, an RTSP/HTTP URL, or a camera index
+        (``0`` / ``"0"`` for the first USB/CSI camera).
+
+        Live sources need different handling than files:
+          * **Timestamps** come from the wall clock, not ``frame_index / fps``
+            — IP cameras frequently report a bogus FPS (0, 90000, …), and
+            trusting it would silently corrupt every speed reading.
+          * **Dropped frames** trigger reconnect attempts instead of ending
+            the run.
+        ``live`` is auto-detected from the source (camera index or stream URL)
+        but can be forced either way. ``max_frames``/``max_seconds`` bound a
+        live run (otherwise it runs until the stream dies or Ctrl-C).
+        """
+        import time
+
         import cv2
 
-        cap = cv2.VideoCapture(str(video_path))
+        src, is_live = _normalise_source(source, live)
+        cap = cv2.VideoCapture(src)
         if not cap.isOpened():
-            raise FileNotFoundError(f"Could not open video: {video_path}")
-        fps = cap.get(cv2.CAP_PROP_FPS) or 25.0
+            raise FileNotFoundError(f"Could not open video source: {source}")
+        meta_fps = cap.get(cv2.CAP_PROP_FPS)
+        fps_valid = meta_fps is not None and 1.0 <= meta_fps <= 240.0
+        # For files an invalid FPS is rare; fall back to 25. For live sources
+        # the nominal fps is only used to size the ring buffer and clip/video
+        # writers — speed math uses wall-clock timestamps instead.
+        fps = meta_fps if fps_valid else 25.0
         w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
@@ -106,12 +135,31 @@ class SpeedPipeline:
         )
 
         frame_index = 0
+        t0 = time.monotonic()
+        read_failures = 0
         while True:
+            if max_frames is not None and frame_index >= max_frames:
+                break
+            if max_seconds is not None and (time.monotonic() - t0) >= max_seconds:
+                break
             ok, frame = cap.read()
             if not ok:
-                break
+                if not is_live:
+                    break  # end of file
+                # Live stream hiccup: retry, then attempt one reconnect cycle.
+                read_failures += 1
+                if read_failures <= 5:
+                    time.sleep(0.2)
+                    continue
+                cap.release()
+                time.sleep(1.0)
+                cap = cv2.VideoCapture(src)
+                if not cap.isOpened() or read_failures > 30:
+                    break
+                continue
+            read_failures = 0
             ring.push(frame_index, frame)
-            timestamp = frame_index / fps
+            timestamp = (time.monotonic() - t0) if is_live else frame_index / fps
             objects = self._process_frame(frame, frame_index, timestamp)
             self._handle_violations(frame, objects, frame_index, timestamp, ring, vlog)
 
@@ -186,6 +234,7 @@ class SpeedPipeline:
                 plate_text=plate,
             )
 
+    # ------------------------------------------------------------------ #
     def _annotate(self, frame, objects, frame_index, timestamp, n_tracks, n_viol):
         annotated = frame.copy()
         if self.cfg.draw_calibration:
@@ -195,3 +244,22 @@ class SpeedPipeline:
         draw_hud(annotated, frame_index, timestamp,
                  self.calib.speed_limit_kmh, n_tracks, n_viol)
         return annotated
+
+
+STREAM_SCHEMES = ("rtsp://", "rtmp://", "http://", "https://", "udp://", "tcp://")
+
+
+def _normalise_source(source, live):
+    """Return ``(opencv_source, is_live)``.
+
+    A bare integer (or digit string) is a local camera index; a URL with a
+    streaming scheme is a network stream. Both are live. Anything else is
+    treated as a file path unless ``live`` overrides the guess.
+    """
+    if isinstance(source, int):
+        return source, True if live is None else live
+    s = str(source)
+    if s.isdigit():
+        return int(s), True if live is None else live
+    is_stream = s.lower().startswith(STREAM_SCHEMES)
+    return s, is_stream if live is None else live
