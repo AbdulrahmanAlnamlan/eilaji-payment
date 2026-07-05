@@ -74,6 +74,7 @@ class SpeedPipeline:
         )
         self.speed = SpeedEstimator(window_seconds=self.cfg.speed_window_seconds)
         self.max_speed_by_track: Dict[int, float] = {}
+        self._plate_by_track: Dict[int, str] = {}
 
     # ------------------------------------------------------------------ #
     def run_video(
@@ -137,6 +138,9 @@ class SpeedPipeline:
         frame_index = 0
         t0 = time.monotonic()
         read_failures = 0
+        # Violations whose plate could not be read yet: retry on later frames,
+        # where the vehicle is closer/larger (tracked per track_id).
+        pending_plates: Dict[int, Violation] = {}
         while True:
             if max_frames is not None and frame_index >= max_frames:
                 break
@@ -161,7 +165,9 @@ class SpeedPipeline:
             ring.push(frame_index, frame)
             timestamp = (time.monotonic() - t0) if is_live else frame_index / fps
             objects = self._process_frame(frame, frame_index, timestamp)
-            self._handle_violations(frame, objects, frame_index, timestamp, ring, vlog)
+            self._handle_violations(frame, objects, frame_index, timestamp, ring, vlog,
+                                    pending_plates)
+            self._retry_pending_plates(frame, objects, pending_plates)
 
             if writer is not None:
                 annotated = self._annotate(frame, objects, frame_index, timestamp,
@@ -205,11 +211,13 @@ class SpeedPipeline:
                 prev = self.max_speed_by_track.get(track_id, 0.0)
                 self.max_speed_by_track[track_id] = max(prev, speed_kmh)
                 obj.is_violation = speed_kmh > self.calib.speed_limit_kmh
+            obj.plate_text = self._plate_by_track.get(track_id)
             objects.append(obj)
         return objects
 
     def _handle_violations(
-        self, frame, objects, frame_index, timestamp, ring, vlog
+        self, frame, objects, frame_index, timestamp, ring, vlog,
+        pending_plates: Optional[Dict[int, Violation]] = None,
     ) -> None:
         for obj in objects:
             if obj.speed_kmh is None:
@@ -222,8 +230,10 @@ class SpeedPipeline:
                     plate = self.plate_reader(frame, obj)
                 except Exception:
                     plate = None
-            obj.plate_text = plate
-            vlog.record(
+            if plate:
+                obj.plate_text = plate
+                self._plate_by_track[obj.track_id] = plate
+            violation = vlog.record(
                 track_id=obj.track_id,
                 speed_kmh=obj.speed_kmh,
                 frame_index=frame_index,
@@ -233,6 +243,30 @@ class SpeedPipeline:
                 ring=ring,
                 plate_text=plate,
             )
+            if plate is None and self.plate_reader is not None and pending_plates is not None:
+                pending_plates[obj.track_id] = violation
+
+    def _retry_pending_plates(
+        self, frame, objects, pending_plates: Dict[int, Violation]
+    ) -> None:
+        """Violations often fire while the car is still far away and its plate
+        unreadable. Keep trying on later frames — the vehicle gets closer and
+        larger — and backfill the violation record on the first good read."""
+        if not pending_plates or self.plate_reader is None:
+            return
+        for obj in objects:
+            violation = pending_plates.get(obj.track_id)
+            if violation is None:
+                continue
+            try:
+                plate = self.plate_reader(frame, obj)
+            except Exception:
+                plate = None
+            if plate:
+                violation.plate_text = plate
+                obj.plate_text = plate
+                self._plate_by_track[obj.track_id] = plate
+                del pending_plates[obj.track_id]
 
     # ------------------------------------------------------------------ #
     def _annotate(self, frame, objects, frame_index, timestamp, n_tracks, n_viol):

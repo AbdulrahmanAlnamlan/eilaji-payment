@@ -23,7 +23,7 @@ video frames ─► detect ─► track (assign IDs) ─► project ground point
 | التتبع اللحظي — real-time tracking | `detection.py` (YOLO) + `tracking.py` (IoU tracker)         |
 | Speed monitoring via cameras       | `calibration.py` (homography) + `speed.py` (least-squares)  |
 | التوثيق بالفيديو — video evidence  | `violations.py` ring buffer → per-violation `.mp4` clip     |
-| التعرف الآلي (ALPR)                | `alpr.py` hook (Fast-ALPR / PaddleOCR wrappers, phase 2)    |
+| التعرف الآلي (ALPR)                | `plates.py` Qatar plate OCR (demo) + `alpr.py` hooks        |
 | الأتمتة — automated dispatch       | `violations.json` log + hooks for a FastAPI/DB backend      |
 
 ## Quick start
@@ -96,6 +96,39 @@ Field-test checklist:
    GPS/cruise-control speed and compare. Do this at 2–3 different speeds.
 4. Start with `--max-seconds 60 --no-clips` to confirm detection/tracking look
    right in `annotated.mp4`, then enable clips.
+
+## Qatar plates (ALPR)
+
+Qatar plates are digit-only (1–6 digits, Western numerals large + Eastern
+Arabic ٠-٩ above, "QATAR / قطر" legend) — an easier OCR target than
+alphanumeric plates. `plates.py` provides:
+
+- **Format rules** — `normalize_digits()` (Arabic-Indic → Western) and
+  `validate_qatar_plate()` (1–6 digits, else reject). Run these on the output
+  of *any* OCR backend to cheaply kill misreads.
+- **`QatarPlateReader`** — a dependency-free OCR (plate localisation → digit
+  segmentation → template correlation) that reads the synthetic plates the
+  demo footage renders on each car. The demo asserts every speeder's plate is
+  recovered and — the enforcement-critical property — that an unreadable plate
+  yields `None` (retry on a closer frame) **never a plausible-but-wrong
+  number**.
+- **Backfill** — a violation usually fires while the car is far away; the
+  pipeline keeps retrying the read on later, closer frames and backfills the
+  violation record on the first confident read.
+
+```
+=== plate (ALPR) check ===
+    OK  read  plate 42781
+    OK  read  plate 674
+    OK  read  plate 9021
+```
+
+For **real Qatari plates** swap in `--alpr fast-alpr` (`pip install
+fast-alpr`) — same callable interface — and expect to fine-tune the OCR model
+on local plate fonts/layouts for production accuracy. Note the camera
+geometry: plates need roughly ≥20 px of height to read, so real deployments
+pair the wide speed-camera view with a tighter/zoomed ALPR view per lane (the
+demo mimics this with a 1080p, 35 m-span camera).
 
 ## Calibration — the accuracy-critical part
 

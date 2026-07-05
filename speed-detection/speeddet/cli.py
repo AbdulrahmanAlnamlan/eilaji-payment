@@ -30,6 +30,18 @@ from pathlib import Path
 from .calibration import Calibrator
 from .detection import ColorBlobDetector, YoloDetector
 from .pipeline import PipelineConfig, SpeedPipeline
+from .plates import QatarPlateReader
+
+
+def _build_plate_reader(name: str):
+    if name == "none":
+        return None
+    if name == "qatar-demo":
+        return QatarPlateReader()
+    if name == "fast-alpr":
+        from .alpr import FastAlprReader
+        return FastAlprReader()
+    raise ValueError(f"unknown --alpr '{name}'")
 
 
 def _build_detector(name: str, args) -> object:
@@ -78,7 +90,8 @@ def cmd_run(args) -> None:
         save_clips=not args.no_clips,
         clip_seconds=args.clip_seconds,
     )
-    pipeline = SpeedPipeline(detector=detector, calibrator=calib, config=cfg)
+    pipeline = SpeedPipeline(detector=detector, calibrator=calib, config=cfg,
+                             plate_reader=_build_plate_reader(args.alpr))
     result = pipeline.run_video(
         args.video,
         live=True if args.live else None,
@@ -95,13 +108,17 @@ def cmd_demo(args) -> None:
     out_dir = Path(args.output)
     video = out_dir / "highway.mp4"
     print("generating synthetic footage with known ground-truth speeds ...")
-    info = generate(out_path=video, speed_limit_kmh=args.speed_limit)
+    # 1080p with a ~35 m road span mimics the tighter ALPR camera view real
+    # deployments use, so plates are large enough to read near the camera.
+    info = generate(out_path=video, speed_limit_kmh=args.speed_limit,
+                    width=1920, height=1080, far_road_y_m=35.0)
     print(json.dumps(info, indent=2))
 
     calib = Calibrator.load(info["calibration"])
     detector = ColorBlobDetector()
     cfg = PipelineConfig(output_dir=str(out_dir), save_clips=not args.no_clips)
-    pipeline = SpeedPipeline(detector=detector, calibrator=calib, config=cfg)
+    pipeline = SpeedPipeline(detector=detector, calibrator=calib, config=cfg,
+                             plate_reader=QatarPlateReader())
     result = pipeline.run_video(str(video))
     _print_result(result)
 
@@ -116,6 +133,18 @@ def cmd_demo(args) -> None:
         err = abs(g - r) / g * 100.0
         flag = "OK " if err < 12 else "!! "
         print(f"    {flag} truth {g:6.1f} km/h  ~  measured {r:6.1f} km/h  ({err:4.1f}% err)")
+
+    # Plate check: every ground-truth speeder should appear in the violation
+    # log with its (correct) Qatar plate number.
+    print("\n=== plate (ALPR) check ===")
+    speeder_plates = {v["plate_number"] for v in gt["vehicles"] if v["is_violation"]}
+    read_plates = {v.plate_text for v in result.violations if v.plate_text}
+    for plate in sorted(speeder_plates):
+        status = "OK  read" if plate in read_plates else "!!  MISSED"
+        print(f"    {status}  plate {plate}")
+    bogus = read_plates - speeder_plates
+    if bogus:
+        print(f"    !!  WRONG reads (not in ground truth): {sorted(bogus)}")
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -142,6 +171,9 @@ def build_parser() -> argparse.ArgumentParser:
     r.add_argument("--clip-seconds", type=float, default=8.0)
     r.add_argument("--no-video", action="store_true", help="skip annotated video output")
     r.add_argument("--no-clips", action="store_true", help="skip evidence clip extraction")
+    r.add_argument("--alpr", default="none", choices=["none", "qatar-demo", "fast-alpr"],
+                   help="plate reader: qatar-demo (built-in, synthetic plates) or "
+                        "fast-alpr (pip install fast-alpr; real footage)")
     r.set_defaults(func=cmd_run)
 
     d = sub.add_parser("demo", help="generate synthetic footage and run end-to-end")

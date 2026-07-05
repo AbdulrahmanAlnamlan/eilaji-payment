@@ -27,6 +27,7 @@ from typing import List, Tuple
 import numpy as np
 
 from ..calibration import Calibrator, build_ground_plane_calibration
+from ..plates import render_qatar_plate
 
 
 @dataclass
@@ -37,13 +38,14 @@ class Vehicle:
     color_bgr: Tuple[int, int, int]
     start_y_m: float = 58.0    # enters far from the camera
     end_y_m: float = 3.0       # exits near the camera (moving toward camera)
+    plate_number: str = ""     # Qatar-style digit plate ("" = no plate drawn)
 
 
 DEFAULT_VEHICLES = [
-    Vehicle(lane_center_x_m=1.8, speed_kmh=52.0, start_time_s=0.0, color_bgr=(60, 220, 60)),
-    Vehicle(lane_center_x_m=5.5, speed_kmh=78.0, start_time_s=0.6, color_bgr=(40, 40, 230)),
-    Vehicle(lane_center_x_m=9.2, speed_kmh=96.0, start_time_s=1.1, color_bgr=(230, 60, 40)),
-    Vehicle(lane_center_x_m=5.5, speed_kmh=124.0, start_time_s=2.4, color_bgr=(30, 200, 230)),
+    Vehicle(lane_center_x_m=1.8, speed_kmh=52.0, start_time_s=0.0, color_bgr=(60, 220, 60), plate_number="358"),
+    Vehicle(lane_center_x_m=5.5, speed_kmh=78.0, start_time_s=0.6, color_bgr=(40, 40, 230), plate_number="42781"),
+    Vehicle(lane_center_x_m=9.2, speed_kmh=96.0, start_time_s=1.1, color_bgr=(230, 60, 40), plate_number="9021"),
+    Vehicle(lane_center_x_m=5.5, speed_kmh=124.0, start_time_s=2.4, color_bgr=(200, 120, 20), plate_number="674"),
 ]
 
 
@@ -56,8 +58,9 @@ def _draw_road(frame: np.ndarray, calib: Calibrator) -> None:
     frame[: int(h * 0.33)] = (120, 105, 90)
     # lane markings: dashed lines along the road at lane boundaries
     road_w = float(calib.world_points[:, 0].max())
+    far_y = float(calib.world_points[:, 1].max())
     for lane_x in np.arange(0.0, road_w + 0.1, road_w / 3.0):
-        for y in np.arange(4.0, 58.0, 4.0):
+        for y in np.arange(4.0, far_y - 2.0, 4.0):
             p0 = calib.world_to_image([(lane_x, y)])[0]
             p1 = calib.world_to_image([(lane_x, y + 2.0)])[0]
             cv2.line(frame, (int(p0[0]), int(p0[1])), (int(p1[0]), int(p1[1])),
@@ -79,16 +82,25 @@ def generate(
     fps: float = 25.0,
     duration_s: float = 5.0,
     speed_limit_kmh: float = 60.0,
+    far_road_y_m: float = 60.0,
     vehicles: List[Vehicle] = None,
 ) -> dict:
+    """``far_road_y_m`` sets how much road the camera covers. A long span
+    (60 m) is the speed-measurement view; a tighter span (~35 m) at 1080p+
+    mimics the zoomed ALPR camera real deployments use, making plates large
+    enough to read."""
+    import copy
+
     import cv2
 
     out_path = Path(out_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    vehicles = vehicles if vehicles is not None else DEFAULT_VEHICLES
+    vehicles = copy.deepcopy(vehicles if vehicles is not None else DEFAULT_VEHICLES)
+    for v in vehicles:  # keep trajectories inside the calibrated span
+        v.start_y_m = min(v.start_y_m, far_road_y_m - 2.0)
 
     calib = build_ground_plane_calibration(
-        (width, height), speed_limit_kmh=speed_limit_kmh
+        (width, height), speed_limit_kmh=speed_limit_kmh, far_road_y_m=far_road_y_m
     )
 
     fourcc = cv2.VideoWriter_fourcc(*"mp4v")
@@ -123,6 +135,17 @@ def generate(
             # a darker roof so it reads as a car, still same hue family
             roof = tuple(int(c * 0.7) for c in v.color_bgr)
             cv2.rectangle(frame, (x1, y1), (x2, y1 + max(2, h_px // 3)), roof, -1)
+            # Qatar-style rear plate, centred low on the back of the car.
+            if v.plate_number:
+                plate_w = int(w_px * 0.62)
+                if plate_w >= 24:
+                    plate = render_qatar_plate(v.plate_number, plate_w)
+                    ph, pw = plate.shape[:2]
+                    px1 = int(round(cx - pw / 2))
+                    py1 = y2 - int(h_px * 0.12) - ph
+                    px2, py2p = px1 + pw, py1 + ph
+                    if 0 <= px1 and px2 <= width and 0 <= py1 and py2p <= height:
+                        frame[py1:py2p, px1:px2] = plate
         writer.write(frame)
     writer.release()
 
@@ -142,6 +165,7 @@ def generate(
                 "speed_kmh": v.speed_kmh,
                 "start_time_s": v.start_time_s,
                 "is_violation": v.speed_kmh > speed_limit_kmh,
+                "plate_number": v.plate_number,
             }
             for idx, v in enumerate(vehicles)
         ],
