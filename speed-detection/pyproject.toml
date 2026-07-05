@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "speeddet"
+version = "0.1.0"
+description = "Runnable prototype of a camera-based vehicle speed-detection core (YOLO + tracking + calibrated speed math)"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "numpy>=1.24",
+    "opencv-python>=4.8",
+]
+
+[project.optional-dependencies]
+yolo = ["ultralytics>=8.1"]
+alpr = ["fast-alpr"]
+dev = ["pytest>=7"]
+
+[project.scripts]
+speeddet = "speeddet.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["speeddet*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

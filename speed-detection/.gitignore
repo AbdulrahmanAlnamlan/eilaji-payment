@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+
+# Pipeline outputs / generated media
+output/
+demo/
+*.mp4
+!*/keep.mp4
+
+# Model weights
+*.pt
+*.onnx

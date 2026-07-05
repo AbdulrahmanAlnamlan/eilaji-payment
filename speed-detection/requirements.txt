@@ -1,0 +1,15 @@
+# Core dependencies for the speed-detection prototype.
+numpy>=1.24
+opencv-python>=4.8            # video I/O, homography, drawing (use -headless on servers)
+
+# --- Production detection backend (optional) ---
+# Install to run the `yolo` detector on real footage:
+#   pip install ultralytics
+# ultralytics>=8.1
+
+# --- ALPR backends (optional, phase 2) ---
+# pip install fast-alpr
+# pip install paddleocr paddlepaddle
+
+# --- Dev ---
+# pytest>=7

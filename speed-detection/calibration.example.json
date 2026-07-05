@@ -1,0 +1,16 @@
+{
+  "image_points": [
+    [420, 690],
+    [860, 690],
+    [760, 300],
+    [520, 300]
+  ],
+  "world_points": [
+    [0.0, 0.0],
+    [10.95, 0.0],
+    [10.95, 60.0],
+    [0.0, 60.0]
+  ],
+  "speed_limit_kmh": 60,
+  "notes": "Example: 3 lanes x 3.65 m wide, 60 m longitudinal span. Replace image_points/world_points with your own surveyed correspondences. world units are METRES."
+}
