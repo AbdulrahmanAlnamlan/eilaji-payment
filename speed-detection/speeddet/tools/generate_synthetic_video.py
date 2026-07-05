@@ -42,10 +42,10 @@ class Vehicle:
 
 
 DEFAULT_VEHICLES = [
-    Vehicle(lane_center_x_m=1.8, speed_kmh=52.0, start_time_s=0.0, color_bgr=(60, 220, 60), plate_number="358"),
-    Vehicle(lane_center_x_m=5.5, speed_kmh=78.0, start_time_s=0.6, color_bgr=(40, 40, 230), plate_number="42781"),
-    Vehicle(lane_center_x_m=9.2, speed_kmh=96.0, start_time_s=1.1, color_bgr=(230, 60, 40), plate_number="9021"),
-    Vehicle(lane_center_x_m=5.5, speed_kmh=124.0, start_time_s=2.4, color_bgr=(200, 120, 20), plate_number="674"),
+    Vehicle(lane_center_x_m=1.8, speed_kmh=52.0, start_time_s=0.0, color_bgr=(60, 220, 60), plate_number="Q 358"),
+    Vehicle(lane_center_x_m=5.5, speed_kmh=78.0, start_time_s=0.6, color_bgr=(40, 40, 230), plate_number="TX 42781"),
+    Vehicle(lane_center_x_m=9.2, speed_kmh=96.0, start_time_s=1.1, color_bgr=(230, 60, 40), plate_number="PR 9021"),
+    Vehicle(lane_center_x_m=5.5, speed_kmh=124.0, start_time_s=2.4, color_bgr=(200, 120, 20), plate_number="LI 674"),
 ]
 
 

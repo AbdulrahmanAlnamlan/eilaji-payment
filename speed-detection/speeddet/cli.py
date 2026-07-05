@@ -108,10 +108,11 @@ def cmd_demo(args) -> None:
     out_dir = Path(args.output)
     video = out_dir / "highway.mp4"
     print("generating synthetic footage with known ground-truth speeds ...")
-    # 1080p with a ~35 m road span mimics the tighter ALPR camera view real
-    # deployments use, so plates are large enough to read near the camera.
+    # 1080p with a ~30 m road span mimics the tighter ALPR camera view real
+    # deployments use, so plates (incl. the category letter row) are large
+    # enough to read near the camera.
     info = generate(out_path=video, speed_limit_kmh=args.speed_limit,
-                    width=1920, height=1080, far_road_y_m=35.0)
+                    width=1920, height=1080, far_road_y_m=30.0)
     print(json.dumps(info, indent=2))
 
     calib = Calibrator.load(info["calibration"])

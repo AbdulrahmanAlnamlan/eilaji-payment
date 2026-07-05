@@ -99,28 +99,35 @@ Field-test checklist:
 
 ## Qatar plates (ALPR)
 
-Qatar plates are digit-only (1–6 digits, Western numerals large + Eastern
-Arabic ٠-٩ above, "QATAR / قطر" legend) — an easier OCR target than
-alphanumeric plates. `plates.py` provides:
+Current Qatari metal plates carry a **category letter code** (1–2 Latin
+letters, top-right) plus **1–6 digits**, with the maroon "QATAR / قطر" legend:
+`Q` private/rental/electric, `PR` private transport, `TK` truck, `BS` bus,
+`LI` limousine, `MO` motorcycle, `TR` trailer, `TX` taxi, temporary codes
+(`TE`/`EN`/`EX`/`UE`/`EV`), and official plates (`GV` government, `CD`
+diplomatic, `UN`, `AP`, `DP`, `CV`, `NV`, `AQ`, `BN`, `PT`, `MH`, `FD`).
+Police / Lekhwiya / QAF / Amiri Guard plates use non-standard Arabic layouts
+and are out of the demo reader's scope. `plates.py` provides:
 
-- **Format rules** — `normalize_digits()` (Arabic-Indic → Western) and
-  `validate_qatar_plate()` (1–6 digits, else reject). Run these on the output
-  of *any* OCR backend to cheaply kill misreads.
-- **`QatarPlateReader`** — a dependency-free OCR (plate localisation → digit
-  segmentation → template correlation) that reads the synthetic plates the
-  demo footage renders on each car. The demo asserts every speeder's plate is
-  recovered and — the enforcement-critical property — that an unreadable plate
-  yields `None` (retry on a closer frame) **never a plausible-but-wrong
-  number**.
-- **Backfill** — a violation usually fires while the car is far away; the
-  pipeline keeps retrying the read on later, closer frames and backfills the
-  violation record on the first confident read.
+- **Format rules** — `parse_qatar_plate()` / `validate_qatar_plate()` (known
+  category code + 1–6 digits, else reject) and `normalize_digits()`
+  (Arabic-Indic ٠-٩ → Western). Run these on the output of *any* OCR backend
+  to cheaply kill misreads.
+- **`QatarPlateReader`** — a dependency-free OCR (plate localisation → per-band
+  glyph segmentation → template correlation) reading both the digit row and
+  the category letters off the demo footage. Measured across all 25 category
+  codes at 4 scales: 92% full reads, 8% degrade to correct-digits-only at tiny
+  sizes, **0 wrong reads** — the enforcement-critical property: a read is
+  exactly right, gracefully partial, or `None` (retry on a closer frame).
+- **Backfill & upgrade** — a violation usually fires while the car is far
+  away; the pipeline keeps retrying on closer frames, records the digits as
+  soon as they resolve, and upgrades to the full "CODE digits" form when the
+  (smaller) letter row becomes readable — only if the digits agree.
 
 ```
 === plate (ALPR) check ===
-    OK  read  plate 42781
-    OK  read  plate 674
-    OK  read  plate 9021
+    OK  read  plate LI 674
+    OK  read  plate PR 9021
+    OK  read  plate TX 42781
 ```
 
 For **real Qatari plates** swap in `--alpr fast-alpr` (`pip install

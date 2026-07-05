@@ -243,7 +243,8 @@ class SpeedPipeline:
                 ring=ring,
                 plate_text=plate,
             )
-            if plate is None and self.plate_reader is not None and pending_plates is not None:
+            plate_incomplete = plate is None or plate.replace(" ", "").isdigit()
+            if plate_incomplete and self.plate_reader is not None and pending_plates is not None:
                 pending_plates[obj.track_id] = violation
 
     def _retry_pending_plates(
@@ -251,7 +252,12 @@ class SpeedPipeline:
     ) -> None:
         """Violations often fire while the car is still far away and its plate
         unreadable. Keep trying on later frames — the vehicle gets closer and
-        larger — and backfill the violation record on the first good read."""
+        larger — and backfill the violation record with the best read.
+
+        Qatar plates carry a category letter code above the digits; the small
+        letters resolve later than the digits, so a digits-only read is kept
+        as provisional and upgraded to the full "CODE digits" form when a
+        closer frame resolves the letters (only if the digits agree)."""
         if not pending_plates or self.plate_reader is None:
             return
         for obj in objects:
@@ -262,11 +268,20 @@ class SpeedPipeline:
                 plate = self.plate_reader(frame, obj)
             except Exception:
                 plate = None
-            if plate:
+            if not plate:
+                continue
+            current = violation.plate_text
+            has_code = not plate.replace(" ", "").isdigit()
+            if current is None:
                 violation.plate_text = plate
-                obj.plate_text = plate
-                self._plate_by_track[obj.track_id] = plate
-                del pending_plates[obj.track_id]
+            elif has_code and plate.split()[-1] == current:
+                violation.plate_text = plate  # upgrade digits-only -> full
+            else:
+                continue
+            obj.plate_text = violation.plate_text
+            self._plate_by_track[obj.track_id] = violation.plate_text
+            if has_code:
+                del pending_plates[obj.track_id]  # nothing left to improve
 
     # ------------------------------------------------------------------ #
     def _annotate(self, frame, objects, frame_index, timestamp, n_tracks, n_viol):

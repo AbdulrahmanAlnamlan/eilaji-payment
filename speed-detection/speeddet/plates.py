@@ -1,11 +1,25 @@
 """Qatar licence-plate support: format rules, rendering, and a demo OCR.
 
-Qatar plates are digit-only (no letters): 1–6 digits, shown large in Western
-numerals with the Eastern-Arabic form (٠١٢٣٤٥٦٧٨٩) written smaller above, plus
-the "QATAR / قطر" legend. Private plates are black-on-white; other categories
-(transport, taxi, limousine, ...) differ mainly by colour. That makes the
-recognition problem *easier* than alphanumeric plates: normalise digits,
-validate 1–6 of them, done.
+Current Qatari metal plates carry a **category letter code** (1–2 Latin
+letters, shown top-right) plus up to 6 digits, with the "QATAR / قطر" legend
+and emblem on the left/top. Category codes (per the MOI plate taxonomy):
+
+    Q   private car / rental / electric      PR  private passenger transport
+    TK  private truck                        BS  private bus
+    BN  private transport (flatbed/بركدون)   PT  public bus (tourism)
+    MH  mobile home                          FD  flatbed private transport
+    LI  limousine                            MO  motorcycle
+    TR  trailer / semi-trailer               TX  taxi
+    TE  temporary exit                       EN  temporary entry
+    EX  export                               UE  under-test
+    EV  machinery / equipment                NV  off-road-only vehicles
+    AQ  antique vehicles                     DP  disability
+    CV  commercial                           GV  government
+    UN  United Nations                       CD  diplomatic corps
+    AP  Amiri protocol
+
+Police, Lekhwiya (ISF), armed forces (QAF) and Amiri Guard plates use
+non-standard Arabic layouts and are out of scope for this demo reader.
 
 Three pieces live here:
 
@@ -30,11 +44,20 @@ import numpy as np
 
 from .types import TrackedObject
 
-# Eastern Arabic-Indic digits as used on Qatari plates.
+# Eastern Arabic-Indic digits (older plates / handwritten records).
 EASTERN_ARABIC = "٠١٢٣٤٥٦٧٨٩"
 _E2W = {ord(e): ord(w) for e, w in zip(EASTERN_ARABIC, "0123456789")}
 
 MAROON_BGR = (28, 26, 138)  # Qatar maroon, approximately
+
+#: Valid category codes on current Qatari metal plates (see module docstring).
+CATEGORY_CODES = {
+    "Q", "PR", "TK", "BS", "BN", "PT", "MH", "FD", "LI", "MO", "TR", "TX",
+    "TE", "EN", "EX", "UE", "EV", "NV", "AQ", "DP", "CV", "GV", "UN", "CD",
+    "AP",
+}
+#: Every letter that appears in some category code (the OCR letter alphabet).
+CATEGORY_LETTERS = sorted({ch for code in CATEGORY_CODES for ch in code})
 
 
 def normalize_digits(text: str) -> str:
@@ -43,18 +66,31 @@ def normalize_digits(text: str) -> str:
     return "".join(ch for ch in western if ch.isdigit())
 
 
-def validate_qatar_plate(text: Optional[str]) -> Optional[str]:
-    """Return the normalised plate number if it is a plausible Qatar plate.
+def parse_qatar_plate(text: Optional[str]) -> Optional[Tuple[str, str]]:
+    """Split a raw read into ``(category_code, digits)``.
 
-    Qatar plates carry 1–6 digits and no letters. Returns ``None`` for empty /
-    over-long / letter-bearing reads so callers can retry on a better frame.
+    Accepts "TX 42781", "tx42781", "٤٢٧٨١ TX", or bare digits "42781"
+    (category unknown -> ""). Returns ``None`` when the letters are not a
+    valid category code or the digit count is not 1–6.
     """
     if not text:
         return None
-    digits = normalize_digits(text)
+    letters = "".join(ch for ch in str(text).upper() if "A" <= ch <= "Z")
+    digits = normalize_digits(str(text))
+    if letters and letters not in CATEGORY_CODES:
+        return None
     if not (1 <= len(digits) <= 6):
         return None
-    return digits
+    return (letters, digits)
+
+
+def validate_qatar_plate(text: Optional[str]) -> Optional[str]:
+    """Return the normalised plate string ("TX 42781" or "42781"), else None."""
+    parsed = parse_qatar_plate(text)
+    if parsed is None:
+        return None
+    code, digits = parsed
+    return f"{code} {digits}" if code else digits
 
 
 def to_eastern(digits: str) -> str:
@@ -66,40 +102,50 @@ def to_eastern(digits: str) -> str:
 # ---------------------------------------------------------------------- #
 # Geometry constants shared by the renderer and the reader so templates match.
 _PLATE_AR = 24.0 / 11.0          # width / height, roughly Qatar's long plate
-_DIGIT_BAND = (0.42, 0.94)       # vertical span of the big digit row
+_LETTER_BAND = (0.08, 0.38)      # vertical span of the category-letter row
+_DIGIT_BAND = (0.44, 0.94)       # vertical span of the big digit row
+_LETTER_X_MIN = 0.45             # letters sit in the right part of the plate
 _FONT_SCALE_PER_PX = 1.0 / 26.0  # cv2 Hershey scale per pixel of digit height
 
 
 def render_qatar_plate(number: str, width_px: int = 240) -> np.ndarray:
-    """Draw a synthetic Qatar-style private plate (BGR image).
+    """Draw a synthetic Qatar-style plate (BGR image).
 
-    White base, big black Western digits, smaller Eastern-Arabic digits above,
-    maroon 'QATAR' legend. Stylised — for demo footage and OCR templates, not
-    a replica.
+    Mirrors the current metal-plate layout: maroon 'QATAR' legend top-left,
+    the category letter code large at top-right, and the digits across the
+    lower row. Stylised — for demo footage and OCR templates, not a replica.
     """
     import cv2
 
-    number = validate_qatar_plate(number) or "0"
+    parsed = parse_qatar_plate(number) or ("", "0")
+    code, number = parsed
     w = int(width_px)
     h = max(8, int(round(w / _PLATE_AR)))
     img = np.full((h, w, 3), 250, dtype=np.uint8)
     cv2.rectangle(img, (0, 0), (w - 1, h - 1), (90, 90, 90), max(1, w // 120))
 
-    # Maroon legend band (top-left): "QATAR".
+    # Maroon legend (top-left): "QATAR".
     legend_h = int(h * 0.30)
     if legend_h >= 7:
-        cv2.putText(img, "QATAR", (int(w * 0.04), int(h * 0.26)),
-                    cv2.FONT_HERSHEY_SIMPLEX, legend_h * 0.032,
+        cv2.putText(img, "QATAR", (int(w * 0.04), int(h * 0.30)),
+                    cv2.FONT_HERSHEY_SIMPLEX, legend_h * 0.030,
                     MAROON_BGR, max(1, w // 240), cv2.LINE_AA)
 
-    # Small Eastern-Arabic digits (top-right). Hershey fonts lack Arabic
-    # glyphs, so approximate with small dots/strokes only when big enough to
-    # matter visually; skipped below 60 px width.
-    if w >= 60:
-        east = to_eastern(number)
-        cv2.putText(img, east, (int(w * 0.62), int(h * 0.26)),
-                    cv2.FONT_HERSHEY_SIMPLEX, legend_h * 0.022,
-                    (40, 40, 40), 1, cv2.LINE_AA)
+    # Category letters, large at top-right (like the real plates).
+    if code:
+        band_top, band_bot = (int(h * f) for f in _LETTER_BAND)
+        letter_h = band_bot - band_top
+        scale = letter_h * _FONT_SCALE_PER_PX
+        thick = max(1, int(round(letter_h / 9)))
+        (cw, th), _ = cv2.getTextSize("M", cv2.FONT_HERSHEY_SIMPLEX, scale, thick)
+        gap = max(2, cw // 4)
+        total = len(code) * cw + (len(code) - 1) * gap
+        x = w - int(w * 0.06) - total
+        y_base = band_top + (letter_h + th) // 2
+        for ch in code:
+            cv2.putText(img, ch, (x, y_base), cv2.FONT_HERSHEY_SIMPLEX,
+                        scale, (10, 10, 10), thick, cv2.LINE_AA)
+            x += cw + gap
 
     # Big Western digits, centred in the lower band. Drawn one glyph per cell
     # with explicit spacing (like the real plate) so digits never touch —
@@ -144,26 +190,29 @@ class QatarPlateReader:
 
     def __init__(self, min_digit_px: int = 6, min_score: float = 0.55,
                  min_plate_height_px: int = 18) -> None:
-        import cv2
-
         self.min_digit_px = min_digit_px
         self.min_score = min_score
         self.min_plate_height_px = min_plate_height_px
-        self._templates: Dict[str, np.ndarray] = {}
-        for d in "0123456789":
-            # Render each digit large and clean, then normalise like a segment.
-            scale = 64 * _FONT_SCALE_PER_PX
-            thick = max(1, int(round(64 / 9)))
-            (tw, th), _ = cv2.getTextSize(d, cv2.FONT_HERSHEY_SIMPLEX, scale, thick)
-            canvas = np.full((th + 16, tw + 16), 255, dtype=np.uint8)
-            cv2.putText(canvas, d, (8, th + 8), cv2.FONT_HERSHEY_SIMPLEX,
-                        scale, 0, thick, cv2.LINE_AA)
-            ink = 255 - canvas
-            # Tight-crop to the glyph so templates align with the tight
-            # bounding boxes produced by contour segmentation.
-            ys, xs = np.nonzero(ink > 32)
-            ink = ink[ys.min() : ys.max() + 1, xs.min() : xs.max() + 1]
-            self._templates[d] = self._normalise(ink)
+        self._digit_templates = {d: self._make_template(d) for d in "0123456789"}
+        self._letter_templates = {c: self._make_template(c) for c in CATEGORY_LETTERS}
+
+    @staticmethod
+    def _make_template(ch: str) -> np.ndarray:
+        import cv2
+
+        # Render the glyph large and clean, then normalise like a segment.
+        scale = 64 * _FONT_SCALE_PER_PX
+        thick = max(1, int(round(64 / 9)))
+        (tw, th), _ = cv2.getTextSize(ch, cv2.FONT_HERSHEY_SIMPLEX, scale, thick)
+        canvas = np.full((th + 16, tw + 16), 255, dtype=np.uint8)
+        cv2.putText(canvas, ch, (8, th + 8), cv2.FONT_HERSHEY_SIMPLEX,
+                    scale, 0, thick, cv2.LINE_AA)
+        ink = 255 - canvas
+        # Tight-crop to the glyph so templates align with the tight
+        # bounding boxes produced by contour segmentation.
+        ys, xs = np.nonzero(ink > 32)
+        ink = ink[ys.min() : ys.max() + 1, xs.min() : xs.max() + 1]
+        return QatarPlateReader._normalise(ink)
 
     # -- pipeline hook -------------------------------------------------- #
     def __call__(self, frame: np.ndarray, obj: TrackedObject) -> Optional[str]:
@@ -209,32 +258,65 @@ class QatarPlateReader:
         plate = cv2.resize(plate, (max(1, int(plate.shape[1] * f)), target_h),
                            interpolation=cv2.INTER_CUBIC)
 
-        # Keep only the big-digit band and binarise (digits dark -> ink=255).
+        # --- digits row -------------------------------------------------- #
         band = plate[int(target_h * _DIGIT_BAND[0]) : int(target_h * _DIGIT_BAND[1])]
         _, ink = cv2.threshold(band, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-
         segs = self._segment(ink)
         if not segs:
             return None
-        out: List[str] = []
+        digits: List[str] = []
         for seg in segs:
-            digit, score = self._match(seg)
+            digit, score = self._match(seg, self._digit_templates)
             if score < self.min_score:
                 return None  # unreadable frame; let the pipeline retry later
-            out.append(digit)
-        return validate_qatar_plate("".join(out))
+            digits.append(digit)
+
+        # --- category letters row (top-right) ----------------------------- #
+        # Optional: a digits-only read is still returned if the (smaller)
+        # letters cannot be resolved on this frame.
+        code = self._read_category(plate, target_h)
+
+        text = f"{code} {''.join(digits)}" if code else "".join(digits)
+        return validate_qatar_plate(text)
+
+    def _read_category(self, plate: np.ndarray, target_h: int) -> Optional[str]:
+        import cv2
+
+        # Crop slightly beyond the nominal letter band so descenders (the
+        # tail of 'Q') survive — clipping it makes Q collapse into O.
+        top = int(target_h * max(0.0, _LETTER_BAND[0] - 0.04))
+        bot = int(target_h * (_DIGIT_BAND[0] - 0.01))
+        x0 = int(plate.shape[1] * _LETTER_X_MIN)  # skip the QATAR legend
+        band = plate[top:bot, x0:]
+        if band.size == 0:
+            return None
+        _, ink = cv2.threshold(band, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+        segs = self._segment(ink)
+        if not (1 <= len(segs) <= 2):
+            return None
+        letters = []
+        for seg in segs:
+            ch, score = self._match(seg, self._letter_templates)
+            if score < self.min_score:
+                return None
+            letters.append(ch)
+        code = "".join(letters)
+        return code if code in CATEGORY_CODES else None
 
     def _segment(self, ink: np.ndarray) -> List[np.ndarray]:
         import cv2
 
         contours, _ = cv2.findContours(ink, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         boxes = []
+        band_w = ink.shape[1]
         for cnt in contours:
             x, y, w, h = cv2.boundingRect(cnt)
             if h < self.min_digit_px or w < 2:
                 continue
             if h < ink.shape[0] * 0.4:  # noise / legend remnants
                 continue
+            if x <= 1 or x + w >= band_w - 1:
+                continue  # plate border frame leaking into the band crop
             boxes.append((x, y, w, h))
         boxes.sort(key=lambda b: b[0])  # left-to-right
         if len(boxes) >= 2:
@@ -252,12 +334,13 @@ class QatarPlateReader:
 
         return cv2.resize(seg, _TPL_SIZE, interpolation=cv2.INTER_AREA).astype(np.float32) / 255.0
 
-    def _match(self, seg: np.ndarray) -> Tuple[str, float]:
-        best_d, best_s = "?", -1.0
-        for d, tpl in self._templates.items():
+    @staticmethod
+    def _match(seg: np.ndarray, templates: Dict[str, np.ndarray]) -> Tuple[str, float]:
+        best_c, best_s = "?", -1.0
+        for c, tpl in templates.items():
             num = float((seg * tpl).sum())
             den = float(np.sqrt((seg ** 2).sum() * (tpl ** 2).sum())) + 1e-9
             score = num / den  # normalised cross-correlation
             if score > best_s:
-                best_d, best_s = d, score
-        return best_d, best_s
+                best_c, best_s = c, score
+        return best_c, best_s
