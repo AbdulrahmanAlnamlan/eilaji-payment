@@ -1,5 +1,16 @@
 # Sentinel: roadside radar unit + drone nest
 
+> **Real-world precedent (China, 2026):** municipal pilots in China run
+> exactly this concept — a compact drone nest mounted on top of an existing
+> street/sign pole at an intersection; the drone auto-launches, monitors
+> traffic, documents violations (e.g. un-helmeted riders), and returns to
+> the pole to recharge, no pilot involved. Two design lessons from the
+> footage: (1) **pole-top retrofit** on existing street furniture beats
+> building a new pole — smaller footprint, no civil works, faster rollout;
+> (2) their nest is a light clamshell, viable in a temperate climate — the
+> Qatar version needs the sealed, cooled bay described in §4. The precedent
+> is also pitch ammunition: this is deployed technology, not a concept.
+
 Design for the street hardware: a pole-mounted enforcement camera (the
 "radar") that is also a docking/charging station for a patrol drone. The
 fixed head does the legally-defensible speed measurement; the drone extends
@@ -127,6 +138,20 @@ Mains is strongly recommended for any drone-charging unit. A camera-only
   speed policy, gate ALPR and safety, which needs no enforcement authority.
 - **Data:** plate → person data falls under Qatar's PDPPL; keep owner lookup
   on the government side of the interface, store only plate strings + clips.
+
+## 6b. Configuration variants
+
+| Variant | What | When |
+| --- | --- | --- |
+| **A. Full station** (this doc's main design) | new pole: sensing head + edge box + climate-controlled nest, ~1 kW mains | flagship sites, highway segments, the MOI pilot |
+| **B. Pole-top retrofit nest** (China-style) | compact nest clamped to an *existing* light/sign pole, small drone, power tapped from the street-light circuit; sensing optional | dense urban rollout, intersections, compounds — cheapest per point |
+| **C. Camera-only unit** | sensing head + edge box, no nest; solar-capable | pure speed/ALPR points feeding the same backend |
+
+Variant B is what the Chinese municipal pilots run. Its constraints: the
+street-light circuit is often energised only at night (needs a small battery
+buffer or a dedicated feed for daytime charging), pole load/wind moment must
+be checked, and in Qatar the clamshell must still be sealed against dust with
+at least passive thermal management for the parked drone's battery.
 
 ## 7. Phased build
 
