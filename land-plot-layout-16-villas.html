@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Site Plan SP-03 — 16 Villas, No Internal Street | مخطط الموقع</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',Arial,Helvetica,sans-serif;background:#e8e8e4;color:#111;padding:24px;display:flex;flex-direction:column;align-items:center;gap:24px}
+  .sheet{background:#fff;box-shadow:0 4px 24px rgba(0,0,0,.18);border:2px solid #111;max-width:1720px;width:100%}
+  .sheet svg{display:block;width:100%;height:auto}
+  .program{background:#fff;box-shadow:0 4px 24px rgba(0,0,0,.18);border:2px solid #111;max-width:1720px;width:100%;padding:28px 36px}
+  .program h2{font-size:20px;letter-spacing:1px;border-bottom:2px solid #111;padding-bottom:8px;margin-bottom:16px}
+  .program table{width:100%;border-collapse:collapse;font-size:14px}
+  .program th,.program td{border:1px solid #999;padding:8px 12px;text-align:left}
+  .program th{background:#f2f2ee;font-size:12px;letter-spacing:.5px;text-transform:uppercase}
+  .program td.num{text-align:right;font-variant-numeric:tabular-nums}
+  .program tr.total td{font-weight:700;background:#f7f7f3}
+  .note{font-size:12px;color:#555;margin-top:12px;line-height:1.7}
+  @media print{body{background:#fff;padding:0}.sheet,.program{box-shadow:none;border:none;page-break-inside:avoid}}
+</style>
+</head>
+<body>
+
+<div class="sheet">
+<svg viewBox="0 0 1720 1150" xmlns="http://www.w3.org/2000/svg" font-family="'Segoe UI',Arial,sans-serif">
+  <defs>
+    <pattern id="hatch" width="8" height="8" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+      <rect width="8" height="8" fill="#c6d2e0"/>
+      <line x1="0" y1="0" x2="0" y2="8" stroke="#5b7089" stroke-width="1.4"/>
+    </pattern>
+    <pattern id="grass" width="10" height="10" patternUnits="userSpaceOnUse">
+      <rect width="10" height="10" fill="#e8f1de"/>
+      <circle cx="2.5" cy="3" r="1" fill="#8fb573"/>
+      <circle cx="7.5" cy="7.5" r="1" fill="#a3c489"/>
+      <circle cx="5" cy="1" r=".8" fill="#8fb573"/>
+    </pattern>
+    <pattern id="roadhatch" width="10" height="10" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+      <rect width="10" height="10" fill="#eceae4"/>
+      <line x1="0" y1="0" x2="0" y2="10" stroke="#c9c5ba" stroke-width="1"/>
+    </pattern>
+    <g id="tree">
+      <circle r="10" fill="#b9d3a2" stroke="#5f8a4a" stroke-width="1.5"/>
+      <circle r="4" fill="none" stroke="#5f8a4a" stroke-width="1"/>
+      <line x1="-7" y1="0" x2="7" y2="0" stroke="#5f8a4a" stroke-width="1"/>
+      <line x1="0" y1="-7" x2="0" y2="7" stroke="#5f8a4a" stroke-width="1"/>
+    </g>
+  </defs>
+
+  <rect width="1720" height="1150" fill="#fff"/>
+  <rect x="10" y="10" width="1700" height="1130" fill="none" stroke="#111" stroke-width="2.5"/>
+
+  <!-- ==================== ROADS (8 m each) ==================== -->
+  <!-- Scale 8 px/m. Land: x 220..860 (80 m), y 90..890 (100 m). No internal street. -->
+  <rect x="140" y="30" width="64" height="924" fill="url(#roadhatch)" stroke="#444" stroke-width="1.5"/>
+  <line x1="172" y1="30" x2="172" y2="954" stroke="#aaa" stroke-width="1.5" stroke-dasharray="16 12"/>
+  <text x="172" y="440" font-size="19" font-weight="700" letter-spacing="3" fill="#333" transform="rotate(-90 172 440)" text-anchor="middle">WEST ROAD · 8.00 m</text>
+
+  <rect x="876" y="30" width="64" height="924" fill="url(#roadhatch)" stroke="#444" stroke-width="1.5"/>
+  <line x1="908" y1="30" x2="908" y2="954" stroke="#aaa" stroke-width="1.5" stroke-dasharray="16 12"/>
+  <text x="908" y="440" font-size="19" font-weight="700" letter-spacing="3" fill="#333" transform="rotate(90 908 440)" text-anchor="middle">EAST ROAD · 8.00 m</text>
+
+  <rect x="76" y="890" width="928" height="64" fill="url(#roadhatch)" stroke="#444" stroke-width="1.5"/>
+  <line x1="76" y1="922" x2="1004" y2="922" stroke="#aaa" stroke-width="1.5" stroke-dasharray="16 12"/>
+  <text x="540" y="928" font-size="19" font-weight="700" letter-spacing="3" fill="#333" text-anchor="middle">SOUTH (MAIN) ROAD · 8.00 m</text>
+
+  <!-- LAND BOUNDARY -->
+  <rect x="220" y="90" width="640" height="800" fill="#f6f9f1" stroke="#111" stroke-width="4"/>
+
+  <!-- ==================== PLOTS (built by script) ==================== -->
+  <g id="plots"></g>
+
+  <!-- ==================== DIMENSIONS ==================== -->
+  <g stroke="#111" stroke-width="1" fill="#111" font-size="13">
+    <!-- overall width 80.00 -->
+    <line x1="220" y1="48" x2="860" y2="48"/>
+    <line x1="220" y1="42" x2="220" y2="54"/><line x1="860" y1="42" x2="860" y2="54"/>
+    <text x="540" y="42" text-anchor="middle" font-weight="700" stroke="none" font-size="15">80.00</text>
+    <!-- 40 / 40 -->
+    <line x1="220" y1="72" x2="540" y2="72"/><line x1="540" y1="72" x2="860" y2="72"/>
+    <line x1="220" y1="66" x2="220" y2="78"/><line x1="540" y1="66" x2="540" y2="78"/><line x1="860" y1="66" x2="860" y2="78"/>
+    <text x="380" y="66" text-anchor="middle" stroke="none">40.00</text>
+    <text x="700" y="66" text-anchor="middle" stroke="none">40.00</text>
+    <!-- per-row 25.00 (right of east road) -->
+    <line x1="968" y1="90" x2="968" y2="890"/>
+    <line x1="962" y1="90" x2="974" y2="90"/><line x1="962" y1="290" x2="974" y2="290"/>
+    <line x1="962" y1="490" x2="974" y2="490"/><line x1="962" y1="690" x2="974" y2="690"/><line x1="962" y1="890" x2="974" y2="890"/>
+    <text x="958" y="190" text-anchor="middle" stroke="none" transform="rotate(-90 958 190)">25.00</text>
+    <text x="958" y="390" text-anchor="middle" stroke="none" transform="rotate(-90 958 390)">25.00</text>
+    <text x="958" y="590" text-anchor="middle" stroke="none" transform="rotate(-90 958 590)">25.00</text>
+    <text x="958" y="790" text-anchor="middle" stroke="none" transform="rotate(-90 958 790)">25.00</text>
+    <!-- overall height 100.00 -->
+    <line x1="1000" y1="90" x2="1000" y2="890"/>
+    <line x1="994" y1="90" x2="1006" y2="90"/><line x1="994" y1="890" x2="1006" y2="890"/>
+    <text x="1014" y="490" text-anchor="middle" font-weight="700" stroke="none" font-size="15" transform="rotate(-90 1014 490)">100.00</text>
+    <!-- overall height left -->
+    <line x1="110" y1="90" x2="110" y2="890"/>
+    <line x1="104" y1="90" x2="116" y2="90"/><line x1="104" y1="890" x2="116" y2="890"/>
+    <text x="102" y="490" text-anchor="middle" font-weight="700" stroke="none" font-size="15" transform="rotate(-90 102 490)">100.00</text>
+  </g>
+
+  <!-- notes -->
+  <g font-size="11.5" fill="#111">
+    <text x="60" y="1000" font-weight="700" font-size="13">NOTES:</text>
+    <text x="60" y="1018">1. ALL DIMENSIONS ARE IN METERS. DRAWING IS TO SCALE (1 : 500 AT FULL SHEET).</text>
+    <text x="60" y="1035">2. NO INTERNAL STREET — PLOTS 1–4 ACCESS FROM WEST ROAD, PLOTS 5–8 FROM EAST ROAD.</text>
+    <text x="60" y="1052">3. BUILDING SETBACK 3.00 m ALL SIDES · VILLA-TO-VILLA GARDEN 14.00 m.</text>
+    <text x="60" y="1069">4. 2 VILLAS PER PLOT (MIDDLE VILLA REMOVED PER MARK-UP) · FOOTPRINT 10.00 × 15.00 m (150 sqm).</text>
+    <text x="60" y="1086">5. VILLA BUILT-UP AREA 350 sqm (GROUND + FIRST + PENTHOUSE).</text>
+  </g>
+
+  <!-- ==================== RIGHT PANEL ==================== -->
+  <line x1="1250" y1="10" x2="1250" y2="1140" stroke="#111" stroke-width="2.5"/>
+
+  <g transform="translate(1280,40)">
+    <text font-size="17" font-weight="700" letter-spacing="2">LEGEND</text>
+    <rect x="0" y="20" width="48" height="26" fill="url(#hatch)" stroke="#111" stroke-width="1.5"/>
+    <text x="62" y="33" font-size="12.5">VILLA FOOTPRINT</text>
+    <text x="62" y="48" font-size="11" fill="#555">10.00 m × 15.00 m (150 sqm)</text>
+    <rect x="0" y="62" width="48" height="22" fill="#e3d9c6" stroke="#b8a888"/>
+    <text x="62" y="77" font-size="12.5">DRIVEWAY ACCESS TO SIDE ROAD</text>
+    <line x1="0" y1="104" x2="48" y2="104" stroke="#555" stroke-width="1.5" stroke-dasharray="7 5"/>
+    <text x="62" y="108" font-size="12.5">BUILDING SETBACK 3.00 m</text>
+    <rect x="0" y="122" width="48" height="22" fill="url(#grass)" stroke="#8fb573"/>
+    <text x="62" y="137" font-size="12.5">GARDEN / LANDSCAPE</text>
+    <use href="#tree" x="24" y="168"/>
+    <text x="62" y="172" font-size="12.5">TREE / PLANTING</text>
+  </g>
+  <line x1="1250" y1="255" x2="1710" y2="255" stroke="#111" stroke-width="1.5"/>
+
+  <g transform="translate(1420,300)">
+    <text x="0" y="-10" font-size="15" font-weight="700" letter-spacing="2" text-anchor="middle">NORTH</text>
+    <circle cx="0" cy="48" r="38" fill="none" stroke="#111" stroke-width="1.5"/>
+    <path d="M0,18 L10,54 L0,46 L-10,54 Z" fill="#111"/>
+    <text x="0" y="76" font-size="13" font-weight="700" text-anchor="middle">N</text>
+  </g>
+  <g transform="translate(1300,425)">
+    <text font-size="13" font-weight="700" letter-spacing="1">SCALE 1 : 500</text>
+    <g transform="translate(0,14)">
+      <rect x="0" y="0" width="40" height="8" fill="#111"/><rect x="40" y="0" width="40" height="8" fill="#fff" stroke="#111"/>
+      <rect x="80" y="0" width="40" height="8" fill="#111"/><rect x="120" y="0" width="80" height="8" fill="#fff" stroke="#111"/>
+      <g font-size="10">
+        <text x="0" y="22" text-anchor="middle">0</text><text x="40" y="22" text-anchor="middle">5</text>
+        <text x="80" y="22" text-anchor="middle">10</text><text x="120" y="22" text-anchor="middle">15</text>
+        <text x="200" y="22" text-anchor="middle">25 m</text>
+      </g>
+    </g>
+  </g>
+  <line x1="1250" y1="485" x2="1710" y2="485" stroke="#111" stroke-width="1.5"/>
+
+  <g transform="translate(1280,520)" font-size="13">
+    <text font-size="16" font-weight="700" letter-spacing="2">PLOT SUMMARY</text>
+    <g transform="translate(0,28)">
+      <text y="0">TOTAL LAND AREA</text><text x="235" y="0">:  8,000 sqm (80 × 100 m)</text>
+      <text y="26">INTERNAL STREET</text><text x="235" y="26">:  NONE — 0 sqm</text>
+      <text y="52">NET PLOT AREA</text><text x="235" y="52">:  8,000 sqm (100%)</text>
+      <text y="78">PLOTS</text><text x="235" y="78">:  8 × 1,000 sqm (40 × 25 m)</text>
+      <text y="104">VILLAS</text><text x="235" y="104">:  16 (2 PER PLOT)</text>
+      <text y="130">VILLA FOOTPRINT</text><text x="235" y="130">:  10.00 × 15.00 m = 150 sqm</text>
+      <text y="156">COVERAGE PER PLOT</text><text x="235" y="156">:  300 / 1,000 = 30%</text>
+      <text y="182">GARDEN BETWEEN VILLAS</text><text x="235" y="182">:  14.00 m</text>
+      <text y="208">GARDEN PER PLOT</text><text x="235" y="208">:  700 sqm</text>
+      <text y="234">VILLA BUA</text><text x="235" y="234">:  350 sqm (G+1+PH)</text>
+    </g>
+  </g>
+  <line x1="1250" y1="810" x2="1710" y2="810" stroke="#111" stroke-width="1.5"/>
+
+  <g transform="translate(1280,850)">
+    <text font-size="23" font-weight="800" letter-spacing="1">SITE PLAN — 16 VILLAS</text>
+    <text y="30" font-size="16" font-weight="700" fill="#333">2 PER PLOT · NO INTERNAL STREET</text>
+    <text y="58" font-size="15" fill="#333">مخطط الموقع — ١٦ فيلا (فيلتان لكل قطعة)</text>
+  </g>
+  <g transform="translate(1280,950)" font-size="12.5">
+    <g font-weight="700">
+      <text y="0">PROJECT</text><text y="26">DRAWING TITLE</text><text y="52">DATE</text>
+      <text y="78">SHEET NO.</text><text y="104">SCALE</text><text y="130">REV.</text>
+    </g>
+    <g transform="translate(150,0)">
+      <text y="0">16 VILLAS COMPOUND</text><text y="26">SITE PLAN</text><text y="52">25-07-2026</text>
+      <text y="78">SP-03</text><text y="104">1 : 500</text><text y="130">A</text>
+    </g>
+    <line x1="-10" y1="10" x2="420" y2="10" stroke="#ccc"/><line x1="-10" y1="36" x2="420" y2="36" stroke="#ccc"/>
+    <line x1="-10" y1="62" x2="420" y2="62" stroke="#ccc"/><line x1="-10" y1="88" x2="420" y2="88" stroke="#ccc"/>
+    <line x1="-10" y1="114" x2="420" y2="114" stroke="#ccc"/>
+    <text y="165" font-size="11" fill="#555">ALL DIMENSIONS ARE IN METERS · DRAWN TO SCALE</text>
+  </g>
+
+  <script><![CDATA[
+    (function(){
+      var NS='http://www.w3.org/2000/svg';
+      var g=document.getElementById('plots');
+      // 8 plots: 2 cols x 4 rows. Plot 320x200 px (40x25 m @ 8 px/m).
+      // Left col x=220 (plots 1-4, access WEST), right col x=540 (plots 5-8, access EAST).
+      for(var i=0;i<8;i++){
+        var col=Math.floor(i/4), row=i%4;
+        var x=220+col*320, y=90+row*200, west=(col===0);
+        var p=document.createElementNS(NS,'g');
+        p.setAttribute('transform','translate('+x+','+y+')');
+        var h='';
+        // plot background + boundary
+        h+='<rect width="320" height="200" fill="url(#grass)" stroke="#111" stroke-width="2.5"/>';
+        // setback line 3m = 24px
+        h+='<rect x="24" y="24" width="272" height="152" fill="none" stroke="#555" stroke-width="1.2" stroke-dasharray="7 5"/>';
+        // driveway: 6m wide strip from side road to central court, along plot centre
+        var dw=west?'<rect x="0" y="76" width="128" height="48" fill="#e3d9c6" stroke="#b8a888" stroke-width="1"/>'
+                   :'<rect x="192" y="76" width="128" height="48" fill="#e3d9c6" stroke="#b8a888" stroke-width="1"/>';
+        // central court paving between villas (14 m wide, x 104..216)
+        h+='<rect x="104" y="40" width="112" height="120" fill="#f0ede4" stroke="#c9c5ba" stroke-width="1"/>';
+        h+=dw;
+        // villas 10x15 m = 80x120 px, at 3m side setback, 5m top/bottom
+        h+='<rect x="24" y="40" width="80" height="120" fill="url(#hatch)" stroke="#111" stroke-width="2"/>';
+        h+='<rect x="216" y="40" width="80" height="120" fill="url(#hatch)" stroke="#111" stroke-width="2"/>';
+        // villa labels
+        h+='<text x="64" y="96" font-size="10" text-anchor="middle" fill="#111">10.00 × 15.00</text>';
+        h+='<text x="64" y="110" font-size="10" text-anchor="middle" fill="#111">150 sqm</text>';
+        h+='<text x="256" y="96" font-size="10" text-anchor="middle" fill="#111">10.00 × 15.00</text>';
+        h+='<text x="256" y="110" font-size="10" text-anchor="middle" fill="#111">150 sqm</text>';
+        // court label
+        h+='<text x="160" y="58" font-size="9" text-anchor="middle" fill="#7a8a6a" letter-spacing="1">GARDEN</text>';
+        // plot title
+        h+='<text x="160" y="17" font-size="14" font-weight="700" letter-spacing="2" text-anchor="middle">PLOT '+(i+1)+'</text>';
+        h+='<text x="160" y="196" font-size="9.5" text-anchor="middle" fill="#444">40.00 × 25.00 = 1,000 sqm</text>';
+        // trees
+        h+='<use href="#tree" x="150" y="150"/><use href="#tree" x="170" y="70"/>';
+        h+=west?'<use href="#tree" x="300" y="30"/><use href="#tree" x="300" y="170"/>'
+               :'<use href="#tree" x="20" y="30"/><use href="#tree" x="20" y="170"/>';
+        p.innerHTML=h;
+        g.appendChild(p);
+      }
+    })();
+  ]]></script>
+</svg>
+</div>
+
+<div class="program">
+  <h2>DEVELOPMENT PROGRAM — 16 VILLAS (SP-03, NO INTERNAL STREET)</h2>
+  <table>
+    <tr><th>Item</th><th>Unit Value</th><th>Count</th><th>Total</th></tr>
+    <tr><td>Land area (80 m × 100 m)</td><td class="num">8,000 sqm</td><td class="num">1</td><td class="num">8,000 sqm</td></tr>
+    <tr><td>Internal street</td><td class="num">—</td><td class="num">—</td><td class="num">0 sqm</td></tr>
+    <tr><td>Plots (40 m × 25 m)</td><td class="num">1,000 sqm</td><td class="num">8</td><td class="num">8,000 sqm</td></tr>
+    <tr><td>Villas per plot (middle villa removed)</td><td class="num">2</td><td class="num">8 plots</td><td class="num">16 villas</td></tr>
+    <tr><td>Villa footprint (10.00 m × 15.00 m)</td><td class="num">150 sqm</td><td class="num">16</td><td class="num">2,400 sqm</td></tr>
+    <tr><td>Plot coverage</td><td class="num">300 / 1,000 sqm</td><td class="num">—</td><td class="num">30%</td></tr>
+    <tr><td>Garden per plot (incl. 14 m central garden)</td><td class="num">700 sqm</td><td class="num">8</td><td class="num">5,600 sqm</td></tr>
+    <tr><td>Ground floor</td><td class="num">143.00 sqm</td><td class="num">16</td><td class="num">2,288 sqm</td></tr>
+    <tr><td>First floor</td><td class="num">143.00 sqm</td><td class="num">16</td><td class="num">2,288 sqm</td></tr>
+    <tr><td>Penthouse</td><td class="num">64.00 sqm</td><td class="num">16</td><td class="num">1,024 sqm</td></tr>
+    <tr class="total"><td>Villa built-up area (G + 1 + PH)</td><td class="num">350.00 sqm</td><td class="num">16</td><td class="num">5,600 sqm</td></tr>
+  </table>
+  <div class="note">
+    Building setback 3.00 m all sides · No internal street — plots 1–4 access from West Road, plots 5–8 from East Road, driveways lead to a shared central court in each plot.<br/>
+    This layout is fully dimensionally consistent and drawn to true scale: 2 villas × 10.00 m + 2 × 3.00 m setbacks + 14.00 m central garden = 40.00 m plot width · 15.00 m villa + 2 × 5.00 m = 25.00 m plot depth · 8 plots × 1,000 sqm = 8,000 sqm land with zero street loss.
+  </div>
+</div>
+
+</body>
+</html>
