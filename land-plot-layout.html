@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Site Plan — 24 Villas Compound | مخطط الموقع</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',Arial,Helvetica,sans-serif;background:#e8e8e4;color:#111;padding:24px;display:flex;flex-direction:column;align-items:center;gap:24px}
+  .sheet{background:#fff;box-shadow:0 4px 24px rgba(0,0,0,.18);border:2px solid #111;max-width:1720px;width:100%}
+  .sheet svg{display:block;width:100%;height:auto}
+  .program{background:#fff;box-shadow:0 4px 24px rgba(0,0,0,.18);border:2px solid #111;max-width:1720px;width:100%;padding:28px 36px}
+  .program h2{font-size:20px;letter-spacing:1px;border-bottom:2px solid #111;padding-bottom:8px;margin-bottom:16px}
+  .program table{width:100%;border-collapse:collapse;font-size:14px}
+  .program th,.program td{border:1px solid #999;padding:8px 12px;text-align:left}
+  .program th{background:#f2f2ee;font-size:12px;letter-spacing:.5px;text-transform:uppercase}
+  .program td.num{text-align:right;font-variant-numeric:tabular-nums}
+  .program tr.total td{font-weight:700;background:#f7f7f3}
+  .note{font-size:12px;color:#555;margin-top:12px;line-height:1.7}
+  @media print{body{background:#fff;padding:0}.sheet,.program{box-shadow:none;border:none;page-break-inside:avoid}}
+</style>
+</head>
+<body>
+
+<div class="sheet">
+<svg viewBox="0 0 1720 1210" xmlns="http://www.w3.org/2000/svg" font-family="'Segoe UI',Arial,sans-serif">
+  <defs>
+    <!-- villa footprint hatch -->
+    <pattern id="hatch" width="8" height="8" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+      <rect width="8" height="8" fill="#f4f4f0"/>
+      <line x1="0" y1="0" x2="0" y2="8" stroke="#666" stroke-width="1.4"/>
+    </pattern>
+    <!-- landscape dotted fill -->
+    <pattern id="grass" width="10" height="10" patternUnits="userSpaceOnUse">
+      <rect width="10" height="10" fill="#e6efdc"/>
+      <circle cx="2.5" cy="3" r="1" fill="#8fb573"/>
+      <circle cx="7.5" cy="7.5" r="1" fill="#a3c489"/>
+      <circle cx="5" cy="1" r=".8" fill="#8fb573"/>
+    </pattern>
+    <!-- road asphalt -->
+    <pattern id="road" width="6" height="6" patternUnits="userSpaceOnUse">
+      <rect width="6" height="6" fill="#efefec"/>
+    </pattern>
+    <g id="tree">
+      <circle r="11" fill="#b9d3a2" stroke="#5f8a4a" stroke-width="1.5"/>
+      <circle r="4.5" fill="none" stroke="#5f8a4a" stroke-width="1"/>
+      <line x1="-8" y1="0" x2="8" y2="0" stroke="#5f8a4a" stroke-width="1"/>
+      <line x1="0" y1="-8" x2="0" y2="8" stroke="#5f8a4a" stroke-width="1"/>
+    </g>
+  </defs>
+
+  <rect width="1720" height="1210" fill="#fff"/>
+  <rect x="10" y="10" width="1700" height="1190" fill="none" stroke="#111" stroke-width="2.5"/>
+
+  <!-- ==================== SITE DRAWING AREA ==================== -->
+  <!-- Land: x 250..1010 (80 m), y 70..970 (100 m) -->
+
+  <!-- WEST ROAD -->
+  <rect x="120" y="30" width="72" height="1040" fill="url(#road)" stroke="#444" stroke-width="1.5"/>
+  <line x1="156" y1="30" x2="156" y2="1070" stroke="#999" stroke-width="1.5" stroke-dasharray="18 12"/>
+  <text x="156" y="470" font-size="21" font-weight="700" letter-spacing="4" fill="#333" transform="rotate(-90 156 470)" text-anchor="middle">WEST ROAD</text>
+  <text x="156" y="700" font-size="12" fill="#333" transform="rotate(-90 156 700)" text-anchor="middle">8.00 m WIDE</text>
+
+  <!-- EAST ROAD -->
+  <rect x="1068" y="30" width="72" height="1040" fill="url(#road)" stroke="#444" stroke-width="1.5"/>
+  <line x1="1104" y1="30" x2="1104" y2="1070" stroke="#999" stroke-width="1.5" stroke-dasharray="18 12"/>
+  <text x="1104" y="470" font-size="21" font-weight="700" letter-spacing="4" fill="#333" transform="rotate(90 1104 470)" text-anchor="middle">EAST ROAD</text>
+  <text x="1104" y="700" font-size="12" fill="#333" transform="rotate(90 1104 700)" text-anchor="middle">8.00 m WIDE</text>
+
+  <!-- SOUTH ROAD -->
+  <rect x="60" y="1005" width="1140" height="72" fill="url(#road)" stroke="#444" stroke-width="1.5"/>
+  <line x1="60" y1="1041" x2="1200" y2="1041" stroke="#999" stroke-width="1.5" stroke-dasharray="18 12"/>
+  <text x="630" y="1048" font-size="21" font-weight="700" letter-spacing="4" fill="#333" text-anchor="middle">SOUTH ROAD</text>
+  <text x="810" y="1046" font-size="12" fill="#333">8.00 m WIDE</text>
+
+  <!-- LAND BOUNDARY -->
+  <rect x="250" y="70" width="760" height="900" fill="#fbfbf8" stroke="#111" stroke-width="4"/>
+
+  <!-- INTERNAL STREET -->
+  <rect x="592" y="70" width="76" height="900" fill="url(#road)" stroke="#444" stroke-width="1.5"/>
+  <line x1="630" y1="78" x2="630" y2="962" stroke="#aaa" stroke-width="1.5" stroke-dasharray="16 12"/>
+  <text x="622" y="520" font-size="17" font-weight="700" letter-spacing="3" fill="#333" transform="rotate(-90 622 520)" text-anchor="middle">INTERNAL STREET</text>
+  <text x="646" y="520" font-size="12" fill="#333" transform="rotate(-90 646 520)" text-anchor="middle">8.00 m WIDE</text>
+
+  <!-- ==================== PLOTS ==================== -->
+  <!-- Left column plots 1-4: x 250..592 | Right column plots 5-8: x 668..1010 ; each 225 tall -->
+  <g id="plots">
+    <!-- generated per-plot below -->
+  </g>
+
+  <!-- one plot template repeated: drawn explicitly for 8 plots -->
+  <!-- ============ LEFT COLUMN ============ -->
+  <g>
+    <!-- PLOT 1 -->
+    <g transform="translate(250,70)">
+      <rect width="342" height="225" fill="none" stroke="#111" stroke-width="2.5"/>
+      <rect x="6" y="6" width="330" height="26" fill="url(#grass)"/>
+      <rect x="6" y="193" width="330" height="26" fill="url(#grass)"/>
+      <rect x="16" y="38" width="310" height="150" fill="none" stroke="#555" stroke-width="1.2" stroke-dasharray="7 5"/>
+      <text x="171" y="58" font-size="16" font-weight="700" letter-spacing="2" text-anchor="middle">PLOT 1</text>
+      <g font-size="9.5" text-anchor="middle">
+        <rect x="26" y="70" width="88" height="104" fill="url(#hatch)" stroke="#111" stroke-width="1.8"/>
+        <text x="70" y="116">13.50 × 11.00</text><text x="70" y="130">148.50 sqm</text>
+        <rect x="127" y="70" width="88" height="104" fill="url(#hatch)" stroke="#111" stroke-width="1.8"/>
+        <text x="171" y="116">13.50 × 11.00</text><text x="171" y="130">148.50 sqm</text>
+        <rect x="228" y="70" width="88" height="104" fill="url(#hatch)" stroke="#111" stroke-width="1.8"/>
+        <text x="272" y="116">13.50 × 11.00</text><text x="272" y="130">148.50 sqm</text>
+      </g>
+      <use href="#tree" x="30" y="19"/><use href="#tree" x="171" y="19"/><use href="#tree" x="312" y="19"/>
+      <use href="#tree" x="90" y="206"/><use href="#tree" x="252" y="206"/>
+    </g>
+    <!-- PLOT 2 -->
+    <g transform="translate(250,295)">
+      <rect width="342" height="225" fill="none" stroke="#111" stroke-width="2.5"/>
+      <rect x="6" y="6" width="330" height="26" fill="url(#grass)"/>
+      <rect x="6" y="193" width="330" height="26" fill="url(#grass)"/>
+      <rect x="16" y="38" width="310" height="150" fill="none" stroke="#555" stroke-width="1.2" stroke-dasharray="7 5"/>
+      <text x="171" y="58" font-size="16" font-weight="700" letter-spacing="2" text-anchor="middle">PLOT 2</text>
+      <g font-size="9.5" text-anchor="middle">
+        <rect x="26" y="70" width="88" height="104" fill="url(#hatch)" stroke="#111" stroke-width="1.8"/>
+        <text x="70" y="116">13.50 × 11.00</text><text x="70" y="130">148.50 sqm</text>
+        <rect x="127" y="70" width="88" height="104" fill="url(#hatch)" stroke="#111" stroke-width="1.8"/>
+        <text x="171" y="116">13.50 × 11.00</text><text x="171" y="130">148.50 sqm</text>
+        <rect x="228" y="70" width="88" height="104" fill="url(#hatch)" stroke="#111" stroke-width="1.8"/>
+        <text x="272" y="116">13.50 × 11.00</text><text x="272" y="130">148.50 sqm</text>
+      </g>
+      <use href="#tree" x="50" y="206"/><use href="#tree" x="210" y="206"/>
+      <use href="#tree" x="130" y="19"/><use href="#tree" x="290" y="19"/>
+    </g>
+    <!-- PLOT 3 -->
+    <g transform="translate(250,520)">
+      <rect width="342" height="225" fill="none" stroke="#111" stroke-width="2.5"/>
+      <rect x="6" y="6" width="330" height="26" fill="url(#grass)"/>
+      <rect x="6" y="193" width="330" height="26" fill="url(#grass)"/>
+      <rect x="16" y="38" width="310" height="150" fill="none" stroke="#555" stroke-width="1.2" stroke-dasharray="7 5"/>
+      <text x="171" y="58" font-size="16" font-weight="700" letter-spacing="2" text-anchor="middle">PLOT 3</text>
+      <g font-size="9.5" text-anchor="middle">
+        <rect x="26" y="70" width="88" height="104" fill="url(#hatch)" stroke="#111" stroke-width="1.8"/>
+        <text x="70" y="116">13.50 × 11.00</text><text x="70" y="130">148.50 sqm</text>
+        <rect x="127" y="70" width="88" height="104" fill="url(#hatch)" stroke="#111" stroke-width="1.8"/>
+        <text x="171" y="116">13.50 × 11.00</text><text x="171" y="130">148.50 sqm</text>
+        <rect x="228" y="70" width="88" height="104" fill="url(#hatch)" stroke="#111" stroke-width="1.8"/>
+        <text x="272" y="116">13.50 × 11.00</text><text x="272" y="130">148.50 sqm</text>
+      </g>
+      <use href="#tree" x="70" y="19"/><use href="#tree" x="230" y="19"/>
+      <use href="#tree" x="171" y="206"/><use href="#tree" x="312" y="206"/>
+    </g>
+    <!-- PLOT 4 -->
+    <g transform="translate(250,745)">
+      <rect width="342" height="225" fill="none" stroke="#111" stroke-width="2.5"/>
+      <rect x="6" y="6" width="330" height="26" fill="url(#grass)"/>
+      <rect x="6" y="193" width="330" height="26" fill="url(#grass)"/>
+      <rect x="16" y="38" width="310" height="150" fill="none" stroke="#555" stroke-width="1.2" stroke-dasharray="7 5"/>
+      <text x="171" y="58" font-size="16" font-weight="700" letter-spacing="2" text-anchor="middle">PLOT 4</text>
+      <g font-size="9.5" text-anchor="middle">
+        <rect x="26" y="70" width="88" height="104" fill="url(#hatch)" stroke="#111" stroke-width="1.8"/>
+        <text x="70" y="116">13.50 × 11.00</text><text x="70" y="130">148.50 sqm</text>
+        <rect x="127" y="70" width="88" height="104" fill="url(#hatch)" stroke="#111" stroke-width="1.8"/>
+        <text x="171" y="116">13.50 × 11.00</text><text x="171" y="130">148.50 sqm</text>
+        <rect x="228" y="70" width="88" height="104" fill="url(#hatch)" stroke="#111" stroke-width="1.8"/>
+        <text x="272" y="116">13.50 × 11.00</text><text x="272" y="130">148.50 sqm</text>
+      </g>
+      <use href="#tree" x="30" y="206"/><use href="#tree" x="171" y="206"/><use href="#tree" x="312" y="206"/>
+      <use href="#tree" x="110" y="19"/><use href="#tree" x="250" y="19"/>
+    </g>
+  </g>
+
+  <!-- ============ RIGHT COLUMN ============ -->
+  <g>
+    <!-- PLOT 5 -->
+    <g transform="translate(668,70)">
+      <rect width="342" height="225" fill="none" stroke="#111" stroke-width="2.5"/>
+      <rect x="6" y="6" width="330" height="26" fill="url(#grass)"/>
+      <rect x="6" y="193" width="330" height="26" fill="url(#grass)"/>
+      <rect x="16" y="38" width="310" height="150" fill="none" stroke="#555" stroke-width="1.2" stroke-dasharray="7 5"/>
+      <text x="171" y="58" font-size="16" font-weight="700" letter-spacing="2" text-anchor="middle">PLOT 5</text>
+      <g font-size="9.5" text-anchor="middle">
+        <rect x="26" y="70" width="88" height="104" fill="url(#hatch)" stroke="#111" stroke-width="1.8"/>
+        <text x="70" y="116">13.50 × 11.00</text><text x="70" y="130">148.50 sqm</text>
+        <rect x="127" y="70" width="88" height="104" fill="url(#hatch)" stroke="#111" stroke-width="1.8"/>
+        <text x="171" y="116">13.50 × 11.00</text><text x="171" y="130">148.50 sqm</text>
+        <rect x="228" y="70" width="88" height="104" fill="url(#hatch)" stroke="#111" stroke-width="1.8"/>
+        <text x="272" y="116">13.50 × 11.00</text><text x="272" y="130">148.50 sqm</text>
+      </g>
+      <use href="#tree" x="30" y="19"/><use href="#tree" x="171" y="19"/><use href="#tree" x="312" y="19"/>
+      <use href="#tree" x="90" y="206"/><use href="#tree" x="252" y="206"/>
+    </g>
+    <!-- PLOT 6 -->
+    <g transform="translate(668,295)">
+      <rect width="342" height="225" fill="none" stroke="#111" stroke-width="2.5"/>
+      <rect x="6" y="6" width="330" height="26" fill="url(#grass)"/>
+      <rect x="6" y="193" width="330" height="26" fill="url(#grass)"/>
+      <rect x="16" y="38" width="310" height="150" fill="none" stroke="#555" stroke-width="1.2" stroke-dasharray="7 5"/>
+      <text x="171" y="58" font-size="16" font-weight="700" letter-spacing="2" text-anchor="middle">PLOT 6</text>
+      <g font-size="9.5" text-anchor="middle">
+        <rect x="26" y="70" width="88" height="104" fill="url(#hatch)" stroke="#111" stroke-width="1.8"/>
+        <text x="70" y="116">13.50 × 11.00</text><text x="70" y="130">148.50 sqm</text>
+        <rect x="127" y="70" width="88" height="104" fill="url(#hatch)" stroke="#111" stroke-width="1.8"/>
+        <text x="171" y="116">13.50 × 11.00</text><text x="171" y="130">148.50 sqm</text>
+        <rect x="228" y="70" width="88" height="104" fill="url(#hatch)" stroke="#111" stroke-width="1.8"/>
+        <text x="272" y="116">13.50 × 11.00</text><text x="272" y="130">148.50 sqm</text>
+      </g>
+      <use href="#tree" x="50" y="206"/><use href="#tree" x="210" y="206"/>
+      <use href="#tree" x="130" y="19"/><use href="#tree" x="290" y="19"/>
+    </g>
+    <!-- PLOT 7 -->
+    <g transform="translate(668,520)">
+      <rect width="342" height="225" fill="none" stroke="#111" stroke-width="2.5"/>
+      <rect x="6" y="6" width="330" height="26" fill="url(#grass)"/>
+      <rect x="6" y="193" width="330" height="26" fill="url(#grass)"/>
+      <rect x="16" y="38" width="310" height="150" fill="none" stroke="#555" stroke-width="1.2" stroke-dasharray="7 5"/>
+      <text x="171" y="58" font-size="16" font-weight="700" letter-spacing="2" text-anchor="middle">PLOT 7</text>
+      <g font-size="9.5" text-anchor="middle">
+        <rect x="26" y="70" width="88" height="104" fill="url(#hatch)" stroke="#111" stroke-width="1.8"/>
+        <text x="70" y="116">13.50 × 11.00</text><text x="70" y="130">148.50 sqm</text>
+        <rect x="127" y="70" width="88" height="104" fill="url(#hatch)" stroke="#111" stroke-width="1.8"/>
+        <text x="171" y="116">13.50 × 11.00</text><text x="171" y="130">148.50 sqm</text>
+        <rect x="228" y="70" width="88" height="104" fill="url(#hatch)" stroke="#111" stroke-width="1.8"/>
+        <text x="272" y="116">13.50 × 11.00</text><text x="272" y="130">148.50 sqm</text>
+      </g>
+      <use href="#tree" x="70" y="19"/><use href="#tree" x="230" y="19"/>
+      <use href="#tree" x="171" y="206"/><use href="#tree" x="312" y="206"/>
+    </g>
+    <!-- PLOT 8 -->
+    <g transform="translate(668,745)">
+      <rect width="342" height="225" fill="none" stroke="#111" stroke-width="2.5"/>
+      <rect x="6" y="6" width="330" height="26" fill="url(#grass)"/>
+      <rect x="6" y="193" width="330" height="26" fill="url(#grass)"/>
+      <rect x="16" y="38" width="310" height="150" fill="none" stroke="#555" stroke-width="1.2" stroke-dasharray="7 5"/>
+      <text x="171" y="58" font-size="16" font-weight="700" letter-spacing="2" text-anchor="middle">PLOT 8</text>
+      <g font-size="9.5" text-anchor="middle">
+        <rect x="26" y="70" width="88" height="104" fill="url(#hatch)" stroke="#111" stroke-width="1.8"/>
+        <text x="70" y="116">13.50 × 11.00</text><text x="70" y="130">148.50 sqm</text>
+        <rect x="127" y="70" width="88" height="104" fill="url(#hatch)" stroke="#111" stroke-width="1.8"/>
+        <text x="171" y="116">13.50 × 11.00</text><text x="171" y="130">148.50 sqm</text>
+        <rect x="228" y="70" width="88" height="104" fill="url(#hatch)" stroke="#111" stroke-width="1.8"/>
+        <text x="272" y="116">13.50 × 11.00</text><text x="272" y="130">148.50 sqm</text>
+      </g>
+      <use href="#tree" x="30" y="206"/><use href="#tree" x="171" y="206"/><use href="#tree" x="312" y="206"/>
+      <use href="#tree" x="110" y="19"/><use href="#tree" x="250" y="19"/>
+    </g>
+  </g>
+
+  <!-- ==================== DIMENSIONS ==================== -->
+  <g stroke="#111" stroke-width="1" fill="#111" font-size="13">
+    <!-- overall width 80.00 (top) -->
+    <line x1="250" y1="34" x2="1010" y2="34"/>
+    <line x1="250" y1="28" x2="250" y2="40"/><line x1="1010" y1="28" x2="1010" y2="40"/>
+    <text x="630" y="28" text-anchor="middle" font-weight="700" stroke="none" font-size="15">80.00</text>
+    <!-- segment widths 25 / 8 / 25 (top, second line) -->
+    <line x1="250" y1="56" x2="592" y2="56"/><line x1="592" y1="56" x2="668" y2="56"/><line x1="668" y1="56" x2="1010" y2="56"/>
+    <line x1="250" y1="50" x2="250" y2="62"/><line x1="592" y1="50" x2="592" y2="62"/><line x1="668" y1="50" x2="668" y2="62"/><line x1="1010" y1="50" x2="1010" y2="62"/>
+    <text x="421" y="51" text-anchor="middle" stroke="none">25.00</text>
+    <text x="630" y="51" text-anchor="middle" stroke="none" font-size="11">8.00</text>
+    <text x="839" y="51" text-anchor="middle" stroke="none">25.00</text>
+    <!-- overall height 100.00 (left, outside west road) -->
+    <line x1="86" y1="70" x2="86" y2="970"/>
+    <line x1="80" y1="70" x2="92" y2="70"/><line x1="80" y1="970" x2="92" y2="970"/>
+    <text x="78" y="524" text-anchor="middle" font-weight="700" stroke="none" font-size="15" transform="rotate(-90 78 524)">100.00</text>
+    <!-- per-plot heights 40.00 x4 (between west road and land) -->
+    <line x1="222" y1="70" x2="222" y2="970"/>
+    <line x1="216" y1="70" x2="228" y2="70"/><line x1="216" y1="295" x2="228" y2="295"/>
+    <line x1="216" y1="520" x2="228" y2="520"/><line x1="216" y1="745" x2="228" y2="745"/><line x1="216" y1="970" x2="228" y2="970"/>
+    <text x="212" y="183" text-anchor="middle" stroke="none" transform="rotate(-90 212 183)">40.00</text>
+    <text x="212" y="408" text-anchor="middle" stroke="none" transform="rotate(-90 212 408)">40.00</text>
+    <text x="212" y="633" text-anchor="middle" stroke="none" transform="rotate(-90 212 633)">40.00</text>
+    <text x="212" y="858" text-anchor="middle" stroke="none" transform="rotate(-90 212 858)">40.00</text>
+    <!-- per-plot heights right side -->
+    <line x1="1038" y1="70" x2="1038" y2="970"/>
+    <line x1="1032" y1="70" x2="1044" y2="70"/><line x1="1032" y1="295" x2="1044" y2="295"/>
+    <line x1="1032" y1="520" x2="1044" y2="520"/><line x1="1032" y1="745" x2="1044" y2="745"/><line x1="1032" y1="970" x2="1044" y2="970"/>
+    <text x="1050" y="183" text-anchor="middle" stroke="none" transform="rotate(90 1050 183)">40.00</text>
+    <text x="1050" y="408" text-anchor="middle" stroke="none" transform="rotate(90 1050 408)">40.00</text>
+    <text x="1050" y="633" text-anchor="middle" stroke="none" transform="rotate(90 1050 633)">40.00</text>
+    <text x="1050" y="858" text-anchor="middle" stroke="none" transform="rotate(90 1050 858)">40.00</text>
+    <!-- bottom overall 80.00 -->
+    <line x1="250" y1="990" x2="1010" y2="990"/>
+    <line x1="250" y1="984" x2="250" y2="996"/><line x1="1010" y1="984" x2="1010" y2="996"/>
+    <text x="630" y="986" text-anchor="middle" font-weight="700" stroke="none" font-size="15">80.00</text>
+  </g>
+
+  <!-- notes bottom-left -->
+  <g font-size="11.5" fill="#111">
+    <text x="60" y="1108" font-weight="700" font-size="13">NOTES:</text>
+    <text x="60" y="1126">1. ALL DIMENSIONS ARE IN METERS. PLOT DIMENSIONS ARE FROM PLOT BOUNDARY.</text>
+    <text x="60" y="1143">2. BUILDING SETBACKS — FRONT: 5.00 m · REAR: 5.00 m · SIDES: 5.00 m</text>
+    <text x="60" y="1160">3. INTERNAL STREET WIDTH: 8.00 m · ROAD WIDTH (WEST, EAST &amp; SOUTH): 8.00 m</text>
+    <text x="60" y="1177">4. EACH PLOT CONTAINS 3 VILLAS · VILLA FOOTPRINT 13.50 m × 11.00 m (148.50 sqm)</text>
+  </g>
+
+  <!-- ==================== RIGHT PANEL ==================== -->
+  <line x1="1250" y1="10" x2="1250" y2="1200" stroke="#111" stroke-width="2.5"/>
+
+  <!-- LEGEND -->
+  <g transform="translate(1280,40)">
+    <text font-size="17" font-weight="700" letter-spacing="2">LEGEND</text>
+    <rect x="0" y="20" width="48" height="26" fill="url(#hatch)" stroke="#111" stroke-width="1.5"/>
+    <text x="62" y="33" font-size="12.5">VILLA FOOTPRINT</text>
+    <text x="62" y="48" font-size="11" fill="#555">13.50 m × 11.00 m</text>
+    <line x1="0" y1="72" x2="48" y2="72" stroke="#555" stroke-width="1.5" stroke-dasharray="7 5"/>
+    <text x="62" y="76" font-size="12.5">BUILDING SETBACK</text>
+    <rect x="0" y="90" width="48" height="22" fill="url(#grass)" stroke="#8fb573"/>
+    <text x="62" y="105" font-size="12.5">LANDSCAPE AREA</text>
+    <use href="#tree" x="24" y="136"/>
+    <text x="62" y="140" font-size="12.5">TREE / PLANTING</text>
+    <line x1="0" y1="165" x2="48" y2="165" stroke="#111" stroke-width="3"/>
+    <text x="62" y="169" font-size="12.5">PLOT BOUNDARY</text>
+  </g>
+  <line x1="1250" y1="250" x2="1710" y2="250" stroke="#111" stroke-width="1.5"/>
+
+  <!-- NORTH + SCALE -->
+  <g transform="translate(1420,300)">
+    <text x="0" y="-14" font-size="15" font-weight="700" letter-spacing="2" text-anchor="middle">NORTH</text>
+    <circle cx="0" cy="46" r="40" fill="none" stroke="#111" stroke-width="1.5"/>
+    <path d="M0,14 L11,52 L0,44 L-11,52 Z" fill="#111"/>
+    <text x="0" y="76" font-size="13" font-weight="700" text-anchor="middle">N</text>
+  </g>
+  <g transform="translate(1300,430)">
+    <text font-size="13" font-weight="700" letter-spacing="1">SCALE 1 : 500</text>
+    <g transform="translate(0,14)">
+      <rect x="0" y="0" width="30" height="8" fill="#111"/><rect x="30" y="0" width="30" height="8" fill="#fff" stroke="#111"/>
+      <rect x="60" y="0" width="30" height="8" fill="#111"/><rect x="90" y="0" width="60" height="8" fill="#fff" stroke="#111"/>
+      <rect x="150" y="0" width="60" height="8" fill="#111"/>
+      <g font-size="10">
+        <text x="0" y="22" text-anchor="middle">0</text><text x="30" y="22" text-anchor="middle">5</text>
+        <text x="60" y="22" text-anchor="middle">10</text><text x="90" y="22" text-anchor="middle">15</text>
+        <text x="150" y="22" text-anchor="middle">25</text><text x="210" y="22" text-anchor="middle">35 m</text>
+      </g>
+    </g>
+  </g>
+  <line x1="1250" y1="490" x2="1710" y2="490" stroke="#111" stroke-width="1.5"/>
+
+  <!-- PLOT SUMMARY -->
+  <g transform="translate(1280,525)" font-size="13">
+    <text font-size="16" font-weight="700" letter-spacing="2">PLOT SUMMARY</text>
+    <g transform="translate(0,28)">
+      <text y="0">TOTAL LAND AREA</text><text x="230" y="0">:  8,000 sqm</text>
+      <text y="26">TOTAL PLOTS</text><text x="230" y="26">:  8 PLOTS</text>
+      <text y="52">PLOT SIZE</text><text x="230" y="52">:  25.00 m × 40.00 m</text>
+      <text y="78">PLOT AREA</text><text x="230" y="78">:  1,000 sqm</text>
+      <text y="104">VILLAS PER PLOT</text><text x="230" y="104">:  3 VILLAS</text>
+      <text y="130">TOTAL VILLAS</text><text x="230" y="130">:  24 VILLAS</text>
+      <text y="156">VILLA FOOTPRINT</text><text x="230" y="156">:  13.50 m × 11.00 m</text>
+      <text y="182">VILLA AREA</text><text x="230" y="182">:  148.50 sqm</text>
+      <text y="208">VILLA BUILT-UP AREA</text><text x="230" y="208">:  350 sqm (GF+FF+PH)</text>
+    </g>
+  </g>
+  <line x1="1250" y1="790" x2="1710" y2="790" stroke="#111" stroke-width="1.5"/>
+
+  <!-- TITLE BLOCK -->
+  <g transform="translate(1280,830)">
+    <text font-size="24" font-weight="800" letter-spacing="1">SITE PLAN —</text>
+    <text y="32" font-size="24" font-weight="800" letter-spacing="1">24 VILLAS COMPOUND</text>
+    <text y="62" font-size="16" fill="#333">مخطط الموقع — مجمع ٢٤ فيلا</text>
+  </g>
+  <g transform="translate(1280,930)" font-size="12.5">
+    <g font-weight="700">
+      <text y="0">PROJECT</text><text y="28">LOCATION</text><text y="56">DRAWING TITLE</text>
+      <text y="84">DATE</text><text y="112">SHEET NO.</text><text y="140">SCALE</text><text y="168">REV.</text>
+    </g>
+    <g transform="translate(150,0)">
+      <text y="0">24 VILLAS COMPOUND</text><text y="28">—</text><text y="56">SITE PLAN</text>
+      <text y="84">25-07-2026</text><text y="112">SP-01</text><text y="140">1 : 500</text><text y="168">A</text>
+    </g>
+    <line x1="-10" y1="12" x2="420" y2="12" stroke="#ccc"/><line x1="-10" y1="40" x2="420" y2="40" stroke="#ccc"/>
+    <line x1="-10" y1="68" x2="420" y2="68" stroke="#ccc"/><line x1="-10" y1="96" x2="420" y2="96" stroke="#ccc"/>
+    <line x1="-10" y1="124" x2="420" y2="124" stroke="#ccc"/><line x1="-10" y1="152" x2="420" y2="152" stroke="#ccc"/>
+    <text y="205" font-size="11" fill="#555">ALL DIMENSIONS ARE IN METERS · DO NOT SCALE FROM DRAWING</text>
+  </g>
+</svg>
+</div>
+
+<div class="program">
+  <h2>DEVELOPMENT PROGRAM — 24 VILLAS COMPOUND</h2>
+  <table>
+    <tr><th>Item</th><th>Unit Value</th><th>Count</th><th>Total</th></tr>
+    <tr><td>Land area (80 m × 100 m)</td><td class="num">8,000 sqm</td><td class="num">1</td><td class="num">8,000 sqm</td></tr>
+    <tr><td>Plots (25 m × 40 m)</td><td class="num">1,000 sqm</td><td class="num">8</td><td class="num">8,000 sqm</td></tr>
+    <tr><td>Villas per plot</td><td class="num">3</td><td class="num">8 plots</td><td class="num">24 villas</td></tr>
+    <tr><td>Villa footprint (13.50 m × 11.00 m)</td><td class="num">148.50 sqm</td><td class="num">24</td><td class="num">3,564 sqm</td></tr>
+    <tr><td>Ground floor (majlis, living, dining, kitchen, maid room)</td><td class="num">143.00 sqm</td><td class="num">24</td><td class="num">3,432 sqm</td></tr>
+    <tr><td>First floor (4 bedrooms, family lounge, balcony)</td><td class="num">143.00 sqm</td><td class="num">24</td><td class="num">3,432 sqm</td></tr>
+    <tr><td>Penthouse (lounge, pantry, bath, roof terraces)</td><td class="num">64.00 sqm</td><td class="num">24</td><td class="num">1,536 sqm</td></tr>
+    <tr class="total"><td>Villa built-up area (GF + FF + PH)</td><td class="num">350.00 sqm</td><td class="num">24</td><td class="num">8,400 sqm</td></tr>
+  </table>
+  <div class="note">
+    Building setbacks 5.00 m on all sides · Internal street 8.00 m wide · Surrounding roads (west, east, south) 8.00 m wide.<br/>
+    Note: villa footprints and setbacks are drawn diagrammatically (as in the reference drawing) — three 13.50 m-wide villas with 5 m setbacks exceed a 25 m plot width at true scale, and 8 × 1,000 sqm plots plus an internal street exceed the 8,000 sqm land area. Dimensions shown are the design targets and should be reconciled at the detailed-survey stage.
+  </div>
+</div>
+
+</body>
+</html>
