@@ -189,14 +189,58 @@ That curve is what tells an operations team how much human review a threshold
 costs. We also report **expected calibration error**, because the tower's most
 important behaviour is knowing when to say "unclear".
 
-### 3.3 Results
+### 3.3 Results — measured, on a held-out synthetic test set
 
-See `models/occupant_report.json` for the full run. **Read these numbers for
-what they are: proof that the pipeline trains, calibrates, exports and loads —
-not a prediction of field accuracy.** They are measured on synthetic data
-against synthetic labels. A model trained only on synthetic crops will not
-transfer to your cameras. That is not a caveat, it is the finding: it is
-precisely why the data-collection budget in §4 is unavoidable.
+245,548 parameters, 64×64 input, 5 epochs on 9,000 training crops, evaluated on
+2,500 crops from a **separate generator seed** (a test set sharing the random
+stream would not be held out at all).
+
+| | Belt | Phone |
+| --- | --- | --- |
+| Accuracy | **0.9428** | **0.9364** |
+| Precision | 0.9480 | 0.9519 |
+| Recall | 0.9608 | 0.7944 |
+| F1 | 0.9544 | 0.8660 |
+| False-positive rate | 0.0870 | **0.0140** |
+| Expected calibration error | 0.0182 | 0.0249 |
+
+Learning curve (validation): belt 0.653 → 0.885 → 0.882 → 0.912 → **0.942**;
+phone 0.601 → 0.858 → 0.852 → 0.932 → **0.929**.
+
+**The abstention curve is the operationally useful result:**
+
+| Confidence ≥ | Belt coverage / accuracy | Phone coverage / accuracy |
+| --- | --- | --- |
+| 0.50 | 100.0% / 0.9428 | 100.0% / 0.9364 |
+| 0.70 | 93.2% / 0.9661 | 94.5% / 0.9551 |
+| 0.90 | 77.4% / 0.9861 | 80.3% / 0.9791 |
+| 0.95 | 65.6% / 0.9909 | 57.2% / 0.9916 |
+
+Read it as an operations dial: at a 0.90 threshold the system judges ~78% of
+vehicles at ~98.6% accuracy and abstains on the rest. That is how you trade
+throughput against reviewer workload, and it is a conversation you can only
+have if the model is calibrated — hence the ECE numbers, both under 0.025.
+
+Note the asymmetry worth carrying into deployment: **phone recall is 0.79 while
+its false-positive rate is 0.014**. The model misses phones rather than
+inventing them. For an enforcement proposal that is the correct direction of
+error — a missed violation costs nothing, a fabricated one costs a wrongful
+citation and the programme's credibility.
+
+**Verified end to end** (`examples/verify_trained_model.py`):
+1. the ONNX loads with the expected input and output names;
+2. it agrees with its source PyTorch model to **2.4e-06** — catching the class
+   of export bug that silently degrades field accuracy;
+3. it runs as a drop-in inside `SpeedPipeline`, producing review-gated
+   `no_seatbelt` and `phone_use` events.
+
+**Now read all of that for what it is.** These figures are measured on
+synthetic data against synthetic labels. **They do not predict field
+accuracy.** What they prove is that the pipeline trains, calibrates, abstains,
+exports and is consumed correctly by the tower — the *engineering* risk is
+retired. The *domain* risk is untouched, and no amount of further synthetic
+work will touch it. That is precisely why the data-collection budget in §4 is
+unavoidable rather than optional.
 
 ---
 

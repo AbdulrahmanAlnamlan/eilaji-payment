@@ -256,7 +256,16 @@ def train(cfg: Optional[TrainConfig] = None, verbose: bool = True) -> Dict:
         if verbose:
             print(f"  epoch {epoch + 1}/{cfg.epochs}  loss {running / max(1, nb):.4f}"
                   f"  val belt {val['belt']['accuracy']:.3f}"
-                  f"  val phone {val['phone']['accuracy']:.3f}")
+                  f"  val phone {val['phone']['accuracy']:.3f}", flush=True)
+
+        # Checkpoint every epoch. CPU training runs long enough that a killed
+        # job which saved nothing is a real failure mode — this way the last
+        # completed epoch always leaves a usable model and report.
+        _save_artifacts(model, cfg, out_dir, {
+            "config": asdict(cfg), "parameters": n_params, "history": history,
+            "test": val, "note": f"checkpoint after epoch {epoch + 1}; "
+                                 f"'test' holds VALIDATION metrics until the run ends",
+        })
 
     test = evaluate(model, xte, bte, pte)
     report = {
@@ -267,15 +276,24 @@ def train(cfg: Optional[TrainConfig] = None, verbose: bool = True) -> Dict:
         "train_seconds": round(time.time() - t0, 1),
     }
 
-    onnx_path = out_dir / "occupant.onnx"
-    export_onnx(model, onnx_path, cfg.image_size)
-    report["onnx"] = str(onnx_path)
+    _save_artifacts(model, cfg, out_dir, report)
+    report["onnx"] = str(out_dir / "occupant.onnx")
+    return report
+
+
+def _save_artifacts(model, cfg, out_dir: Path, report: Dict) -> None:
+    """Write weights, ONNX and the JSON report. Safe to call repeatedly."""
+    import torch
+
+    report = dict(report)
+    report["onnx"] = str(out_dir / "occupant.onnx")
+    try:
+        export_onnx(model, out_dir / "occupant.onnx", cfg.image_size)
+    except Exception as exc:  # export is optional; never lose the weights
+        report["onnx_error"] = str(exc)
+    torch.save(model.state_dict(), out_dir / "occupant.pt")
     with open(out_dir / "occupant_report.json", "w", encoding="utf-8") as fh:
         json.dump(report, fh, indent=2)
-
-    import torch as _t
-    _t.save(model.state_dict(), out_dir / "occupant.pt")
-    return report
 
 
 def evaluate(model, x, belt_labels, phone_labels, batch: int = 256) -> Dict:

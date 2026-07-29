@@ -1,0 +1,152 @@
+{
+  "config": {
+    "train_n": 9000,
+    "val_n": 2500,
+    "test_n": 2500,
+    "epochs": 5,
+    "batch_size": 96,
+    "lr": 0.003,
+    "weight_decay": 0.0001,
+    "width": 24,
+    "seed": 0,
+    "image_size": 64,
+    "out_dir": "models"
+  },
+  "parameters": 245548,
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 1.1099337506037887,
+      "val_belt_acc": 0.6528,
+      "val_phone_acc": 0.6008
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.7364693617308011,
+      "val_belt_acc": 0.8852,
+      "val_phone_acc": 0.8584
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.559099898222954,
+      "val_belt_acc": 0.8824,
+      "val_phone_acc": 0.852
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.444330342354313,
+      "val_belt_acc": 0.9124,
+      "val_phone_acc": 0.9316
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.3697798784061145,
+      "val_belt_acc": 0.942,
+      "val_phone_acc": 0.9292
+    }
+  ],
+  "test": {
+    "belt": {
+      "accuracy": 0.9428,
+      "precision": 0.9480354879594424,
+      "recall": 0.9608220937700707,
+      "f1": 0.9543859649122807,
+      "tp": 1496,
+      "fp": 82,
+      "tn": 861,
+      "fn": 61,
+      "false_positive_rate": 0.08695652173913043,
+      "ece": 0.018245510220527637,
+      "abstention": [
+        {
+          "threshold": 0.5,
+          "coverage": 1.0,
+          "accuracy_when_judged": 0.9428,
+          "judged": 2500
+        },
+        {
+          "threshold": 0.6,
+          "coverage": 0.9688,
+          "accuracy_when_judged": 0.9566473988439307,
+          "judged": 2422
+        },
+        {
+          "threshold": 0.7,
+          "coverage": 0.9324,
+          "accuracy_when_judged": 0.9661089661089661,
+          "judged": 2331
+        },
+        {
+          "threshold": 0.8,
+          "coverage": 0.8764,
+          "accuracy_when_judged": 0.9753537197626655,
+          "judged": 2191
+        },
+        {
+          "threshold": 0.9,
+          "coverage": 0.7744,
+          "accuracy_when_judged": 0.9860537190082644,
+          "judged": 1936
+        },
+        {
+          "threshold": 0.95,
+          "coverage": 0.656,
+          "accuracy_when_judged": 0.9908536585365854,
+          "judged": 1640
+        }
+      ]
+    },
+    "phone": {
+      "accuracy": 0.9364,
+      "precision": 0.9518518518518518,
+      "recall": 0.794435857805255,
+      "f1": 0.8660488626790228,
+      "tp": 514,
+      "fp": 26,
+      "tn": 1827,
+      "fn": 133,
+      "false_positive_rate": 0.014031300593631947,
+      "ece": 0.02489589784145357,
+      "abstention": [
+        {
+          "threshold": 0.5,
+          "coverage": 1.0,
+          "accuracy_when_judged": 0.9364,
+          "judged": 2500
+        },
+        {
+          "threshold": 0.6,
+          "coverage": 0.9772,
+          "accuracy_when_judged": 0.945149406467458,
+          "judged": 2443
+        },
+        {
+          "threshold": 0.7,
+          "coverage": 0.9452,
+          "accuracy_when_judged": 0.9551417689377909,
+          "judged": 2363
+        },
+        {
+          "threshold": 0.8,
+          "coverage": 0.9048,
+          "accuracy_when_judged": 0.964633068081344,
+          "judged": 2262
+        },
+        {
+          "threshold": 0.9,
+          "coverage": 0.8032,
+          "accuracy_when_judged": 0.9790836653386454,
+          "judged": 2008
+        },
+        {
+          "threshold": 0.95,
+          "coverage": 0.572,
+          "accuracy_when_judged": 0.9916083916083916,
+          "judged": 1430
+        }
+      ]
+    }
+  },
+  "train_seconds": 254.8,
+  "onnx": "models/occupant.onnx"
+}

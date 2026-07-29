@@ -15,3 +15,8 @@ demo/
 # Model weights
 *.pt
 *.onnx
+
+# Trained model artifacts (regenerate with speeddet.training.train_occupant)
+models/*.onnx
+models/*.onnx.data
+models/*.pt
