@@ -11,5 +11,11 @@ opencv-python>=4.8            # video I/O, homography, drawing (use -headless on
 # pip install fast-alpr
 # pip install paddleocr paddlepaddle
 
+# --- Occupant analytics (optional) ---
+# Runs a trained seatbelt/phone classifier over the windshield crop.
+# The model must be trained on your own camera geometry — see
+# speeddet/analytics/occupant.py.
+# onnxruntime>=1.17
+
 # --- Dev ---
 # pytest>=7

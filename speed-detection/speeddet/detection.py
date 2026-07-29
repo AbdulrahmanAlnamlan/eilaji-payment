@@ -104,11 +104,23 @@ class ColorBlobDetector:
         val_min: int = 60,
         min_area_px: int = 60,
         class_name: str = "vehicle",
+        small_object_area_px: int = 0,
+        small_object_class: str = "object",
     ) -> None:
+        """``small_object_area_px`` (0 = off) labels blobs below that area as
+        ``small_object_class`` instead of ``class_name``.
+
+        A real detector (YOLO) returns true classes, so downstream analytics
+        can say "this is not a vehicle". The blob detector has no such notion,
+        which would make every ejected object look like a car to the litter
+        analyzer — so the demo approximates the distinction by size.
+        """
         self.sat_min = sat_min
         self.val_min = val_min
         self.min_area_px = min_area_px
         self.class_name = class_name
+        self.small_object_area_px = small_object_area_px
+        self.small_object_class = small_object_class
 
     def detect(self, frame: np.ndarray) -> List[Detection]:
         import cv2  # local import; opencv is a core dep for video I/O anyway
@@ -126,12 +138,16 @@ class ColorBlobDetector:
             if cv2.contourArea(cnt) < self.min_area_px:
                 continue
             x, y, w, h = cv2.boundingRect(cnt)
+            box_area = w * h
+            is_small = (self.small_object_area_px > 0
+                        and box_area < self.small_object_area_px)
             detections.append(
                 Detection(
                     bbox=(float(x), float(y), float(x + w), float(y + h)),
                     confidence=1.0,
-                    class_id=0,
-                    class_name=self.class_name,
+                    class_id=1 if is_small else 0,
+                    class_name=(self.small_object_class if is_small
+                                else self.class_name),
                 )
             )
         return detections

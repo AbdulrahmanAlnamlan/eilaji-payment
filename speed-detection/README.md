@@ -1,4 +1,44 @@
-# speeddet — camera-based vehicle speed-detection core
+# speeddet — Sentinel tower software stack
+
+> **Full system design: [`docs/sentinel-tower.md`](docs/sentinel-tower.md).**
+> Roadside station design incl. drone nest: [`docs/radar-drone-station.md`](docs/radar-drone-station.md).
+
+Beyond the speed core documented below, this package now implements the
+analytics, event and tower layers of the Sentinel unit:
+
+| Layer | Module | What it does |
+| --- | --- | --- |
+| Anomaly AI | `analytics/kinematics.py` | collision, near-miss, stopped vehicle, wrong-way, erratic driving, congestion, pedestrian-on-roadway — all from world-space physics, no model weights |
+| Occupant AI | `analytics/occupant.py` | seatbelt / phone from the windshield ROI, temporal voting, pluggable classifier |
+| Littering | `analytics/litter.py` | object ejected from a window, attributed to the source vehicle |
+| Events | `events.py` | one bus, per-incident dedupe, JSONL / webhook / console dispatch |
+| Privacy | `privacy.py` | face-blur redaction, hash-chained audit log, retention sweep, identity boundary |
+| Tower | `tower/` | subsystem health, time-boxed audited CCTV sessions, drone nest state machine + interlocks, mission planning |
+
+Try the incident scenarios — each renders scripted footage with known ground
+truth and runs the whole stack over it:
+
+```bash
+python -m speeddet.cli scenario --scenario collision
+python -m speeddet.cli scenario --scenario wrong_way
+python -m speeddet.cli scenario --scenario litter
+python -m speeddet.cli scenario --scenario occupant
+```
+
+### The three classes of detection — and why it matters
+
+| Class | Examples | Status |
+| --- | --- | --- |
+| **A — instrument** | speed, wrong-way, stopped vehicle, collision | reproducible physics; verified against ground truth |
+| **B — proposal** | seatbelt, phone, littering | flagged `requires_review`; a human confirms before any enforcement. Needs a model trained on *your* footage |
+| **C — attention** | fights, crowd anomaly | routes an operator's attention; never asserts what happened |
+
+The code enforces this: Class B events carry `requires_review=True` and there
+is no path from one to an automatic citation.
+
+---
+
+# Speed-detection core
 
 A runnable prototype of the **speed-detection core** from the "smart traffic
 radar" system in the post: detect vehicles, track them across frames, map pixels

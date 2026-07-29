@@ -148,6 +148,49 @@ def cmd_demo(args) -> None:
         print(f"    !!  WRONG reads (not in ground truth): {sorted(bogus)}")
 
 
+def cmd_scenario(args) -> None:
+    """Render a scripted incident and run the full analytics stack on it."""
+    from .analytics import KinematicAnalyzer, LitterAnalyzer, OccupantAnalyzer
+    from .analytics.occupant import CueOccupantClassifier
+    from .events import ConsoleDispatcher, EventBus, JsonlDispatcher
+    from .tools.scenarios import SCENARIOS, build_scenario
+
+    out_dir = Path(args.output)
+    print(f"rendering '{args.scenario}' scenario ...")
+    info = build_scenario(args.scenario, str(out_dir / f"{args.scenario}.mp4"))
+    print(f"  video       : {info['video']}")
+    print(f"  ground truth: {info['incident']}")
+
+    bus = EventBus()
+    bus.subscribe(ConsoleDispatcher())
+    bus.subscribe(JsonlDispatcher(out_dir / "events.jsonl"))
+    pipeline = SpeedPipeline(
+        detector=ColorBlobDetector(small_object_area_px=800),
+        calibrator=Calibrator.load(info["calibration"]),
+        config=PipelineConfig(output_dir=str(out_dir),
+                              annotated_video_name=f"{args.scenario}_annotated.mp4",
+                              save_clips=not args.no_clips),
+        plate_reader=QatarPlateReader(),
+        analyzers=[KinematicAnalyzer(), LitterAnalyzer(),
+                   OccupantAnalyzer(CueOccupantClassifier())],
+        bus=bus,
+    )
+    print("\n--- live event stream ---")
+    result = pipeline.run_video(info["video"])
+
+    expected = set(info["incident"]["expected_events"])
+    fired = {e.type.value for e in bus.published}
+    print("\n=== incident check ===")
+    for want in sorted(expected):
+        print(f"    {'OK  detected' if want in fired else '!!  MISSED  '}  {want}")
+    unexpected = fired - expected - {"speeding", "operator_access",
+                                     "system_health", "drone_status"}
+    if unexpected:
+        print(f"    ..  also fired: {sorted(unexpected)}")
+    print(f"\nannotated video : {result.annotated_video}")
+    print(f"event log       : {out_dir / 'events.jsonl'}")
+
+
 def build_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(prog="speeddet", description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -182,6 +225,17 @@ def build_parser() -> argparse.ArgumentParser:
     d.add_argument("--speed-limit", type=float, default=60.0)
     d.add_argument("--no-clips", action="store_true")
     d.set_defaults(func=cmd_demo)
+
+    s = sub.add_parser("scenario",
+                       help="render a scripted incident and run the full "
+                            "analytics stack (collision, stopped vehicle, "
+                            "wrong-way, littering, swerve, occupant)")
+    s.add_argument("--scenario", default="collision",
+                   choices=["collision", "stopped", "wrong_way", "litter",
+                            "swerve", "occupant"])
+    s.add_argument("--output", default="demo/incidents")
+    s.add_argument("--no-clips", action="store_true")
+    s.set_defaults(func=cmd_scenario)
 
     return ap
 

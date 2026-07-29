@@ -27,3 +27,6 @@ include = ["speeddet*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = [
+    "slow: renders video and runs the full pipeline (skip with -m 'not slow')",
+]

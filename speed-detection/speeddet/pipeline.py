@@ -12,12 +12,18 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Callable, Dict, List, Optional, Protocol
+from typing import Any, Callable, Dict, List, Optional, Protocol
 
 import numpy as np
 
-from .annotate import draw_calibration_region, draw_hud, draw_tracked_object
+from .annotate import (
+    draw_alerts,
+    draw_calibration_region,
+    draw_hud,
+    draw_tracked_object,
+)
 from .calibration import Calibrator
+from .events import Event, EventBus, EventType, Evidence, Severity
 from .speed import SpeedEstimator
 from .tracking import IouTracker
 from .types import Detection, TrackedObject
@@ -43,6 +49,16 @@ class PipelineConfig:
     iou_threshold: float = 0.2
     max_misses: int = 15
     min_hits: int = 2
+    # analytics
+    tower_id: str = "tower-000"
+    #: Publish speeding violations onto the event bus as well as the log.
+    publish_speeding_events: bool = True
+    #: Attempt a plate read every N frames for vehicles whose plate is not yet
+    #: known. Plates must be read for *every* vehicle, not only speeders —
+    #: a littering or seatbelt event needs the plate just as much, and those
+    #: vehicles are often not speeding. Reading stops per track as soon as a
+    #: plate resolves, so the cost is bounded.
+    plate_read_interval: int = 2
 
 
 @dataclass
@@ -62,11 +78,17 @@ class SpeedPipeline:
         calibrator: Calibrator,
         config: Optional[PipelineConfig] = None,
         plate_reader: Optional[Callable[[np.ndarray, TrackedObject], Optional[str]]] = None,
+        analyzers: Optional[List[Any]] = None,
+        bus: Optional[EventBus] = None,
     ) -> None:
         self.detector = detector
         self.calib = calibrator
         self.cfg = config or PipelineConfig()
         self.plate_reader = plate_reader
+        self.analyzers = list(analyzers or [])
+        self.bus = bus or EventBus()
+        #: Per-track world-space motion state, shared by every analyzer.
+        self.track_states: Dict[int, Any] = {}
         self.tracker = IouTracker(
             iou_threshold=self.cfg.iou_threshold,
             max_misses=self.cfg.max_misses,
@@ -75,6 +97,8 @@ class SpeedPipeline:
         self.speed = SpeedEstimator(window_seconds=self.cfg.speed_window_seconds)
         self.max_speed_by_track: Dict[int, float] = {}
         self._plate_by_track: Dict[int, str] = {}
+        #: (expiry_timestamp, severity_name, message) shown as alert banners.
+        self._active_alerts: List[tuple] = []
 
     # ------------------------------------------------------------------ #
     def run_video(
@@ -165,9 +189,11 @@ class SpeedPipeline:
             ring.push(frame_index, frame)
             timestamp = (time.monotonic() - t0) if is_live else frame_index / fps
             objects = self._process_frame(frame, frame_index, timestamp)
+            self._read_plates(frame, objects, frame_index)
             self._handle_violations(frame, objects, frame_index, timestamp, ring, vlog,
                                     pending_plates)
             self._retry_pending_plates(frame, objects, pending_plates)
+            self._run_analyzers(frame, objects, frame_index, timestamp, fps)
 
             if writer is not None:
                 annotated = self._annotate(frame, objects, frame_index, timestamp,
@@ -224,15 +250,11 @@ class SpeedPipeline:
                 continue
             if not vlog.should_fire(obj.track_id, obj.speed_kmh, timestamp):
                 continue
-            plate = None
-            if self.plate_reader is not None:
-                try:
-                    plate = self.plate_reader(frame, obj)
-                except Exception:
-                    plate = None
-            if plate:
-                obj.plate_text = plate
-                self._plate_by_track[obj.track_id] = plate
+            # Plates are resolved for every vehicle by _read_plates; this may
+            # still be None if the vehicle is too far away to read yet, which
+            # the pending-plate backfill below resolves on a closer frame.
+            plate = obj.plate_text or self._plate_by_track.get(obj.track_id)
+            obj.plate_text = plate
             violation = vlog.record(
                 track_id=obj.track_id,
                 speed_kmh=obj.speed_kmh,
@@ -243,6 +265,7 @@ class SpeedPipeline:
                 ring=ring,
                 plate_text=plate,
             )
+            self._publish_speeding(violation, frame_index, timestamp)
             plate_incomplete = plate is None or plate.replace(" ", "").isdigit()
             if plate_incomplete and self.plate_reader is not None and pending_plates is not None:
                 pending_plates[obj.track_id] = violation
@@ -264,10 +287,7 @@ class SpeedPipeline:
             violation = pending_plates.get(obj.track_id)
             if violation is None:
                 continue
-            try:
-                plate = self.plate_reader(frame, obj)
-            except Exception:
-                plate = None
+            plate = self._plate_by_track.get(obj.track_id)
             if not plate:
                 continue
             current = violation.plate_text
@@ -284,6 +304,115 @@ class SpeedPipeline:
                 del pending_plates[obj.track_id]  # nothing left to improve
 
     # ------------------------------------------------------------------ #
+    def _record_plate(self, track_id: int, plate: Optional[str]) -> Optional[str]:
+        """Store a plate read, upgrading a digits-only read to the full form.
+
+        Qatar plates carry a category code above the digits; the small letters
+        resolve later than the digits, so a bare-digits read is provisional and
+        is replaced once the letters appear — but only if the digits agree.
+        """
+        if not plate:
+            return self._plate_by_track.get(track_id)
+        current = self._plate_by_track.get(track_id)
+        if current is None:
+            self._plate_by_track[track_id] = plate
+            return plate
+        has_code = not plate.replace(" ", "").isdigit()
+        current_digits_only = current.replace(" ", "").isdigit()
+        if has_code and current_digits_only and plate.split()[-1] == current:
+            self._plate_by_track[track_id] = plate
+            return plate
+        return current
+
+    def _read_plates(self, frame, objects, frame_index: int) -> None:
+        """Opportunistically read the plate of any vehicle we cannot yet name."""
+        if self.plate_reader is None:
+            return
+        interval = max(1, self.cfg.plate_read_interval)
+        if frame_index % interval:
+            # Still propagate what we already know to this frame's objects.
+            for obj in objects:
+                known = self._plate_by_track.get(obj.track_id)
+                if known:
+                    obj.plate_text = known
+            return
+        for obj in objects:
+            known = self._plate_by_track.get(obj.track_id)
+            # Keep trying while the read is still digits-only, so the category
+            # code can be filled in from a closer frame.
+            if known and not known.replace(" ", "").isdigit():
+                obj.plate_text = known
+                continue
+            try:
+                plate = self.plate_reader(frame, obj)
+            except Exception:
+                plate = None
+            obj.plate_text = self._record_plate(obj.track_id, plate) or known
+
+    # ------------------------------------------------------------------ #
+    def _run_analyzers(self, frame, objects, frame_index, timestamp, fps) -> None:
+        """Update shared track state, then run every analyzer on this frame."""
+        if not self.analyzers:
+            return
+        from .analytics.base import FrameContext, TrackState
+
+        for obj in objects:
+            state = self.track_states.get(obj.track_id)
+            if state is None:
+                state = TrackState(obj.track_id)
+                self.track_states[obj.track_id] = state
+            state.update(obj, timestamp)
+
+        ctx = FrameContext(
+            frame_index=frame_index,
+            timestamp=timestamp,
+            objects=objects,
+            frame=frame,
+            fps=fps,
+            speed_limit_kmh=self.calib.speed_limit_kmh,
+            tower_id=self.cfg.tower_id,
+            states=self.track_states,
+        )
+        for analyzer in self.analyzers:
+            try:
+                for event in analyzer.analyze(ctx):
+                    if event.evidence is None:
+                        event.evidence = Evidence(frame_index=frame_index,
+                                                  timestamp=timestamp)
+                    if self.bus.publish(event) and event.severity >= Severity.MEDIUM:
+                        self._active_alerts.append(
+                            (timestamp + 4.0, event.severity.name, event.message))
+            except Exception:
+                # One misbehaving analyzer must not stop the others or the
+                # speed pipeline, which is the instrument-grade path.
+                continue
+
+    def _publish_speeding(self, violation: Violation, frame_index: int,
+                          timestamp: float) -> None:
+        if not self.cfg.publish_speeding_events:
+            return
+        over = violation.over_by_kmh
+        severity = (Severity.HIGH if over >= 40 else
+                    Severity.MEDIUM if over >= 20 else Severity.LOW)
+        self.bus.publish(Event(
+            type=EventType.SPEEDING,
+            severity=severity,
+            timestamp=timestamp,
+            tower_id=self.cfg.tower_id,
+            confidence=1.0,
+            track_ids=[violation.track_id],
+            plate_text=violation.plate_text,
+            speed_kmh=violation.speed_kmh,
+            speed_limit_kmh=violation.speed_limit_kmh,
+            world_xy=violation.world_xy,
+            bbox=violation.bbox,
+            message=(f"{violation.speed_kmh:.0f} km/h in a "
+                     f"{violation.speed_limit_kmh:.0f} zone (+{over:.0f})"),
+            evidence=Evidence(frame_index=frame_index, timestamp=timestamp,
+                              clip_path=violation.clip_path),
+        ))
+
+    # ------------------------------------------------------------------ #
     def _annotate(self, frame, objects, frame_index, timestamp, n_tracks, n_viol):
         annotated = frame.copy()
         if self.cfg.draw_calibration:
@@ -292,6 +421,9 @@ class SpeedPipeline:
             draw_tracked_object(annotated, obj)
         draw_hud(annotated, frame_index, timestamp,
                  self.calib.speed_limit_kmh, n_tracks, n_viol)
+        self._active_alerts = [a for a in self._active_alerts if a[0] > timestamp]
+        if self._active_alerts:
+            draw_alerts(annotated, [(sev, msg) for _, sev, msg in self._active_alerts])
         return annotated
 
 

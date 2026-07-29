@@ -61,6 +61,30 @@ def draw_hud(frame: np.ndarray, frame_index: int, timestamp: float,
         y += 24
 
 
+def draw_alerts(frame: np.ndarray, alerts) -> None:
+    """Banner the active incidents across the top of the frame.
+
+    ``alerts`` is a sequence of ``(severity_name, text)``. Critical incidents
+    are what an operator must see at a glance — a speed readout on a box is no
+    use when the actual event is "these two cars just crashed".
+    """
+    import cv2
+
+    if not alerts:
+        return
+    h, w = frame.shape[:2]
+    band_h = 34
+    y = 0
+    for severity, text in alerts[:3]:
+        color = RED if severity in ("CRITICAL", "HIGH") else (0, 140, 220)
+        overlay = frame.copy()
+        cv2.rectangle(overlay, (0, y), (w, y + band_h), color, -1)
+        cv2.addWeighted(overlay, 0.75, frame, 0.25, 0, frame)
+        cv2.putText(frame, f"  {severity}: {text}", (8, y + 24),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, WHITE, 2, cv2.LINE_AA)
+        y += band_h + 2
+
+
 def draw_calibration_region(frame: np.ndarray, image_points) -> None:
     """Outline the calibrated ground quadrilateral (sanity-check overlay)."""
     import cv2
