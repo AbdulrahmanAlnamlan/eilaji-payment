@@ -1,7 +1,11 @@
 # speeddet — Sentinel tower software stack
 
-> **Full system design: [`docs/sentinel-tower.md`](docs/sentinel-tower.md).**
-> Roadside station design incl. drone nest: [`docs/radar-drone-station.md`](docs/radar-drone-station.md).
+> **📋 Start here: [`docs/README.md`](docs/README.md)** — four reports covering
+> the system and its verification, the training-data audit, the legal and
+> evidentiary framework, and the Qatar market.
+>
+> Full system design: [`docs/sentinel-tower.md`](docs/sentinel-tower.md) ·
+> Roadside station incl. drone nest: [`docs/radar-drone-station.md`](docs/radar-drone-station.md)
 
 Beyond the speed core documented below, this package now implements the
 analytics, event and tower layers of the Sentinel unit:

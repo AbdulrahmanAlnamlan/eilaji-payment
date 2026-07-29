@@ -1,15 +1,29 @@
 # Sentinel: roadside radar unit + drone nest
 
-> **Real-world precedent (China, 2026):** municipal pilots in China run
-> exactly this concept — a compact drone nest mounted on top of an existing
-> street/sign pole at an intersection; the drone auto-launches, monitors
-> traffic, documents violations (e.g. un-helmeted riders), and returns to
-> the pole to recharge, no pilot involved. Two design lessons from the
-> footage: (1) **pole-top retrofit** on existing street furniture beats
-> building a new pole — smaller footprint, no civil works, faster rollout;
-> (2) their nest is a light clamshell, viable in a temperate climate — the
-> Qatar version needs the sealed, cooled bay described in §4. The precedent
-> is also pitch ammunition: this is deployed technology, not a concept.
+> **Precedent (China, 2025–26) — read the caveat before using this in a pitch.**
+> Reporting describes municipal deployments in Shenzhen and Guangzhou where
+> drones dispatch from automated pole-mounted "hives" and AI identifies
+> illegal parking, wrong-way driving, emergency-lane occupation and speeding,
+> framed as "non-contact law enforcement and evidence collection".
+>
+> **What is verified:** drones launching from automated nests for traffic
+> monitoring and *evidence capture*, with humans in the loop.
+> **What is NOT verified:** that any citation is issued autonomously. The
+> available sources are low-tier — a drone-industry blog, an aggregator, one
+> state-adjacent outlet and one vendor's own marketing page
+> ([Unmanned Airspace](https://www.unmannedairspace.info/latest-news-and-information/how-drones-in-china-are-transforming-road-traffic-management-safety/),
+> [The Droning Company](https://thedroningcompany.com/blog/china-using-traffic-drones-to-ease-congestion),
+> [China Daily HK](https://www.chinadailyhk.com/hk/article/616654)).
+> An earlier draft of this document asserted autonomous violation issuance and
+> a specific helmet-enforcement example as fact, sourced only from a social
+> media clip. That was an overstatement and has been removed. **Do not put the
+> autonomous-citation claim in front of MOI** — if they check it and it does
+> not hold, it costs the credibility of everything else in the deck.
+>
+> Two design lessons that survive the caveat: (1) **pole-top retrofit** on
+> existing street furniture beats building a new pole — smaller footprint, no
+> civil works, faster rollout; (2) their nest is a light clamshell viable in a
+> temperate climate — the Qatar version needs the sealed, cooled bay in §4.
 
 Design for the street hardware: a pole-mounted enforcement camera (the
 "radar") that is also a docking/charging station for a patrol drone. The

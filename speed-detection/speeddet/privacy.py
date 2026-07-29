@@ -24,11 +24,23 @@ Three things live here.
      enforcement, and it is far more accurate than face matching at
      highway distance through a windshield.
 
-   Under Qatar's Personal Data Privacy Protection Law (Law No. 13 of 2016),
-   biometric data is special-category data requiring a stronger lawful basis
-   than ordinary traffic enforcement provides. Design accordingly: keep face
-   *recognition* off the tower, and gate any lookup behind the authority that
-   owns the legal basis.
+   **Correction to an earlier version of this comment.** It stated that
+   biometric data is special-category data under Qatar's Personal Data Privacy
+   Protection Law (Law No. 13 of 2016). Research indicates that is **wrong**:
+   the PDPPL's "personal data of special nature" list covers ethnic origin,
+   children, health, religious creeds, marital relations and criminal offences
+   — biometric data does **not** appear. Special-category treatment of
+   biometrics belongs to the *Qatar Financial Centre* Data Protection
+   Regulations 2021, a separate regime applying only inside the QFC. Secondary
+   sources conflate the two constantly.
+
+   That removes a legal argument; it does not change the design. The three
+   engineering reasons above stand on their own, and a lighter statutory touch
+   is a gap in the law rather than a safe harbour — the regulator (now the
+   National Data Privacy Office at the NCSA, which took over from CDP/MOTC)
+   may fill it by guidance. Keep face *recognition* off the tower and gate any
+   lookup behind the authority that owns the legal basis. Verify with Qatari
+   counsel before relying on any of this.
 
 3. **Retention and audit.** Evidence has a clock on it, and every operator
    who opens a live view or pulls a clip is recorded. If the system is ever
