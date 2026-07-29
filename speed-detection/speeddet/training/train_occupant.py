@@ -247,7 +247,7 @@ def train(cfg: Optional[TrainConfig] = None, verbose: bool = True) -> Dict:
             if step < steps - 1:
                 sched.step()
             step += 1
-            running += float(loss)
+            running += loss.detach().item()
             nb += 1
         val = evaluate(model, xva, bva, pva)
         history.append({"epoch": epoch + 1, "train_loss": running / max(1, nb),
