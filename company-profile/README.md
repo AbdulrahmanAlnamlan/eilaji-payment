@@ -12,7 +12,7 @@ from the original.
 |------|--------|-------|
 | 16 | PVC Luxe Door — frame profile drawings | **DRESSING ROOM / غرف الملابس** |
 | 17 | LUX01–LUX08 door models | **KITCHEN / المطابخ** |
-| 20 | Back cover, stock window-and-cat photo | Back cover, our own Doha office glazing shot |
+| 20 | Back cover, stock window-and-cat photo | Back cover, the factory building on New Industrial Area |
 
 Pages 1–15, 18 and 19 are byte-for-byte the originals — verified by rendering
 every page of both PDFs and diffing them pixel by pixel.
@@ -51,7 +51,7 @@ Everything in `assets/` was lifted out of the original PDF, not recreated:
 | `logo_watermark.png` | Same logo, faded to 4 % for the page watermark |
 | `strip_icons.png` | Feature icon row from the original page 16 |
 | `strip_swatch.png` | Wood finish swatches + labels from the original page 17 |
-| `backcover_photo.png` | Office glazing photo from the cover, cropped to the back-cover frame |
+| `backcover_photo.png` | Factory building photo from the cover, cropped to the back-cover frame (249 dpi at print size, against 103 dpi for the photo it replaces) |
 
 ## Photographs still needed
 
