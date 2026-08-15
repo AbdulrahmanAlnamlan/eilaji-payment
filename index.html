@@ -71,7 +71,9 @@
     .country-name{font-size:14px;font-weight:600;color:#0F172A}
     .country-code-lbl{font-size:14px;font-weight:700;color:#0EA5E9}
     .success-screen{display:none;text-align:center;padding:60px 24px}
-    .success-icon{width:84px;height:84px;border-radius:50%;background:linear-gradient(135deg,#10B981,#059669);display:flex;align-items:center;justify-content:center;font-size:38px;margin:0 auto 20px}
+    .success-icon{width:84px;height:84px;border-radius:50%;background:linear-gradient(135deg,#10B981,#059669);display:flex;align-items:center;justify-content:center;font-size:38px;margin:0 auto 20px;color:#fff}
+    .success-icon.pending{background:linear-gradient(135deg,#0EA5E9,#06B6D4)}
+    .success-icon.failed{background:linear-gradient(135deg,#EF4444,#DC2626)}
     .success-screen h2{font-size:24px;font-weight:800;margin-bottom:10px}
     .success-screen p{color:#64748b;line-height:1.8}
     .open-btn{display:inline-block;margin-top:28px;background:#0EA5E9;color:white;padding:14px 36px;border-radius:50px;text-decoration:none;font-weight:800;font-size:16px}
@@ -203,7 +205,7 @@
 </div>
 
 <div class="success-screen" id="success-screen">
-  <div class="success-icon">✓</div>
+  <div class="success-icon" id="suc-icon">✓</div>
   <h2 id="suc-title">تم الاشتراك بنجاح!</h2>
   <p id="suc-body">مرحباً بك في علاجي بريميوم.<br/>افتح التطبيق للاستمتاع بجميع المزايا.</p>
   <a href="eilaji://" class="open-btn" id="open-btn">افتح علاجي</a>
@@ -235,6 +237,8 @@
 
 <script>
 var lang='ar', selectedPlan='3months', selectedCode='+974', selectedFlag='🇶🇦';
+// null until we come back from Tap; then {state:'pending'|'success'|'failed'}
+var paymentResult=null;
 
 var PLANS={
   monthly:  {price:29, enNum:'29', arNum:'٢٩', enName:'Monthly',  arName:'شهري',   enPeriod:'per month',      arPeriod:'شهرياً'},
@@ -363,6 +367,7 @@ function applyLang(){
   document.getElementById('open-btn').textContent=isAr?'افتح علاجي':'Open Eilaji';
   renderCountries(document.getElementById('country-search').value);
   updateBtn();
+  renderResult();
 }
 
 function toggleLang(){ lang=lang==='ar'?'en':'ar'; applyLang(); }
@@ -384,7 +389,8 @@ async function startPayment(){
     var res=await fetch('/api/create-charge',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({name:name,email:email,phone:cleanPhone,phoneCode:cleanCode,plan:selectedPlan,amount:plan.price,lang:lang}),
+      // No amount is sent — the server owns the price list.
+      body:JSON.stringify({name:name,email:email,phone:cleanPhone,phoneCode:cleanCode,plan:selectedPlan,lang:lang}),
     });
     var data=await res.json();
     if(data.url){window.location.href=data.url;}
@@ -396,13 +402,61 @@ async function startPayment(){
   }
 }
 
-function handleReturn(){
-  var p=new URLSearchParams(window.location.search);
-  if(p.get('success')==='1'){
-    document.getElementById('main-content').style.display='none';
-    document.getElementById('success-screen').style.display='block';
-    window.scrollTo(0,0);
+// Renders whatever verification told us. Kept separate from handleReturn so
+// that toggling the language on the result screen doesn't revert the text.
+function renderResult(){
+  if(!paymentResult)return;
+  var isAr=lang==='ar';
+  var icon=document.getElementById('suc-icon');
+  var title=document.getElementById('suc-title');
+  var bodyEl=document.getElementById('suc-body');
+  var openBtn=document.getElementById('open-btn');
+
+  if(paymentResult.state==='pending'){
+    icon.className='success-icon pending'; icon.textContent='…';
+    title.textContent=isAr?'جارٍ التأكد من الدفع...':'Verifying your payment...';
+    bodyEl.innerHTML=isAr?'لحظات من فضلك.':'One moment please.';
+    openBtn.style.display='none';
+  }else if(paymentResult.state==='success'){
+    icon.className='success-icon'; icon.textContent='✓';
+    title.textContent=isAr?'تم الاشتراك بنجاح!':'Subscription Successful!';
+    bodyEl.innerHTML=isAr?'مرحباً بك في علاجي بريميوم.<br/>افتح التطبيق للاستمتاع بجميع المزايا.':'Welcome to Eilaji Premium.<br/>Open the app to enjoy all features.';
+    openBtn.style.display='inline-block';
+  }else{
+    icon.className='success-icon failed'; icon.textContent='!';
+    title.textContent=isAr?'لم يكتمل الدفع':'Payment not completed';
+    bodyEl.innerHTML=isAr?'لم نتمكن من تأكيد عملية الدفع.<br/>لم يتم خصم أي مبلغ إذا لم تكتمل العملية. يمكنك المحاولة مرة أخرى.':'We could not confirm your payment.<br/>You have not been charged if it did not complete. You can try again.';
+    openBtn.style.display='none';
   }
+}
+
+async function handleReturn(){
+  var p=new URLSearchParams(window.location.search);
+  if(p.get('success')!=='1')return;
+
+  document.getElementById('main-content').style.display='none';
+  document.getElementById('success-screen').style.display='block';
+  window.scrollTo(0,0);
+
+  // Never trust ?success=1 on its own — confirm the charge with Tap first.
+  paymentResult={state:'pending'};
+  renderResult();
+
+  var tapId=p.get('tap_id');
+  if(!tapId){paymentResult={state:'failed'};renderResult();return;}
+
+  try{
+    var res=await fetch('/api/verify-payment',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({tap_id:tapId}),
+    });
+    var data=await res.json();
+    paymentResult={state:data && data.success?'success':'failed'};
+  }catch(err){
+    paymentResult={state:'failed'};
+  }
+  renderResult();
 }
 
 document.addEventListener('DOMContentLoaded',function(){
