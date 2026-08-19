@@ -77,7 +77,7 @@ snapshots written at final approval · boot is read-only · one authz module · 
 
 | # | Item | Deps | Effort | Status |
 |---|---|---|---|---|
-| 4.1 | Supplier master + document expiry alerts + scorecards | 2.1 | M | todo |
+| 4.1 | Supplier master + document expiry alerts + scorecards — **real register received** (71 suppliers, `ATPF-SUP-NN` codes, credit terms; profile + import repairs in `docs/03-REFERENCE-DATA.md`) | 2.1 | M | todo |
 | 4.2 | Requisition → RFQ → supplier-quote comparison → PO | 4.1 | L | todo 🔶 (PO approval thresholds) |
 | 4.3 | GRN posts the stock ledger; 3-way match; supplier invoice capture | 4.2, 2.6 | M | todo |
 | 4.4 | Import shipments + landed-cost allocation into item cost | 4.3, 2.8 | M | todo (risky cutover #6) 🔶 (allocation basis) |
