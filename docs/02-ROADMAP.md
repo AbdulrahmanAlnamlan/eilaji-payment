@@ -47,7 +47,7 @@ snapshots written at final approval · boot is read-only · one authz module · 
 | # | Item | Deps | Effort | Status |
 |---|---|---|---|---|
 | 2.1 | Platform primitives: `doc_sequences` (new doc types only), soft-delete convention, notification skeleton (in-app), new roles in authz | 1.7 | M | todo |
-| 2.2 | `pos_products` → `items` rename + compatibility view; item kinds (good/profile/steel/accessory/offcut/spare/consumable); price-list-2026.ts retired into data | 1.2, 1.3 | M | todo (risky cutover #3) |
+| 2.2 | `pos_products` → `items` rename + compatibility view; item kinds (good/profile/steel/accessory/offcut/spare/consumable, **+ raw_material** — raw-material stock is currently tracked in the costing workbook, see `03-REFERENCE-DATA.md`); price-list-2026.ts retired into data | 1.2, 1.3 | M | todo (risky cutover #3) |
 | 2.3 | `stock_moves` generalisation: warehouse/bin/lot/base-UoM/source-doc/idempotency key; POS posts unchanged via defaults | 2.2 | M | todo |
 | 2.4 | UoM conversions (bar ↔ metre ↔ kg ↔ piece), absorbing `barMeters`/`packageQty`/`unitFactor` | 2.2 | M | todo 🔶 (kg conversions per profile) |
 | 2.5 | Warehouses + bin locations + QR labels; storekeeper UI (large-touch, Arabic-first) | 2.3 | M | todo |
@@ -69,7 +69,7 @@ snapshots written at final approval · boot is read-only · one authz module · 
 | 3.5 | Shop-floor terminal: tablet, Arabic-first, big targets, QR start/stop, scrap w/ reason codes, downtime capture, operator clock-in; offline-tolerant | 3.2 | L | todo |
 | 3.6 | Material issue against WO → posts `stock_moves` | 3.2, 2.6 | M | todo |
 | 3.7 | `@workspace/nesting`: deterministic 1D bar nesting (kerf, min remnant) fed by fabrication snapshots; offcuts written back to inventory; exhaustive unit tests | 1.5, 2.10 | L | todo 🔶 (kerf mm, grouping policy) |
-| 3.8 | Extrusion batch tracking: compound lot, line speed, output kg, scrap %, regrind | 3.2, 2.11 | M | todo |
+| 3.8 | Extrusion batch tracking: compound lot, line speed, output kg, scrap %, regrind — **the three real compound formulas received** (incl. 3% scrap + 40 kg regrind per batch; see `03-REFERENCE-DATA.md`) | 3.2, 2.11 | M | todo |
 | 3.9 | Actual vs estimated cost roll-up per WO against `quote-cost.ts` figures | 3.6 | M | todo |
 | 3.10 | QC: inspection plans per operation, defect catalogue, hold/rework/scrap disposition | 3.2 | M | todo |
 
