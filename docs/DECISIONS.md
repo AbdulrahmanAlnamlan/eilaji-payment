@@ -4,15 +4,18 @@ One entry per decision, newest first. Format: date · decision · reasoning · c
 
 ---
 
-## 2026-08-18 — OPEN QUESTION: an Odoo implementation was prepared — what is its status?
+## 2026-08-18 — RESOLVED: Odoo never went live; the newer markup matrix is current (owner)
 
-`COSTING_AND_PRODUTCS.xlsx` (see `03-REFERENCE-DATA.md`) is an Odoo implementation workbook: product
-master, categories, UoMs and upload-format BOMs designed for Odoo. Owner to state: never went live /
-partially live (which modules?) / still under evaluation / abandoned in favour of this custom ERP.
-The answer decides: (a) whether Phase 2/3 imports from these sheets or from a live Odoo database,
-(b) whether any Odoo instance must be integrated with or decommissioned, (c) whether the custom-ERP
-scope should be re-confirmed against what Odoo already covers. Until answered, the roadmap assumes the
-sheets are the source and no live Odoo exists.
+`COSTING_AND_PRODUTCS.xlsx` (see `03-REFERENCE-DATA.md`) is an Odoo implementation workbook, but the
+owner confirms **Odoo never went live** — the sheets are prepared data only. Consequences: the custom-ERP
+path stands unchanged; there is no live Odoo database to import from or integrate with; Phase 2/3 seed
+the item master, UoM conversions, compound recipes and per-profile BOMs directly from this workbook
+(the best-organised data available — its SKU scheme `RM-*`/`CPD-*`/`TH1-*` and purchase/BoM/stock UoM
+split are adopted as the starting design for `items`).
+
+Owner also confirms: **the newer workbook's markup matrix is the current pricing policy** (local retail
+white 0.5, color/lamination 0.8; container 0.4/0.7; export 0.3/0.4/0.5; auxiliary 0.7/1.0). The older
+FORMUL-file النسبة sheet is superseded. Derived pricing / cost-floor work uses the newer matrix.
 
 ---
 
