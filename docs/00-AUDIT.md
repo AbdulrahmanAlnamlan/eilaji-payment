@@ -26,7 +26,7 @@ Worse:
 - **Almost nothing multi-write is transactional.** Item mutations, approval + project creation, and quote
   deletion are sequences of autocommit statements (§4.2). There is a concrete TOCTOU race that can stamp
   `finalApprovedAt` on an unsigned, unapproved quote and flip its project into production (§4.1).
-- **The deployment is autoscale but the server assumes a single process**: 13 boot-time DB
+- **The deployment is autoscale but the server assumes a single process**: 14 boot-time DB
   mutation steps run on *every instance start* (§2.7), and all rate limiters are per-process in-memory Maps
   (`sharePublic.ts:74-95`, `designRequestsPublic.ts:38-45`) — N instances = N× the limit.
 - **The hottest list endpoints are unbounded with N+1 formatters**: `GET /quotes` loads the whole table and
@@ -169,7 +169,7 @@ Measured (`wc -l`):
   profile prices. So the standardisation is two tables, not a sweep.
 
 ### 2.7 Startup seeders mutate production data — **CONFIRMED, and larger than claimed**
-Boot performs **13 sequential DB-mutation steps before `app.listen`** (`index.ts:433-541`), each in a
+Boot performs **14 sequential DB-mutation steps before `app.listen`** (`index.ts:433-541`), each in a
 try/catch that only logs (boot continues on failure):
 1. `ensureCarpentryCatalog` (+7 window_types rows) `:434`
 2. `ensureFabricatedTypologies` (TL-01) `:440`
@@ -180,17 +180,19 @@ try/catch that only logs (boot continues on failure):
 6. `ensureSeededCertificates` (8 rows if empty) `:464`
 7. `ensureSeededTeamMembers` (9 real names if empty) `:470`
 8. `ensurePosPriceList` (seeds `pos_products` from the 423-line hardcoded price list) `:476`
-9. `backfillCustomers` — **full-table scans** of quotes/design-requests/projects `:490`
-10. `backfillActivity` — full scans of 10 tables, gated by `activityBackfillNeeded` `:502-504`
-11. `pruneActivity` (3-year retention) + daily interval `:512-520`
-12. `cleanupExpiredShareLinks` + hourly interval `:524-532`
-13. `pruneChaseDigests` + `startDailyChaseDigest` (hourly tick, inserts digests) `:537-541`
+9. `reconcileSiteSettingsFromProfile` — inserts/patches the `site_settings` singleton with hardcoded
+   real contact data (`:299-327`, called `:482`)
+10. `backfillCustomers` — **full-table scans** of quotes/design-requests/projects `:490`
+11. `backfillActivity` — full scans of 10 tables, gated by `activityBackfillNeeded` `:502-504`
+12. `pruneActivity` (3-year retention) + daily interval `:512-520`
+13. `cleanupExpiredShareLinks` + hourly interval `:524-532`
+14. `pruneChaseDigests` + `startDailyChaseDigest` (hourly tick, inserts digests) `:537-541`
 
 Aggravating factors:
-- Deployment target is **autoscale** (`.replit:5`): every new instance replays all 13 steps; the interval
+- Deployment target is **autoscale** (`.replit:5`): every new instance replays all 14 steps; the interval
   jobs run on every instance concurrently. Idempotence is by `onConflictDoNothing`/old-value guards, not
   by locks — mostly safe but unserialised.
-- Boot-time full-table scans (steps 9–10) delay readiness linearly with data size.
+- Boot-time full-table scans (steps 10–11) delay readiness linearly with data size.
 - A seeded reference project re-created by an admin with the old name+image is **deleted again on next
   boot** (`:452`, acknowledged in `replit.md`).
 - Severity: **High.** An ERP must not patch rows on boot; move to explicit, logged, idempotent commands.
@@ -298,7 +300,8 @@ owner sign-off, but the fix is a one-line WHERE clause per endpoint.**
 
 ### 4.3 HIGH — unbounded lists + N+1 formatters on the hottest endpoints
 - `GET /quotes`: `db.select().from(quotesTable)` — whole table, role/status/archived filtered **in JS**,
-  no LIMIT (`quotes.ts:467-478`); then `formatQuote` issues up to 6 queries per row (`:204-218`) → ~6N+1.
+  no LIMIT (`quotes.ts:467-478`); then `formatQuote` issues up to 5 queries per row (project + 4 user
+  lookups, `:204-218`) → ~5N+1. (Paid totals, to its credit, are one grouped query for the page, `:478`.)
 - Same shape: `GET /projects` (all rows + one COUNT per project, `projects.ts:41-50`),
   `GET /design-requests` (all rows including jsonb design snapshots, `designRequests.ts:115-121`),
   `GET /templates` (all rows incl. extraConfig, `templates.ts:32`), `GET /site-admin/submissions` + CSV

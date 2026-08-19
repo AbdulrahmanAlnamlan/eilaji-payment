@@ -133,7 +133,7 @@ separately at their own salesman-entered rates. Billed area = `(lengthMm + width
   denylist"). `PRICING_KEY_RE` guards only the public design-request intake.
 - **Cost data is firewalled**: `canSeeCost` gates it; it must never reach a salesman payload, a signing
   page, or any public route (`lib/quoteCost.ts:1-22`).
-- **Boot mutates data**: `api-server/src/index.ts` runs 13 seed/backfill steps on every start (until
+- **Boot mutates data**: `api-server/src/index.ts` runs 14 seed/backfill steps on every start (until
   Phase 1 moves them) — deleting a seeded reference project without editing the seeder list resurrects/
   re-deletes it.
 - **Date logic is Asia/Qatar** via `qatarDay()`/`qatarHour()` — between midnight and 3am local, a UTC date
