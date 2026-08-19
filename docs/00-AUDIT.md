@@ -408,8 +408,10 @@ magic-byte photo sniffing; no IDOR anywhere — all anonymous reads are token- o
 
 1. **Orphan rows**: run the SQL in §2.2 on the live DB and share the counts — they decide whether the FK
    migration needs a data-repair step.
-2. **Is the discount-cap bypass** (staff typing arbitrary unit prices, §2.8) intended pricing freedom or a
-   hole to close? It changes the authorization redesign.
+2. ~~**Is the discount-cap bypass** (staff typing arbitrary unit prices, §2.8) intended pricing freedom or a
+   hole to close?~~ **Answered 2026-08-18**: close it — component cost prices become editable data, the
+   engine's computed cost becomes a server-enforced minimum price on fabricated uPVC lines. Details and
+   remaining sub-decisions in `docs/DECISIONS.md`. This also upgrades the §4.7 engine bugs to prerequisites.
 3. **`factory-website`**: does it exist in the live repo? Everything under `/api/site*` assumes it.
 4. **May I add the two one-line WHERE guards** to `final-approve`/`approve` (§4.1) in Phase 1? It touches
    the protected approval path, so it needs your explicit yes.
