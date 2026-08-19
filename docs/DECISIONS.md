@@ -4,6 +4,21 @@ One entry per decision, newest first. Format: date · decision · reasoning · c
 
 ---
 
+## 2026-08-19 — ERP front-end direction settled (owner decision)
+
+Mockup canvas ("Al-Thuraiya ERP Screens" artifact) approved as the direction: the ERP extends the
+shipped design tool's UI — same tokens, components and density — with new modules as role-gated sidebar
+groups. Owner picked and confirmed a **brand-crimson shell**: sidebar and shop-floor/receiving top bars
+in `#822626` (borders `#671e1e`, raised chips `#9a2f2f`), active nav rows white with crimson text
+(contrast ≈ 9.4:1). Buttons, links and badges keep the app's existing blue primary — a full primary-color
+re-theme was not requested. Three UX modes confirmed: dense desktop (office), large-touch Arabic-first RTL
+tablet (shop floor + warehouse, offline-tolerant), mobile approvals. Eight screens drawn: inventory items,
+work orders, production Gantt (Sun–Thu calendar), cutting plan (kerf 3 mm, min remnant 500 mm — pending
+Phase 2 confirmation), HR employee file with document-expiry escalation, GRN receiving, shop-floor
+terminal, mobile approvals incl. the price-floor override flow.
+
+---
+
 ## 2026-08-18 — RESOLVED: Odoo never went live; the newer markup matrix is current (owner)
 
 `COSTING_AND_PRODUTCS.xlsx` (see `03-REFERENCE-DATA.md`) is an Odoo implementation workbook, but the
