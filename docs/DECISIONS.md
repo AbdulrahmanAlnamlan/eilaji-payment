@@ -33,20 +33,17 @@ factory loses money.
    ("cost is UNKNOWN, never guessed at zero") — no floor is possible there until those products get cost
    data. Flagged to the owner.
 
-**Open sub-decisions (owner to confirm before enforcement is switched on):**
-- a) Hard block for sales/staff with manager-level override per line, or hard block for everyone?
-  *Recommendation: block sales/staff; manager/factory_manager/admin may override with a logged reason —
-  strategic below-cost sales stay possible but deliberate and audited.*
-- b) What the salesman sees: the actual minimum number ("minimum price: X QAR"), or only "price below
-  minimum"? Showing the number reveals cost-derived data through the `canSeeCost` firewall.
-  *Recommendation: show the minimum sale price (not the cost breakdown) — a hidden floor is found by
-  trial anyway, and salesmen need the number to negotiate.*
-- c) Floor = cost exactly, or cost × (1 + `minProfitPercent`)? The existing `minProfitPercent` setting
-  ("0 = warn only below cost") already expresses a margin floor for managers.
-  *Recommendation: floor = cost for the hard block; keep `minProfitPercent` as the softer warning band
-  above it.*
-- d) Existing open quotes priced below the new floor: grandfather them, or flag on next edit?
-  *Recommendation: flag on next pricing edit only — never mutate issued documents.*
+**Sub-decisions — CONFIRMED by owner 2026-08-18:**
+- a) **Managers can override.** Sales/staff hard-blocked; manager, factory_manager and admin may save
+  below the floor, with actor + reason recorded in the activity log.
+- b) **Show the minimum price to the salesman** ("minimum price for this item: X QAR") — the floor number
+  is visible; the cost breakdown stays behind `canSeeCost`. Note: since the floor = cost × (1 + margin),
+  the displayed number does not directly reveal raw cost.
+- c) **Floor = cost × (1 + `minProfitPercent`).** Stricter than the audit recommendation, chosen
+  deliberately: salesmen can never quote inside the margin band; `minProfitPercent` (report_settings)
+  becomes an enforcement input, not just a warning threshold. Its float column type is fixed in 1.4.
+- d) **Flag on next edit AND produce a one-time report** of every open quote currently priced below the
+  new floor, for manual owner review. Issued documents are never mutated.
 
 **Consequences:** pricing formula + permission model change (protected areas — explicitly owner-initiated
 here); roadmap 1.10 re-scoped from "bug fixes" to "cost integrity + floor enforcement"; component cost
