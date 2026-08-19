@@ -4,6 +4,18 @@ One entry per decision, newest first. Format: date · decision · reasoning · c
 
 ---
 
+## 2026-08-18 — OPEN QUESTION: an Odoo implementation was prepared — what is its status?
+
+`COSTING_AND_PRODUTCS.xlsx` (see `03-REFERENCE-DATA.md`) is an Odoo implementation workbook: product
+master, categories, UoMs and upload-format BOMs designed for Odoo. Owner to state: never went live /
+partially live (which modules?) / still under evaluation / abandoned in favour of this custom ERP.
+The answer decides: (a) whether Phase 2/3 imports from these sheets or from a live Odoo database,
+(b) whether any Odoo instance must be integrated with or decommissioned, (c) whether the custom-ERP
+scope should be re-confirmed against what Odoo already covers. Until answered, the roadmap assumes the
+sheets are the source and no live Odoo exists.
+
+---
+
 ## 2026-08-18 — Cost-price floor on quotation pricing (owner decision)
 
 **Decision (owner):** Component cost prices (Georgian bars, hardware sets, profiles, glass, …) will be

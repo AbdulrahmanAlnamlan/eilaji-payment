@@ -107,3 +107,48 @@ serial 44958; formulas reference NEW vs OLD price columns — confirm which colu
 **Cross-file consistency win**: material brands here match supplier rows in the approved-suppliers
 register (Vinmar→PVC resin, Mars→calcium carbonate, Reda→stabilizers …) — supplier ↔ item links can be
 seeded from real data on day one of Phase 4.
+
+---
+
+## Odoo implementation workbook — `COSTING_AND_PRODUTCS.xlsx` (received 2026-08-18)
+
+**⚠️ Strategic finding first**: sheet names ("Odoo Product Master", "BomDetails_2B_Upload", "Product Cost
+for Odoo", "Need to setup Price lists") show this workbook was prepared **for an Odoo ERP
+implementation** — someone designed categories, SKUs, UoMs and upload-format BOMs for Odoo. Whether Odoo
+is live, partial, or abandoned is an open owner question logged in `DECISIONS.md`; the answer shapes the
+whole roadmap (data source, migration vs integration, module priorities).
+
+**Regardless of the Odoo answer, the data is the best Phase 2/3 seed we have** — far more refined than
+the older costing workbook:
+
+- **`Odoo Product Master` — 386 products with a working SKU scheme**: 341 `TH1-*` finished profiles
+  (AUXILIARY 121 · AL-JAZEERA S60 77 · AL-RAYYAN 70 77 · AL-WAJBA 60 66), 41 `RM-*` raw materials,
+  3 compounds (`CPD-WHITE`, `CPD-COLOR`, `CPDE-WHITE` export), 1 steel coil. Columns split **Purchase UoM
+  vs BoM UoM vs stock UoM** with up to 3 sales packagings — the item-master + UoM design for Phase 2.2/2.4
+  already exists.
+- **`BomDetails_2B_Upload` + `Finish Product BOMs` — per-meter manufacturing BOMs for all 341 profiles**
+  (1,586 component lines): compound kg/m (e.g. frame 70 = 1.56 kg/m), gasket m, protective tape m,
+  packing plastic m, soft-PVC g → cost per meter, per **6 m local bar and per 5.8 m export bar**.
+  The export bar length 5.8 m is a real catalog fact the app does not model (`BAR_METERS = 6` hardcoded).
+- **`Compound BOM` — refined recipes** superseding the older workbook's formulas: adds micro-ingredients
+  (Stearic acid 0.25 kg, OB-1 optical brightener 0.05 kg, Ultramarine Blue 0.02 kg per 363.32 kg batch)
+  and prices **granule/regrind at 3.3 QAR/kg** (the older workbook priced it 0). White compound cost:
+  3.2976 QAR/kg; color 2.8735; export white 3.2847.
+- **`RAW Material` + `UpdatedAVCO` — weighted-average costing (AVCO) already chosen** — validates the
+  roadmap 2.8 valuation recommendation. Includes a UoM migration table (old→new purchase UoM with goods-
+  receipt ratios: ROLL 850M, BAG 20KG, BAG 1000KG…), stock notes in free text ("45 ROLLS", "98 KG"),
+  master batch expanded to 5 colors (black/brown/grey/beige/ivory), steel coil at 4.621 QAR/kg.
+- **`Summary` — full margin model for 341 profiles**, local and export: 7 profiles carry **negative
+  export margins** (e.g. TH1-10 pipe profile) and 22 cells are `#DIV/0!` — real pricing review material
+  for the owner, and exactly what the cost-floor work must surface systematically.
+- **`Seling Prices` — 125 price rows across FOUR variant tiers**: plain white, `TH1-C-` (color),
+  **`TH1-C1-`** and `TH1-C2-` (two lamination grades). The app's price list knows only white/colore/
+  laminated — the `C1` tier is a new variant the catalog must absorb.
+- **`Price Lists` — an updated markup matrix** that supersedes the older workbook's النسبة sheet with
+  different numbers (local retail white 0.5 vs 0.3; color/lamination 0.8 vs 0.7; auxiliary up to 1.0) and
+  the note "Need to setup Price lists". **The two files disagree — owner must say which matrix is
+  current** before any derived pricing is encoded.
+
+**Cross-file discrepancies to resolve at import**: granule 3.3 QAR/kg vs 0 · markup matrices differ ·
+micro-ingredients present here, absent in the older formulas · Kaneka vs LG IM 812 impact modifier ·
+"MASTER PATCH/BEACH/BATCH" spellings · export bar 5.8 m vs app's fixed 6 m.
