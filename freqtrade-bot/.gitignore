@@ -1,0 +1,19 @@
+# Secrets — never commit
+.env
+
+# Runtime data
+user_data/logs/
+user_data/*.sqlite
+user_data/*.sqlite-shp
+user_data/*.sqlite-wal
+user_data/backtest_results/
+user_data/hyperopt_results/
+user_data/data/
+user_data/models/
+user_data/notebooks/.ipynb_checkpoints/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
