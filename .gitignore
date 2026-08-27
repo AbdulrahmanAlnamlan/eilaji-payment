@@ -1,0 +1,14 @@
+# Python bytecode (skill scripts under .claude/skills/ are executable)
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Node
+node_modules/
+
+# Env
+.env
+.env.local
+
+# OS
+.DS_Store
