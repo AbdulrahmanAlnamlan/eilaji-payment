@@ -1,11 +1,12 @@
-const TAP_SECRET = 'sk_live_Hc3XoBk1eLWip0j7OQRdEICA';
+const TAP_SECRET = process.env.TAP_SECRET;
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+  if (!TAP_SECRET) return res.status(500).json({ error: 'TAP_SECRET is not configured' });
 
   try {
     const { name, email, phone, phoneCode, plan, amount } = req.body;
@@ -70,4 +71,4 @@ export default async function handler(req, res) {
     console.error('Server error:', err);
     return res.status(500).json({ error: err.message });
   }
-}
+};

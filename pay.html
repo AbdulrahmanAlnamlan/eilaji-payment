@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>صفحة الدفع | Payment</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/base.css">
+<style>
+  .hero{background:linear-gradient(135deg,var(--brand),var(--brand-2));padding:44px 20px 38px;text-align:center;color:#fff}
+  .hero h1{font-size:26px;font-weight:800;margin-bottom:10px;line-height:1.4}
+  .hero p{font-size:15px;opacity:.9;max-width:520px;margin:0 auto}
+  .main{max-width:560px;margin:0 auto;padding:26px 18px 56px}
+  .block{margin-bottom:22px}
+  .block-title{font-size:15px;font-weight:800;margin-bottom:14px}
+
+  .plans{display:flex;flex-direction:column;gap:12px}
+  .plan{background:var(--surface);border-radius:var(--radius);padding:18px;border:2px solid var(--line);cursor:pointer;transition:border-color .2s,background .2s,transform .15s;position:relative;box-shadow:var(--shadow);user-select:none}
+  .plan:hover{border-color:var(--brand);transform:translateY(-1px)}
+  .plan.selected{border-color:var(--brand);background:var(--tint)}
+  .plan-badge{position:absolute;top:-11px;inset-inline-end:18px;background:var(--brand);color:#fff;font-size:11px;font-weight:700;padding:3px 13px;border-radius:999px}
+  .plan-row{display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .plan-name{font-size:15px;font-weight:800;margin-bottom:4px}
+  .plan-price{display:flex;align-items:baseline;gap:5px}
+  .plan-price-num{font-size:28px;font-weight:800;color:var(--brand);line-height:1}
+  .plan-price-cur{font-size:15px;font-weight:700;color:var(--brand)}
+  .plan-period{font-size:12px;color:var(--muted);margin-top:4px}
+  .radio{width:22px;height:22px;border-radius:50%;border:2px solid #CBD5E1;background:#fff;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:border-color .2s,background .2s}
+  .radio.checked{border-color:var(--brand);background:var(--brand)}
+  .radio.checked::after{content:'';width:9px;height:9px;border-radius:50%;background:#fff}
+
+  .amount-box{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px;text-align:center}
+  .amount-label{font-size:12px;color:var(--muted);font-weight:700;margin-bottom:6px}
+  .amount-value{font-size:38px;font-weight:800;color:var(--brand);line-height:1.1}
+  .amount-cur{font-size:18px;font-weight:700;color:var(--brand)}
+  .open-amount{display:flex;align-items:center;gap:10px;max-width:260px;margin:8px auto 0}
+  .open-amount .input{text-align:center;font-size:22px;font-weight:800;padding:12px}
+
+  .phone-row{display:flex;gap:8px}
+  .code-btn{padding:0 12px;border:1.5px solid var(--line);border-radius:10px;background:#FAFBFC;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;white-space:nowrap;display:flex;align-items:center;gap:5px;min-width:92px;justify-content:center;transition:border-color .2s}
+  .code-btn:hover{border-color:var(--brand)}
+
+  .methods{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+  .method{border:1.5px solid var(--line);border-radius:12px;padding:13px 10px;background:#FAFBFC;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;color:var(--ink);display:flex;align-items:center;justify-content:center;gap:8px;transition:border-color .2s,background .2s}
+  .method:hover{border-color:var(--brand)}
+  .method.selected{border-color:var(--brand);background:var(--tint);color:var(--brand)}
+  .method-icon{font-size:16px}
+
+  .card-fields{margin-top:16px;display:none}
+  .card-fields.show{display:block}
+  .card-row{display:flex;gap:10px}
+  .card-row .field{flex:1}
+  .test-hint{background:var(--warn-bg);color:var(--warn);border-radius:10px;padding:11px 13px;font-size:12px;font-weight:600;margin-top:4px;line-height:1.8}
+  .test-hint code{direction:ltr;unicode-bidi:embed;font-weight:800}
+
+  .pay-btn{width:100%;padding:17px;background:linear-gradient(135deg,var(--brand),var(--brand-2));border:none;border-radius:14px;color:#fff;font-size:17px;font-weight:800;cursor:pointer;font-family:inherit;box-shadow:0 4px 20px rgba(14,165,233,.32);transition:transform .15s,opacity .2s}
+  .pay-btn:hover{transform:translateY(-1px)}
+  .pay-btn:disabled{opacity:.65;cursor:not-allowed;transform:none}
+  .secure-note{text-align:center;font-size:11px;color:var(--faint);margin-top:12px;line-height:1.9}
+  .scheme-row{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:14px}
+  .scheme{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:4px 11px;font-size:11px;font-weight:600;color:#475569}
+
+  .overlay{position:fixed;inset:0;background:rgba(15,23,42,.7);z-index:900;display:none;align-items:center;justify-content:center;padding:20px}
+  .overlay.open{display:flex}
+  .threeds{background:#fff;border-radius:20px;max-width:340px;width:100%;padding:32px 26px;text-align:center}
+  .threeds-spin{width:46px;height:46px;border:3px solid var(--line);border-top-color:var(--brand);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 18px}
+  .threeds h3{font-size:16px;font-weight:800;margin-bottom:6px}
+  .threeds p{font-size:13px;color:var(--muted)}
+
+  .sheet-overlay{position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:999;display:none;align-items:flex-end;justify-content:center}
+  .sheet-overlay.open{display:flex}
+  .sheet{background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:560px;max-height:76vh;display:flex;flex-direction:column}
+  .sheet-head{padding:16px 20px;border-bottom:1px solid #F1F5F9;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+  .sheet-head h3{font-size:17px;font-weight:800}
+  .sheet-close{background:none;border:none;font-size:24px;color:var(--faint);cursor:pointer;line-height:1}
+  .sheet-search{padding:12px 16px;border-bottom:1px solid #F1F5F9;flex-shrink:0}
+  .sheet-list{overflow-y:auto;flex:1}
+  .country{display:flex;align-items:center;justify-content:space-between;padding:13px 20px;border-bottom:1px solid #F8FAFC;cursor:pointer}
+  .country:hover{background:var(--tint)}
+  .country-left{display:flex;align-items:center;gap:12px}
+  .country-flag{font-size:21px}
+  .country-name{font-size:14px;font-weight:600}
+  .country-code{font-size:14px;font-weight:700;color:var(--brand)}
+
+  .result{display:none;text-align:center;padding:52px 20px}
+  .result.show{display:block}
+  .result-icon{width:82px;height:82px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 20px;color:#fff}
+  .result-icon.ok{background:linear-gradient(135deg,#10B981,#059669)}
+  .result-icon.bad{background:linear-gradient(135deg,#F87171,#DC2626)}
+  .result h2{font-size:23px;font-weight:800;margin-bottom:10px}
+  .result p{color:var(--muted)}
+  .receipt{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin:24px auto 0;max-width:380px;text-align:start}
+  .receipt-row{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed var(--line);font-size:13px}
+  .receipt-row:last-child{border-bottom:none}
+  .receipt-key{color:var(--muted);font-weight:600}
+  .receipt-val{font-weight:800;direction:ltr;unicode-bidi:plaintext}
+  .state-msg{max-width:560px;margin:70px auto;text-align:center;color:var(--muted);padding:0 20px}
+</style>
+</head>
+<body>
+
+<div class="mock-banner" data-ar="وضع تجريبي — لا يتم خصم أي مبلغ حقيقي" data-en="Demo mode — no real money is charged"></div>
+
+<header class="site-header">
+  <div class="brandmark">
+    <span class="brandmark-dot" id="logo-dot">ع</span>
+    <span>
+      <span class="brandmark-main" id="logo-text">—</span><br>
+      <span class="brandmark-sub" id="logo-sub"></span>
+    </span>
+  </div>
+  <button class="pill-btn" data-lang-toggle>EN</button>
+</header>
+
+<div id="loading" class="state-msg" data-ar="جارٍ تحميل صفحة الدفع…" data-en="Loading the payment page…"></div>
+<div id="notfound" class="state-msg" style="display:none">
+  <h2 style="font-size:20px;font-weight:800;margin-bottom:8px" data-ar="الرابط غير متاح" data-en="This link is not available"></h2>
+  <p data-ar="ربما تم إيقافه أو أن العنوان غير صحيح." data-en="It may have been deactivated, or the address is wrong."></p>
+</div>
+
+<main id="page" style="display:none">
+  <section class="hero">
+    <h1 id="title">—</h1>
+    <p id="desc"></p>
+  </section>
+
+  <div class="main">
+    <form id="checkout" novalidate>
+      <div id="alert-slot"></div>
+
+      <!-- Pricing: plans, a fixed amount, or an amount the payer chooses -->
+      <div class="block" id="pricing-block">
+        <div class="block-title" id="pricing-title" data-ar="اختر الباقة" data-en="Choose a plan"></div>
+        <div class="plans" id="plans"></div>
+        <div class="amount-box" id="amount-box" style="display:none">
+          <div class="amount-label" id="amount-label" data-ar="المبلغ المستحق" data-en="Amount due"></div>
+          <div id="amount-static"><span class="amount-value" id="amount-value">0</span> <span class="amount-cur" id="amount-cur"></span></div>
+          <div class="open-amount" id="open-amount" style="display:none">
+            <input class="input" id="amount-input" type="number" min="1" step="1" inputmode="decimal" value="50">
+            <span class="amount-cur" id="open-cur"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payer details -->
+      <div class="block card" id="details-block">
+        <div class="block-title" data-ar="بيانات الدافع" data-en="Your details"></div>
+
+        <div class="field" id="f-name">
+          <label class="field-label" for="in-name" data-ar="الاسم الكامل" data-en="Full name"></label>
+          <input class="input" id="in-name" autocomplete="name"
+                 data-ar-placeholder="مثال: محمد أحمد" data-en-placeholder="e.g. Mohammed Ahmed">
+        </div>
+
+        <div class="field" id="f-email">
+          <label class="field-label" for="in-email" data-ar="البريد الإلكتروني" data-en="Email"></label>
+          <input class="input" id="in-email" type="email" autocomplete="email" dir="ltr"
+                 data-ar-placeholder="name@example.com" data-en-placeholder="name@example.com">
+        </div>
+
+        <div class="field" id="f-phone">
+          <label class="field-label" for="in-phone" data-ar="رقم الهاتف" data-en="Phone number"></label>
+          <div class="phone-row">
+            <button class="code-btn" type="button" id="code-btn">
+              <span id="code-flag">🇶🇦</span><span id="code-val" dir="ltr">+974</span><span style="font-size:9px;color:#94A3B8">▼</span>
+            </button>
+            <input class="input" id="in-phone" type="tel" dir="ltr" autocomplete="tel"
+                   data-ar-placeholder="٣٣١٢٣٤٥٦" data-en-placeholder="33123456">
+          </div>
+        </div>
+
+        <div class="field" id="f-note">
+          <label class="field-label" for="in-note" data-ar="ملاحظة (اختياري)" data-en="Note (optional)"></label>
+          <textarea class="input" id="in-note"
+                    data-ar-placeholder="اذكر سبب الاستشارة باختصار" data-en-placeholder="Briefly describe your reason for the consultation"></textarea>
+        </div>
+      </div>
+
+      <!-- Payment method -->
+      <div class="block card">
+        <div class="block-title" data-ar="طريقة الدفع" data-en="Payment method"></div>
+        <div class="methods" id="methods">
+          <button class="method selected" type="button" data-method="naps"><span class="method-icon">🏦</span><span data-ar="بطاقة نبض" data-en="NAPS debit"></span></button>
+          <button class="method" type="button" data-method="card"><span class="method-icon">💳</span><span data-ar="بطاقة ائتمان" data-en="Credit card"></span></button>
+          <button class="method" type="button" data-method="applepay"><span class="method-icon"></span><span>Apple&nbsp;Pay</span></button>
+          <button class="method" type="button" data-method="googlepay"><span class="method-icon">🅖</span><span>Google&nbsp;Pay</span></button>
+          <button class="method" type="button" data-method="sadad_wallet"><span class="method-icon">👛</span><span data-ar="المحفظة" data-en="Wallet"></span></button>
+        </div>
+
+        <div class="card-fields show" id="card-fields">
+          <div class="field">
+            <label class="field-label" for="in-card" data-ar="رقم البطاقة" data-en="Card number"></label>
+            <input class="input" id="in-card" inputmode="numeric" dir="ltr" maxlength="23"
+                   autocomplete="cc-number" placeholder="4242 4242 4242 4242">
+          </div>
+          <div class="card-row">
+            <div class="field">
+              <label class="field-label" for="in-exp" data-ar="تاريخ الانتهاء" data-en="Expiry"></label>
+              <input class="input" id="in-exp" inputmode="numeric" dir="ltr" maxlength="5"
+                     autocomplete="cc-exp" placeholder="12/29">
+            </div>
+            <div class="field">
+              <label class="field-label" for="in-cvv" data-ar="الرمز السري" data-en="CVV"></label>
+              <input class="input" id="in-cvv" inputmode="numeric" dir="ltr" maxlength="4"
+                     autocomplete="cc-csc" placeholder="123">
+            </div>
+          </div>
+          <div class="test-hint">
+            <span data-ar="بطاقات التجربة:" data-en="Test cards:"></span>
+            <code>4242 4242 4242 4242</code>
+            <span data-ar="تنجح ·" data-en="succeeds ·"></span>
+            <code>4000 0000 0000 0002</code>
+            <span data-ar="تُرفض" data-en="is declined"></span>
+          </div>
+        </div>
+      </div>
+
+      <button class="pay-btn" type="submit" id="pay-btn">—</button>
+
+      <div class="secure-note">
+        <div data-ar="🔒 دفع آمن · تحقق ثلاثي الأبعاد (3-D Secure)" data-en="🔒 Secure payment · 3-D Secure verification"></div>
+        <div data-ar="هذه نسخة توضيحية — لا تُرسل أي بيانات بطاقة إلى أي بنك." data-en="This is a demonstration — no card data is sent to any bank."></div>
+      </div>
+
+      <div class="scheme-row">
+        <span class="scheme">NAPS</span><span class="scheme">Visa</span><span class="scheme">Mastercard</span>
+        <span class="scheme">Apple&nbsp;Pay</span><span class="scheme">Google&nbsp;Pay</span>
+      </div>
+    </form>
+
+    <!-- Result -->
+    <div class="result" id="result">
+      <div class="result-icon" id="result-icon">✓</div>
+      <h2 id="result-title"></h2>
+      <p id="result-text"></p>
+      <div class="receipt" id="receipt"></div>
+      <a class="btn btn-primary" id="result-cta" style="margin-top:26px;display:none"></a>
+    </div>
+  </div>
+</main>
+
+<!-- 3-D Secure simulation -->
+<div class="overlay" id="threeds">
+  <div class="threeds">
+    <div class="threeds-spin"></div>
+    <h3 data-ar="جارٍ التحقق مع البنك" data-en="Verifying with your bank"></h3>
+    <p data-ar="لا تغلق هذه الصفحة…" data-en="Please don't close this page…"></p>
+  </div>
+</div>
+
+<!-- Country code picker -->
+<div class="sheet-overlay" id="country-sheet">
+  <div class="sheet">
+    <div class="sheet-head">
+      <h3 data-ar="اختر رمز الدولة" data-en="Select country code"></h3>
+      <button class="sheet-close" type="button" id="sheet-close">✕</button>
+    </div>
+    <div class="sheet-search">
+      <input class="input" id="country-search" data-ar-placeholder="ابحث…" data-en-placeholder="Search…">
+    </div>
+    <div class="sheet-list" id="country-list"></div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div data-ar="مدعوم بواسطة علاجي باي" data-en="Powered by Eilaji Pay"></div>
+  <div>🇶🇦 <span data-ar="بكل فخر صنع في قطر" data-en="Proudly made in Qatar"></span></div>
+</footer>
+
+<script src="/assets/i18n.js"></script>
+<script src="/assets/countries.js"></script>
+<script>
+(function () {
+  var slug = decodeURIComponent(location.pathname.replace(/^\/p\//, '').replace(/\/$/, ''));
+  var link = null;
+  var selectedPlan = null;
+  var method = 'naps';
+  var dialCode = '+974';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var isAr = function () { return window.currentLang === 'ar'; };
+
+  // ---------------------------------------------------------------- loading
+
+  function load() {
+    fetch('/api/link?slug=' + encodeURIComponent(slug))
+      .then(function (r) { return r.json().then(function (b) { return { ok: r.ok, body: b }; }); })
+      .then(function (res) {
+        if (!res.ok) throw new Error(res.body.error || 'Unavailable');
+        link = res.body.link;
+        render();
+      })
+      .catch(function () {
+        $('loading').style.display = 'none';
+        $('notfound').style.display = 'block';
+      });
+  }
+
+  function render() {
+    document.documentElement.style.setProperty('--brand', link.brandColor);
+    document.documentElement.style.setProperty('--brand-2', link.brandColor);
+
+    if (link.pricing === 'plans' && link.plans.length) {
+      selectedPlan = link.plans[0].id;
+      $('amount-box').style.display = 'none';
+    } else {
+      $('plans').style.display = 'none';
+      $('amount-box').style.display = 'block';
+      $('open-amount').style.display = link.pricing === 'open' ? 'flex' : 'none';
+      $('amount-static').style.display = link.pricing === 'open' ? 'none' : 'block';
+    }
+
+    ['name', 'email', 'phone', 'note'].forEach(function (f) {
+      var key = 'collect' + f.charAt(0).toUpperCase() + f.slice(1);
+      $('f-' + f).style.display = link[key] ? 'block' : 'none';
+    });
+    if (!link.collectName && !link.collectEmail && !link.collectPhone && !link.collectNote) {
+      $('details-block').style.display = 'none';
+    }
+
+    $('loading').style.display = 'none';
+    $('page').style.display = 'block';
+    paint();
+  }
+
+  /** Everything that depends on the active language. */
+  function paint() {
+    if (!link) return;
+    var ar = isAr();
+
+    document.title = (ar ? link.title : link.titleEn) || link.title || 'Payment';
+    $('title').textContent = (ar ? link.title : link.titleEn) || link.title || '';
+    $('desc').textContent = (ar ? link.description : link.descriptionEn) || '';
+    $('logo-text').textContent = link.logoText || '';
+    $('logo-sub').textContent = link.logoSubText || '';
+    $('logo-dot').textContent = (link.logoText || '?').trim().charAt(0);
+
+    $('pricing-title').textContent = link.pricing === 'plans'
+      ? (ar ? 'اختر الباقة' : 'Choose a plan')
+      : (ar ? 'المبلغ' : 'Amount');
+
+    if (link.pricing === 'plans') renderPlans();
+    else {
+      $('amount-value').textContent = localeNum(link.amount, ar ? 'ar' : 'en');
+      $('amount-cur').textContent = currency();
+      $('open-cur').textContent = currency();
+      $('amount-label').textContent = link.pricing === 'open'
+        ? (ar ? 'أدخل المبلغ' : 'Enter an amount')
+        : (ar ? 'المبلغ المستحق' : 'Amount due');
+    }
+
+    updatePayBtn();
+  }
+
+  function currency() {
+    if (link.currency === 'QAR') return isAr() ? 'ر.ق' : 'QAR';
+    return link.currency;
+  }
+
+  function renderPlans() {
+    var ar = isAr();
+    $('plans').innerHTML = link.plans.map(function (p) {
+      var badge = ar ? p.badge : (p.badgeEn || p.badge);
+      return '' +
+        '<div class="plan' + (p.id === selectedPlan ? ' selected' : '') + '" data-plan="' + p.id + '">' +
+          (badge ? '<span class="plan-badge">' + badge + '</span>' : '') +
+          '<div class="plan-row"><div>' +
+            '<div class="plan-name">' + (ar ? p.name : (p.nameEn || p.name)) + '</div>' +
+            '<div class="plan-price"><span class="plan-price-num">' + localeNum(p.amount, ar ? 'ar' : 'en') +
+              '</span><span class="plan-price-cur">' + currency() + '</span></div>' +
+            '<div class="plan-period">' + (ar ? p.period : (p.periodEn || p.period)) + '</div>' +
+          '</div>' +
+          '<div class="radio' + (p.id === selectedPlan ? ' checked' : '') + '"></div>' +
+        '</div></div>';
+    }).join('');
+
+    $('plans').querySelectorAll('.plan').forEach(function (el) {
+      el.addEventListener('click', function () {
+        selectedPlan = el.dataset.plan;
+        renderPlans();
+        updatePayBtn();
+      });
+    });
+  }
+
+  function amountDue() {
+    if (link.pricing === 'plans') {
+      var p = link.plans.find(function (x) { return x.id === selectedPlan; });
+      return p ? p.amount : 0;
+    }
+    if (link.pricing === 'open') return Number($('amount-input').value) || 0;
+    return link.amount;
+  }
+
+  function updatePayBtn() {
+    var ar = isAr();
+    var amount = amountDue();
+    $('pay-btn').textContent = (ar ? 'ادفع الآن — ' : 'Pay now — ') +
+      localeNum(amount, ar ? 'ar' : 'en') + ' ' + currency();
+  }
+
+  // ------------------------------------------------------------ interaction
+
+  $('methods').addEventListener('click', function (e) {
+    var btn = e.target.closest('.method');
+    if (!btn) return;
+    method = btn.dataset.method;
+    $('methods').querySelectorAll('.method').forEach(function (m) {
+      m.classList.toggle('selected', m === btn);
+    });
+    // Only the card-shaped methods need a PAN; the wallets are one tap.
+    $('card-fields').classList.toggle('show', method === 'card' || method === 'naps');
+  });
+
+  $('in-card').addEventListener('input', function (e) {
+    var digits = e.target.value.replace(/\D/g, '').slice(0, 19);
+    e.target.value = digits.replace(/(.{4})/g, '$1 ').trim();
+  });
+
+  $('in-exp').addEventListener('input', function (e) {
+    var digits = e.target.value.replace(/\D/g, '').slice(0, 4);
+    e.target.value = digits.length > 2 ? digits.slice(0, 2) + '/' + digits.slice(2) : digits;
+  });
+
+  $('in-cvv').addEventListener('input', function (e) {
+    e.target.value = e.target.value.replace(/\D/g, '');
+  });
+
+  $('amount-input').addEventListener('input', updatePayBtn);
+
+  // Country picker -----------------------------------------------------------
+
+  function renderCountries(filter) {
+    var ar = isAr();
+    var q = String(filter || '').toLowerCase();
+    var rows = window.COUNTRIES.filter(function (c) {
+      if (!q) return true;
+      return c.name.toLowerCase().indexOf(q) !== -1 || c.ar.indexOf(filter) !== -1 || c.code.indexOf(filter) !== -1;
+    });
+    $('country-list').innerHTML = rows.map(function (c) {
+      return '<div class="country" data-code="' + c.code + '" data-flag="' + c.flag + '">' +
+        '<span class="country-left"><span class="country-flag">' + c.flag + '</span>' +
+        '<span class="country-name">' + (ar ? c.ar : c.name) + '</span></span>' +
+        '<span class="country-code" dir="ltr">' + c.code + '</span></div>';
+    }).join('');
+
+    $('country-list').querySelectorAll('.country').forEach(function (el) {
+      el.addEventListener('click', function () {
+        dialCode = el.dataset.code;
+        $('code-val').textContent = dialCode;
+        $('code-flag').textContent = el.dataset.flag;
+        $('country-sheet').classList.remove('open');
+      });
+    });
+  }
+
+  $('code-btn').addEventListener('click', function () {
+    $('country-search').value = '';
+    renderCountries('');
+    $('country-sheet').classList.add('open');
+  });
+  $('sheet-close').addEventListener('click', function () { $('country-sheet').classList.remove('open'); });
+  $('country-sheet').addEventListener('click', function (e) {
+    if (e.target === $('country-sheet')) $('country-sheet').classList.remove('open');
+  });
+  $('country-search').addEventListener('input', function (e) { renderCountries(e.target.value); });
+
+  // Submit -------------------------------------------------------------------
+
+  function showAlert(message) {
+    $('alert-slot').innerHTML = '<div class="alert alert-bad"></div>';
+    $('alert-slot').firstChild.textContent = message;
+    $('alert-slot').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  $('checkout').addEventListener('submit', function (e) {
+    e.preventDefault();
+    $('alert-slot').innerHTML = '';
+
+    var payload = {
+      slug: slug,
+      method: method,
+      planId: selectedPlan,
+      amount: amountDue(),
+      name: $('in-name').value.trim(),
+      email: $('in-email').value.trim(),
+      phone: $('in-phone').value.trim(),
+      phoneCode: dialCode,
+      note: $('in-note').value.trim(),
+      cardNumber: $('in-card').value,
+    };
+
+    var btn = $('pay-btn');
+    btn.disabled = true;
+    $('threeds').classList.add('open');
+
+    fetch('/api/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+      .then(function (r) { return r.json().then(function (b) { return { ok: r.ok, body: b }; }); })
+      .then(function (res) {
+        // A beat of latency so the 3-D Secure step is visible, as it would be
+        // on a real gateway redirect.
+        return new Promise(function (resolve) { setTimeout(function () { resolve(res); }, 1400); });
+      })
+      .then(function (res) {
+        $('threeds').classList.remove('open');
+        btn.disabled = false;
+        if (!res.ok) return showAlert(res.body.error || 'Payment could not be started');
+        showResult(res.body, payload);
+      })
+      .catch(function (err) {
+        $('threeds').classList.remove('open');
+        btn.disabled = false;
+        showAlert(err.message || 'Network error');
+      });
+  });
+
+  function showResult(result, payload) {
+    var ar = isAr();
+    var ok = result.status === 'CAPTURED';
+
+    $('checkout').style.display = 'none';
+    $('page').querySelector('.hero').style.display = 'none';
+    $('result').classList.add('show');
+
+    $('result-icon').className = 'result-icon ' + (ok ? 'ok' : 'bad');
+    $('result-icon').textContent = ok ? '✓' : '✕';
+
+    $('result-title').textContent = ok
+      ? (ar ? 'تم الدفع بنجاح!' : 'Payment successful!')
+      : (ar ? 'لم تتم عملية الدفع' : 'Payment did not go through');
+
+    var reasons = {
+      DO_NOT_HONOUR: { ar: 'رفض البنك العملية. جرّب بطاقة أخرى.', en: 'Your bank declined the transaction. Try another card.' },
+      INSUFFICIENT_FUNDS: { ar: 'الرصيد غير كافٍ.', en: 'Insufficient funds.' },
+      INVALID_CARD_NUMBER: { ar: 'رقم البطاقة غير صحيح.', en: 'That card number is not valid.' },
+    };
+
+    $('result-text').textContent = ok
+      ? ((ar ? link.successMessage : link.successMessageEn) || (ar ? 'تم استلام دفعتك.' : 'Your payment has been received.'))
+      : ((reasons[result.reason] || { ar: 'حاول مرة أخرى.', en: 'Please try again.' })[ar ? 'ar' : 'en']);
+
+    var methodNames = {
+      naps: { ar: 'بطاقة نبض', en: 'NAPS debit' },
+      card: { ar: 'بطاقة ائتمان', en: 'Credit card' },
+      applepay: { ar: 'Apple Pay', en: 'Apple Pay' },
+      googlepay: { ar: 'Google Pay', en: 'Google Pay' },
+      sadad_wallet: { ar: 'المحفظة', en: 'Wallet' },
+    };
+
+    var rows = [
+      [ar ? 'رقم العملية' : 'Transaction ID', result.id],
+      [ar ? 'المبلغ' : 'Amount', localeNum(result.amount, ar ? 'ar' : 'en') + ' ' + currency()],
+      [ar ? 'طريقة الدفع' : 'Method', methodNames[result.method][ar ? 'ar' : 'en']],
+      [ar ? 'الحالة' : 'Status', result.status],
+    ];
+    if (payload.email) rows.push([ar ? 'البريد' : 'Email', payload.email]);
+
+    $('receipt').innerHTML = rows.map(function (r) {
+      return '<div class="receipt-row"><span class="receipt-key"></span><span class="receipt-val"></span></div>';
+    }).join('');
+    $('receipt').querySelectorAll('.receipt-row').forEach(function (el, i) {
+      el.querySelector('.receipt-key').textContent = rows[i][0];
+      el.querySelector('.receipt-val').textContent = rows[i][1];
+    });
+
+    var cta = $('result-cta');
+    if (ok && result.redirectUrl) {
+      cta.href = result.redirectUrl;
+      cta.textContent = ar ? 'متابعة' : 'Continue';
+      cta.style.display = 'inline-flex';
+    } else if (!ok) {
+      cta.href = location.pathname;
+      cta.textContent = ar ? 'حاول مرة أخرى' : 'Try again';
+      cta.style.display = 'inline-flex';
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  document.addEventListener('langchange', paint);
+  initLang('ar');
+  load();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+/* Shared design tokens and primitives for the payment-link platform.
+   Page-specific rules live in each page's own <style> block. */
+
+:root{
+  --brand:#0EA5E9;
+  --brand-2:#06B6D4;
+  --ink:#0F172A;
+  --muted:#64748B;
+  --faint:#94A3B8;
+  --line:#E2E8F0;
+  --bg:#F8FAFC;
+  --surface:#FFFFFF;
+  --tint:#EFF8FF;
+  --ok:#059669;
+  --ok-bg:#DCFCE7;
+  --bad:#DC2626;
+  --bad-bg:#FEE2E2;
+  --warn:#B45309;
+  --warn-bg:#FEF3C7;
+  --radius:16px;
+  --shadow:0 1px 8px rgba(15,23,42,.06);
+  --shadow-lg:0 12px 40px rgba(15,23,42,.12);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:'Cairo',system-ui,-apple-system,'Segoe UI',sans-serif;
+  background:var(--bg);color:var(--ink);min-height:100vh;line-height:1.6;
+}
+a{color:inherit}
+img{max-width:100%}
+
+.site-header{
+  background:var(--surface);padding:14px 20px;display:flex;justify-content:space-between;
+  align-items:center;box-shadow:var(--shadow);position:sticky;top:0;z-index:100;gap:12px;
+}
+.brandmark{display:flex;align-items:center;gap:10px;text-decoration:none}
+.brandmark-dot{
+  width:34px;height:34px;border-radius:10px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--brand),var(--brand-2));
+  display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:15px;
+}
+.brandmark-main{font-size:18px;font-weight:800;line-height:1.2}
+.brandmark-sub{font-size:9px;color:var(--faint);letter-spacing:3px;line-height:1}
+
+.pill-btn{
+  padding:7px 16px;background:var(--tint);border:1.5px solid #BAE6FD;border-radius:999px;
+  font-size:13px;font-weight:700;color:var(--brand);cursor:pointer;
+  font-family:inherit;transition:background .2s,color .2s;white-space:nowrap;
+}
+.pill-btn:hover{background:var(--brand);color:#fff}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:13px 22px;border:none;border-radius:12px;font-family:inherit;
+  font-size:15px;font-weight:800;cursor:pointer;transition:transform .15s,opacity .15s;
+  text-decoration:none;
+}
+.btn:hover{transform:translateY(-1px)}
+.btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.btn-primary{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;box-shadow:0 4px 18px rgba(14,165,233,.32)}
+.btn-ghost{background:var(--surface);color:var(--ink);border:1.5px solid var(--line)}
+.btn-danger{background:var(--bad-bg);color:var(--bad)}
+.btn-block{width:100%}
+
+.card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px}
+
+.field{margin-bottom:14px}
+.field-label{
+  font-size:11px;font-weight:700;color:var(--muted);margin-bottom:6px;
+  display:block;letter-spacing:.5px;text-transform:uppercase;
+}
+.input,select.input,textarea.input{
+  width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;
+  font-size:14px;color:var(--ink);font-family:inherit;outline:none;background:#FAFBFC;
+  transition:border-color .2s,background .2s;
+}
+.input:focus{border-color:var(--brand);background:var(--surface)}
+textarea.input{resize:vertical;min-height:80px}
+.field-hint{font-size:11px;color:var(--faint);margin-top:5px}
+
+.badge{
+  display:inline-block;font-size:10px;font-weight:800;padding:3px 10px;
+  border-radius:999px;letter-spacing:.3px;
+}
+.badge-ok{background:var(--ok-bg);color:#166534}
+.badge-bad{background:var(--bad-bg);color:#991B1B}
+.badge-warn{background:var(--warn-bg);color:var(--warn)}
+.badge-mute{background:#F1F5F9;color:var(--muted)}
+
+.alert{padding:12px 14px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:14px}
+.alert-bad{background:var(--bad-bg);color:#991B1B}
+.alert-ok{background:var(--ok-bg);color:#166534}
+.alert-info{background:var(--tint);color:#075985}
+
+.spinner{
+  display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.4);
+  border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.site-footer{
+  background:var(--ink);color:rgba(255,255,255,.55);text-align:center;
+  padding:22px 20px;font-size:11px;line-height:1.9;
+}
+.site-footer a{color:rgba(255,255,255,.8)}
+
+.mock-banner{
+  background:var(--warn-bg);color:var(--warn);text-align:center;
+  padding:8px 16px;font-size:12px;font-weight:700;
+}
+
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}

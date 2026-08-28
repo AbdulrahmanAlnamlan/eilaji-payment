@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>لوحة التاجر | Merchant dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/base.css">
+<style>
+  .wrap{max-width:1000px;margin:0 auto;padding:22px 18px 60px}
+  .gate{max-width:380px;margin:70px auto;padding:0 18px}
+  .gate .card{text-align:center}
+  .gate h2{font-size:20px;font-weight:800;margin-bottom:6px}
+  .gate p{font-size:13px;color:var(--muted);margin-bottom:20px}
+
+  .tabs{display:flex;gap:6px;background:var(--surface);padding:6px;border-radius:14px;box-shadow:var(--shadow);margin-bottom:22px}
+  .tab{flex:1;padding:11px;border:none;background:none;border-radius:10px;font-family:inherit;font-size:14px;font-weight:700;color:var(--muted);cursor:pointer;transition:background .2s,color .2s}
+  .tab.active{background:var(--tint);color:var(--brand)}
+
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:22px}
+  .stat{background:var(--surface);border-radius:14px;padding:16px;box-shadow:var(--shadow)}
+  .stat-label{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+  .stat-value{font-size:26px;font-weight:800;margin-top:4px;color:var(--ink)}
+
+  .link-card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-bottom:14px;border:1px solid var(--line)}
+  .link-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+  .link-title{font-size:15px;font-weight:800;margin-bottom:3px}
+  .link-sub{font-size:12px;color:var(--muted)}
+  .link-url{display:flex;align-items:center;gap:8px;margin-top:12px;background:#F8FAFC;border:1px solid var(--line);border-radius:10px;padding:9px 12px}
+  .link-url code{flex:1;font-size:12px;direction:ltr;unicode-bidi:plaintext;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .icon-btn{background:none;border:1px solid var(--line);border-radius:8px;padding:5px 10px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;color:var(--muted);white-space:nowrap}
+  .icon-btn:hover{border-color:var(--brand);color:var(--brand)}
+  .link-stats{display:flex;gap:18px;margin-top:12px;flex-wrap:wrap}
+  .link-stat{font-size:12px;color:var(--muted)}
+  .link-stat b{color:var(--ink);font-size:14px}
+  .link-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+
+  .table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+  .table th{background:#F8FAFC;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);padding:11px 12px;text-align:start;white-space:nowrap}
+  .table td{padding:12px;border-top:1px solid var(--line);font-size:13px;vertical-align:top}
+  .table-scroll{overflow-x:auto}
+  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;direction:ltr;unicode-bidi:plaintext}
+  .empty{text-align:center;color:var(--muted);padding:44px 20px;background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow)}
+
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+  @media(max-width:560px){.form-grid{grid-template-columns:1fr}}
+  .plan-editor{border:1px dashed var(--line);border-radius:12px;padding:14px;margin-bottom:10px}
+  .plan-editor-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .plan-editor-head span{font-size:12px;font-weight:800;color:var(--muted)}
+  .checks{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+  .check{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;cursor:pointer}
+  .check input{width:17px;height:17px;accent-color:var(--brand)}
+  .color-row{display:flex;gap:10px;align-items:center}
+  .color-row input[type=color]{width:46px;height:44px;border:1.5px solid var(--line);border-radius:10px;background:none;cursor:pointer;padding:3px}
+
+  .modal{position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:900;display:none;align-items:center;justify-content:center;padding:20px}
+  .modal.open{display:flex}
+  .modal-box{background:#fff;border-radius:20px;padding:26px;max-width:340px;width:100%;text-align:center}
+  .modal-box h3{font-size:17px;font-weight:800;margin-bottom:14px}
+  #qr-target{display:flex;justify-content:center;margin-bottom:14px}
+  .toast{position:fixed;bottom:22px;inset-inline-start:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 20px;border-radius:999px;font-size:13px;font-weight:700;z-index:1000;opacity:0;transition:opacity .2s;pointer-events:none}
+  .toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<div class="mock-banner" data-ar="وضع تجريبي — العمليات محاكاة ولا تُحصّل أموالاً" data-en="Demo mode — transactions are simulated and settle no money"></div>
+
+<header class="site-header">
+  <a class="brandmark" href="/">
+    <span class="brandmark-dot">ع</span>
+    <span>
+      <span class="brandmark-main" data-ar="لوحة التاجر" data-en="Merchant dashboard"></span><br>
+      <span class="brandmark-sub">EILAJI PAY</span>
+    </span>
+  </a>
+  <div style="display:flex;gap:10px;align-items:center">
+    <button class="pill-btn" id="signout" style="display:none" data-ar="خروج" data-en="Sign out"></button>
+    <button class="pill-btn" data-lang-toggle>EN</button>
+  </div>
+</header>
+
+<!-- Passcode gate -->
+<div class="gate" id="gate">
+  <div class="card">
+    <h2 data-ar="تسجيل الدخول" data-en="Sign in"></h2>
+    <p data-ar="أدخل رمز التاجر للوصول إلى الروابط والعمليات." data-en="Enter the merchant passcode to reach your links and transactions."></p>
+    <div id="gate-alert"></div>
+    <div class="field">
+      <input class="input" id="gate-input" type="password" autocomplete="current-password"
+             data-ar-placeholder="رمز التاجر" data-en-placeholder="Merchant passcode">
+    </div>
+    <button class="btn btn-primary btn-block" id="gate-btn" data-ar="دخول" data-en="Enter"></button>
+    <p style="margin-top:16px;font-size:12px" data-ar="الرمز الافتراضي للنسخة التجريبية: demo1234"
+       data-en="Default passcode for this demo: demo1234"></p>
+  </div>
+</div>
+
+<main class="wrap" id="app" style="display:none">
+  <div class="tabs">
+    <button class="tab active" data-tab="links" data-ar="الروابط" data-en="Links"></button>
+    <button class="tab" data-tab="create" data-ar="إنشاء رابط" data-en="Create link"></button>
+    <button class="tab" data-tab="tx" data-ar="العمليات" data-en="Transactions"></button>
+  </div>
+
+  <!-- Links -->
+  <section id="panel-links">
+    <div class="stats" id="link-stats"></div>
+    <div id="links-list"></div>
+  </section>
+
+  <!-- Create -->
+  <section id="panel-create" style="display:none">
+    <form class="card" id="create-form">
+      <div id="create-alert"></div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label class="field-label" data-ar="العنوان (عربي)" data-en="Title (Arabic)"></label>
+          <input class="input" name="title" data-ar-placeholder="استشارة طبية" data-en-placeholder="استشارة طبية">
+        </div>
+        <div class="field">
+          <label class="field-label" data-ar="العنوان (إنجليزي)" data-en="Title (English)"></label>
+          <input class="input" name="titleEn" dir="ltr" placeholder="Medical consultation">
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label class="field-label" data-ar="الوصف (عربي)" data-en="Description (Arabic)"></label>
+          <textarea class="input" name="description" rows="2"></textarea>
+        </div>
+        <div class="field">
+          <label class="field-label" data-ar="الوصف (إنجليزي)" data-en="Description (English)"></label>
+          <textarea class="input" name="descriptionEn" dir="ltr" rows="2"></textarea>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label class="field-label" data-ar="اسم العلامة" data-en="Brand name"></label>
+          <input class="input" name="logoText" data-ar-placeholder="د. عبدالرحمن النملان" data-en-placeholder="Dr. Abdulrahman Alnamlan">
+        </div>
+        <div class="field">
+          <label class="field-label" data-ar="سطر تحت الاسم" data-en="Brand subtitle"></label>
+          <input class="input" name="logoSubText" dir="ltr" placeholder="CONSULTATION">
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label class="field-label" data-ar="الرابط المختصر" data-en="Link slug"></label>
+          <div style="display:flex;align-items:center;gap:6px">
+            <span class="mono" style="color:var(--faint)" id="origin-hint">/p/</span>
+            <input class="input" name="slug" dir="ltr" placeholder="consultation">
+          </div>
+          <div class="field-hint" data-ar="اتركه فارغاً ليُنشأ تلقائياً" data-en="Leave empty to generate one"></div>
+        </div>
+        <div class="field">
+          <label class="field-label" data-ar="اللون" data-en="Brand colour"></label>
+          <div class="color-row">
+            <input type="color" name="brandColor" value="#0EA5E9">
+            <input class="input mono" name="brandColorText" value="#0EA5E9" dir="ltr">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label class="field-label" data-ar="نوع التسعير" data-en="Pricing type"></label>
+          <select class="input" name="pricing" id="pricing-select">
+            <option value="fixed" data-ar="مبلغ ثابت" data-en="Fixed amount"></option>
+            <option value="open" data-ar="مبلغ يحدده الدافع" data-en="Payer chooses the amount"></option>
+            <option value="plans" data-ar="باقات متعددة" data-en="Multiple plans"></option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label" data-ar="العملة" data-en="Currency"></label>
+          <select class="input" name="currency">
+            <option>QAR</option><option>SAR</option><option>AED</option><option>KWD</option>
+            <option>BHD</option><option>OMR</option><option>USD</option><option>EUR</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field" id="amount-field">
+        <label class="field-label" data-ar="المبلغ" data-en="Amount"></label>
+        <input class="input" name="amount" type="number" min="1" step="1" value="150">
+        <div class="field-hint" id="amount-hint"></div>
+      </div>
+
+      <div id="plans-field" style="display:none">
+        <label class="field-label" data-ar="الباقات" data-en="Plans"></label>
+        <div id="plan-rows"></div>
+        <button type="button" class="icon-btn" id="add-plan" data-ar="+ أضف باقة" data-en="+ Add plan"></button>
+        <div style="height:16px"></div>
+      </div>
+
+      <label class="field-label" data-ar="البيانات المطلوبة من الدافع" data-en="Fields to collect"></label>
+      <div class="checks">
+        <label class="check"><input type="checkbox" name="collectName" checked><span data-ar="الاسم" data-en="Name"></span></label>
+        <label class="check"><input type="checkbox" name="collectEmail" checked><span data-ar="البريد" data-en="Email"></span></label>
+        <label class="check"><input type="checkbox" name="collectPhone" checked><span data-ar="الهاتف" data-en="Phone"></span></label>
+        <label class="check"><input type="checkbox" name="collectNote"><span data-ar="ملاحظة" data-en="Note"></span></label>
+      </div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label class="field-label" data-ar="رسالة النجاح (عربي)" data-en="Success message (Arabic)"></label>
+          <input class="input" name="successMessage" data-ar-placeholder="تم استلام دفعتك." data-en-placeholder="تم استلام دفعتك.">
+        </div>
+        <div class="field">
+          <label class="field-label" data-ar="رسالة النجاح (إنجليزي)" data-en="Success message (English)"></label>
+          <input class="input" name="successMessageEn" dir="ltr" placeholder="Payment received.">
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label" data-ar="رابط التحويل بعد الدفع (اختياري)" data-en="Redirect after payment (optional)"></label>
+        <input class="input" name="redirectUrl" dir="ltr" placeholder="https://example.com/thanks">
+      </div>
+
+      <button class="btn btn-primary btn-block" type="submit" id="create-btn"
+              data-ar="أنشئ الرابط" data-en="Create link"></button>
+    </form>
+  </section>
+
+  <!-- Transactions -->
+  <section id="panel-tx" style="display:none">
+    <div class="stats" id="tx-stats"></div>
+    <div id="tx-list"></div>
+  </section>
+</main>
+
+<div class="modal" id="qr-modal">
+  <div class="modal-box">
+    <h3 data-ar="رمز QR للرابط" data-en="Link QR code"></h3>
+    <div id="qr-target"></div>
+    <p class="mono" id="qr-url" style="font-size:11px;color:var(--muted);word-break:break-all"></p>
+    <button class="btn btn-ghost btn-block" style="margin-top:14px" id="qr-close" data-ar="إغلاق" data-en="Close"></button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="/assets/i18n.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+(function () {
+  var KEY_STORAGE = 'eilajipay.key';
+  var key = '';
+  var links = [];
+  var payments = [];
+  var summary = { count: 0, capturedCount: 0, totals: {} };
+
+  var $ = function (id) { return document.getElementById(id); };
+  var isAr = function () { return window.currentLang === 'ar'; };
+  var t = function (ar, en) { return isAr() ? ar : en; };
+
+  function toast(message) {
+    var el = $('toast');
+    el.textContent = message;
+    el.classList.add('show');
+    setTimeout(function () { el.classList.remove('show'); }, 1800);
+  }
+
+  function api(path, options) {
+    var opts = options || {};
+    opts.headers = Object.assign({ 'Content-Type': 'application/json', 'X-Merchant-Key': key }, opts.headers || {});
+    return fetch(path, opts).then(function (r) {
+      return r.json().then(function (b) {
+        if (!r.ok) throw new Error(b.error || ('Request failed: ' + r.status));
+        return b;
+      });
+    });
+  }
+
+  // ------------------------------------------------------------------- gate
+
+  function signIn(candidate) {
+    key = candidate;
+    return api('/api/links').then(function (data) {
+      try { sessionStorage.setItem(KEY_STORAGE, key); } catch (e) { /* private mode */ }
+      links = data.links;
+      $('gate').style.display = 'none';
+      $('app').style.display = 'block';
+      $('signout').style.display = 'inline-block';
+      renderLinks();
+      loadPayments();
+    });
+  }
+
+  $('gate-btn').addEventListener('click', function () {
+    $('gate-alert').innerHTML = '';
+    signIn($('gate-input').value).catch(function () {
+      $('gate-alert').innerHTML = '<div class="alert alert-bad"></div>';
+      $('gate-alert').firstChild.textContent = t('رمز غير صحيح', 'Wrong passcode');
+    });
+  });
+
+  $('gate-input').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') $('gate-btn').click();
+  });
+
+  $('signout').addEventListener('click', function () {
+    try { sessionStorage.removeItem(KEY_STORAGE); } catch (e) { /* ignore */ }
+    location.reload();
+  });
+
+  // ------------------------------------------------------------------ links
+
+  function money(amount, currency) {
+    return localeNum(amount, isAr() ? 'ar' : 'en') + ' ' + (currency === 'QAR' && isAr() ? 'ر.ق' : currency);
+  }
+
+  function renderLinks() {
+    var totalViews = links.reduce(function (a, l) { return a + (l.views || 0); }, 0);
+    var totalPaid = links.reduce(function (a, l) { return a + (l.paidCount || 0); }, 0);
+    var active = links.filter(function (l) { return l.active; }).length;
+
+    var n = function (v) { return localeNum(v, isAr() ? 'ar' : 'en'); };
+    var stats = [
+      [t('روابط نشطة', 'Active links'), n(active)],
+      [t('إجمالي المشاهدات', 'Total views'), n(totalViews)],
+      [t('عمليات ناجحة', 'Captured payments'), n(totalPaid)],
+    ];
+    $('link-stats').innerHTML = stats.map(function () {
+      return '<div class="stat"><div class="stat-label"></div><div class="stat-value"></div></div>';
+    }).join('');
+    $('link-stats').querySelectorAll('.stat').forEach(function (el, i) {
+      el.querySelector('.stat-label').textContent = stats[i][0];
+      el.querySelector('.stat-value').textContent = stats[i][1];
+    });
+
+    if (!links.length) {
+      $('links-list').innerHTML = '<div class="empty"></div>';
+      $('links-list').firstChild.textContent = t('لا توجد روابط بعد.', 'No links yet.');
+      return;
+    }
+
+    $('links-list').innerHTML = links.map(function (l) {
+      var url = location.origin + '/p/' + l.slug;
+      return '<div class="link-card" data-slug="' + l.slug + '">' +
+        '<div class="link-head"><div>' +
+          '<div class="link-title"></div>' +
+          '<div class="link-sub"></div>' +
+        '</div>' +
+        '<span class="badge ' + (l.active ? 'badge-ok' : 'badge-mute') + '"></span></div>' +
+        '<div class="link-url"><code>' + url + '</code>' +
+          '<button class="icon-btn" data-act="copy"></button>' +
+          '<button class="icon-btn" data-act="qr"></button></div>' +
+        '<div class="link-stats">' +
+          '<span class="link-stat"><b>' + localeNum(l.views || 0, isAr() ? 'ar' : 'en') + '</b> <span data-slot="views"></span></span>' +
+          '<span class="link-stat"><b>' + localeNum(l.paidCount || 0, isAr() ? 'ar' : 'en') + '</b> <span data-slot="paid"></span></span>' +
+          '<span class="link-stat"><b>' + money(l.paidTotal || 0, l.currency) + '</b> <span data-slot="total"></span></span>' +
+        '</div>' +
+        '<div class="link-actions">' +
+          '<a class="icon-btn" href="/p/' + l.slug + '" target="_blank" data-act="open"></a>' +
+          '<button class="icon-btn" data-act="toggle"></button>' +
+          '<button class="icon-btn" data-act="delete" style="color:var(--bad)"></button>' +
+        '</div></div>';
+    }).join('');
+
+    // Text is set through textContent so merchant-authored titles can never
+    // inject markup into the dashboard.
+    $('links-list').querySelectorAll('.link-card').forEach(function (card, i) {
+      var l = links[i];
+      var priceLabel = l.pricing === 'plans'
+        ? t('باقات', 'Plans') + ' · ' + l.plans.length
+        : l.pricing === 'open' ? t('مبلغ مفتوح', 'Open amount') : money(l.amount, l.currency);
+      card.querySelector('.link-title').textContent = (isAr() ? l.title : l.titleEn) || l.title;
+      card.querySelector('.link-sub').textContent = priceLabel + ' · ' + new Date(l.createdAt).toLocaleDateString(isAr() ? 'ar-QA' : 'en-GB');
+      card.querySelector('.badge').textContent = l.active ? t('نشط', 'Active') : t('موقوف', 'Paused');
+      card.querySelector('[data-act="copy"]').textContent = t('نسخ', 'Copy');
+      card.querySelector('[data-act="qr"]').textContent = 'QR';
+      card.querySelector('[data-act="open"]').textContent = t('فتح', 'Open');
+      card.querySelector('[data-act="toggle"]').textContent = l.active ? t('إيقاف', 'Pause') : t('تفعيل', 'Activate');
+      card.querySelector('[data-act="delete"]').textContent = t('حذف', 'Delete');
+      card.querySelector('[data-slot="views"]').textContent = t('مشاهدة', 'views');
+      card.querySelector('[data-slot="paid"]').textContent = t('عملية', 'payments');
+      card.querySelector('[data-slot="total"]').textContent = t('محصّل', 'collected');
+    });
+  }
+
+  $('links-list').addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-act]');
+    if (!btn) return;
+    var slug = e.target.closest('.link-card').dataset.slug;
+    var link = links.find(function (l) { return l.slug === slug; });
+    var url = location.origin + '/p/' + slug;
+
+    if (btn.dataset.act === 'copy') {
+      e.preventDefault();
+      navigator.clipboard.writeText(url)
+        .then(function () { toast(t('تم نسخ الرابط', 'Link copied')); })
+        .catch(function () { toast(url); });
+    }
+
+    if (btn.dataset.act === 'qr') {
+      e.preventDefault();
+      $('qr-target').innerHTML = '';
+      if (typeof QRCode === 'function') {
+        new QRCode($('qr-target'), { text: url, width: 190, height: 190, correctLevel: QRCode.CorrectLevel.M });
+      } else {
+        // The QR library is loaded from a CDN; on a network that blocks it the
+        // link itself is still the useful thing, so show that instead of nothing.
+        var note = document.createElement('div');
+        note.className = 'alert alert-info';
+        note.textContent = t('تعذّر تحميل مكتبة رمز QR. انسخ الرابط بدلاً من ذلك.',
+                             'The QR library could not load. Copy the link instead.');
+        $('qr-target').appendChild(note);
+      }
+      $('qr-url').textContent = url;
+      $('qr-modal').classList.add('open');
+    }
+
+    if (btn.dataset.act === 'toggle') {
+      api('/api/link?slug=' + encodeURIComponent(slug), {
+        method: 'PATCH',
+        body: JSON.stringify({ active: !link.active }),
+      }).then(function () {
+        link.active = !link.active;
+        renderLinks();
+      }).catch(function (err) { toast(err.message); });
+    }
+
+    if (btn.dataset.act === 'delete') {
+      if (!confirm(t('حذف هذا الرابط نهائياً؟', 'Delete this link permanently?'))) return;
+      api('/api/link?slug=' + encodeURIComponent(slug), { method: 'DELETE' })
+        .then(function () {
+          links = links.filter(function (l) { return l.slug !== slug; });
+          renderLinks();
+          toast(t('تم الحذف', 'Deleted'));
+        }).catch(function (err) { toast(err.message); });
+    }
+  });
+
+  $('qr-close').addEventListener('click', function () { $('qr-modal').classList.remove('open'); });
+  $('qr-modal').addEventListener('click', function (e) {
+    if (e.target === $('qr-modal')) $('qr-modal').classList.remove('open');
+  });
+
+  // --------------------------------------------------------------- create
+
+  var planCount = 0;
+
+  function addPlanRow(values) {
+    planCount++;
+    var v = values || {};
+    var row = document.createElement('div');
+    row.className = 'plan-editor';
+    row.innerHTML =
+      '<div class="plan-editor-head"><span>#' + planCount + '</span>' +
+      '<button type="button" class="icon-btn" data-remove></button></div>' +
+      '<div class="form-grid">' +
+        '<div class="field"><label class="field-label" data-ar="اسم الباقة (عربي)" data-en="Plan name (Arabic)"></label><input class="input" data-f="name" value="' + (v.name || '') + '"></div>' +
+        '<div class="field"><label class="field-label" data-ar="اسم الباقة (إنجليزي)" data-en="Plan name (English)"></label><input class="input" dir="ltr" data-f="nameEn" value="' + (v.nameEn || '') + '"></div>' +
+        '<div class="field"><label class="field-label" data-ar="المبلغ" data-en="Amount"></label><input class="input" type="number" min="1" data-f="amount" value="' + (v.amount || '') + '"></div>' +
+        '<div class="field"><label class="field-label" data-ar="المدة (عربي)" data-en="Period (Arabic)"></label><input class="input" data-f="period" value="' + (v.period || '') + '"></div>' +
+        '<div class="field"><label class="field-label" data-ar="المدة (إنجليزي)" data-en="Period (English)"></label><input class="input" dir="ltr" data-f="periodEn" value="' + (v.periodEn || '') + '"></div>' +
+        '<div class="field"><label class="field-label" data-ar="شارة (اختياري)" data-en="Badge (optional)"></label><input class="input" data-f="badge" value="' + (v.badge || '') + '"></div>' +
+      '</div>';
+    row.querySelector('[data-remove]').textContent = t('إزالة', 'Remove');
+    row.querySelector('[data-remove]').addEventListener('click', function () { row.remove(); });
+    $('plan-rows').appendChild(row);
+    applyLang(window.currentLang, row);
+  }
+
+  $('add-plan').addEventListener('click', function () { addPlanRow(); });
+
+  $('pricing-select').addEventListener('change', function (e) {
+    var mode = e.target.value;
+    $('plans-field').style.display = mode === 'plans' ? 'block' : 'none';
+    $('amount-field').style.display = mode === 'plans' ? 'none' : 'block';
+    $('amount-hint').textContent = mode === 'open'
+      ? t('يُستخدم كمبلغ مقترح للدافع.', 'Used as the amount suggested to the payer.')
+      : '';
+    if (mode === 'plans' && !$('plan-rows').children.length) addPlanRow();
+  });
+
+  var colorPicker = document.querySelector('[name=brandColor]');
+  var colorText = document.querySelector('[name=brandColorText]');
+  colorPicker.addEventListener('input', function () { colorText.value = colorPicker.value; });
+  colorText.addEventListener('input', function () {
+    if (/^#[0-9a-fA-F]{6}$/.test(colorText.value)) colorPicker.value = colorText.value;
+  });
+
+  $('create-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    $('create-alert').innerHTML = '';
+    var form = e.target;
+
+    var plans = Array.prototype.map.call($('plan-rows').children, function (row) {
+      var read = function (f) { return row.querySelector('[data-f="' + f + '"]').value.trim(); };
+      return {
+        name: read('name'), nameEn: read('nameEn'), amount: Number(read('amount')),
+        period: read('period'), periodEn: read('periodEn'), badge: read('badge'), badgeEn: read('badge'),
+      };
+    });
+
+    var payload = {
+      title: form.title.value, titleEn: form.titleEn.value,
+      description: form.description.value, descriptionEn: form.descriptionEn.value,
+      logoText: form.logoText.value, logoSubText: form.logoSubText.value,
+      slug: form.slug.value, brandColor: colorPicker.value,
+      pricing: form.pricing.value, currency: form.currency.value,
+      amount: Number(form.amount.value), plans: plans,
+      collectName: form.collectName.checked, collectEmail: form.collectEmail.checked,
+      collectPhone: form.collectPhone.checked, collectNote: form.collectNote.checked,
+      successMessage: form.successMessage.value, successMessageEn: form.successMessageEn.value,
+      redirectUrl: form.redirectUrl.value,
+    };
+
+    $('create-btn').disabled = true;
+    api('/api/links', { method: 'POST', body: JSON.stringify(payload) })
+      .then(function (data) {
+        links.unshift(data.link);
+        form.reset();
+        $('plan-rows').innerHTML = '';
+        $('plans-field').style.display = 'none';
+        $('amount-field').style.display = 'block';
+        renderLinks();
+        showTab('links');
+        toast(t('تم إنشاء الرابط', 'Link created'));
+      })
+      .catch(function (err) {
+        $('create-alert').innerHTML = '<div class="alert alert-bad"></div>';
+        $('create-alert').firstChild.textContent = err.message;
+      })
+      .finally(function () { $('create-btn').disabled = false; });
+  });
+
+  // --------------------------------------------------------- transactions
+
+  function loadPayments() {
+    api('/api/payments').then(function (data) {
+      payments = data.payments;
+      summary = data.summary;
+      renderPayments();
+    }).catch(function () { /* the tab shows its empty state */ });
+  }
+
+  function renderPayments() {
+    var totals = Object.keys(summary.totals).map(function (c) {
+      return money(summary.totals[c], c);
+    }).join(' · ') || money(0, 'QAR');
+
+    var stats = [
+      [t('كل العمليات', 'All transactions'), localeNum(summary.count, isAr() ? 'ar' : 'en')],
+      [t('ناجحة', 'Captured'), localeNum(summary.capturedCount, isAr() ? 'ar' : 'en')],
+      [t('الإجمالي المحصّل', 'Total collected'), totals],
+    ];
+    $('tx-stats').innerHTML = stats.map(function () {
+      return '<div class="stat"><div class="stat-label"></div><div class="stat-value" style="font-size:20px"></div></div>';
+    }).join('');
+    $('tx-stats').querySelectorAll('.stat').forEach(function (el, i) {
+      el.querySelector('.stat-label').textContent = stats[i][0];
+      el.querySelector('.stat-value').textContent = stats[i][1];
+    });
+
+    if (!payments.length) {
+      $('tx-list').innerHTML = '<div class="empty"></div>';
+      $('tx-list').firstChild.textContent = t('لا توجد عمليات بعد. افتح أحد الروابط وجرّب الدفع.',
+                                              'No transactions yet. Open one of your links and try a payment.');
+      return;
+    }
+
+    var heads = [t('رقم العملية', 'ID'), t('الرابط', 'Link'), t('العميل', 'Customer'),
+                 t('المبلغ', 'Amount'), t('الطريقة', 'Method'), t('الحالة', 'Status'), t('التاريخ', 'Date')];
+
+    $('tx-list').innerHTML = '<div class="table-scroll"><table class="table"><thead><tr>' +
+      heads.map(function () { return '<th></th>'; }).join('') +
+      '</tr></thead><tbody>' +
+      payments.map(function () {
+        return '<tr>' + heads.map(function () { return '<td></td>'; }).join('') + '</tr>';
+      }).join('') + '</tbody></table></div>';
+
+    $('tx-list').querySelectorAll('th').forEach(function (th, i) { th.textContent = heads[i]; });
+
+    var statusClass = { CAPTURED: 'badge-ok', DECLINED: 'badge-bad', FAILED: 'badge-bad' };
+
+    $('tx-list').querySelectorAll('tbody tr').forEach(function (tr, i) {
+      var p = payments[i];
+      var cells = tr.querySelectorAll('td');
+      cells[0].innerHTML = '<span class="mono"></span>';
+      cells[0].firstChild.textContent = p.id;
+      cells[1].textContent = p.slug + (p.planName ? ' · ' + p.planName : '');
+      cells[2].textContent = p.customer.name || p.customer.email || '—';
+      cells[3].textContent = money(p.amount, p.currency);
+      cells[4].textContent = p.method + (p.last4 ? ' ••' + p.last4 : '');
+      cells[5].innerHTML = '<span class="badge ' + (statusClass[p.status] || 'badge-mute') + '"></span>';
+      cells[5].firstChild.textContent = p.status;
+      cells[6].textContent = new Date(p.createdAt).toLocaleString(isAr() ? 'ar-QA' : 'en-GB');
+    });
+  }
+
+  // ------------------------------------------------------------------ tabs
+
+  function showTab(name) {
+    ['links', 'create', 'tx'].forEach(function (n) {
+      $('panel-' + n).style.display = n === name ? 'block' : 'none';
+    });
+    document.querySelectorAll('.tab').forEach(function (b) {
+      b.classList.toggle('active', b.dataset.tab === name);
+    });
+    if (name === 'tx') loadPayments();
+  }
+
+  document.querySelectorAll('.tab').forEach(function (b) {
+    b.addEventListener('click', function () { showTab(b.dataset.tab); });
+  });
+
+  document.addEventListener('langchange', function () {
+    if ($('app').style.display !== 'none') {
+      renderLinks();
+      renderPayments();
+    }
+  });
+
+  initLang('ar');
+  $('origin-hint').textContent = location.origin + '/p/';
+
+  // Resume a session already signed in on this tab.
+  var saved = null;
+  try { saved = sessionStorage.getItem(KEY_STORAGE); } catch (e) { /* ignore */ }
+  if (saved) signIn(saved).catch(function () { /* fall back to the gate */ });
+})();
+</script>
+</body>
+</html>
