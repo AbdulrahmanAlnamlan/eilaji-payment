@@ -6,7 +6,7 @@
  * swaps text, direction, and the toggle's own label, and remembers the choice.
  */
 (function (global) {
-  var STORAGE_KEY = 'eilajipay.lang';
+  var STORAGE_KEY = 'paylink.lang';
 
   function stored() {
     try { return localStorage.getItem(STORAGE_KEY); } catch (e) { return null; }

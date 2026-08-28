@@ -2,7 +2,7 @@
   "name": "eilaji-payment",
   "version": "2.0.0",
   "private": true,
-  "description": "Payment-link platform: merchant dashboard plus branded hosted checkout pages.",
+  "description": "Payment-link platform for Dr. Abdulrahman Alnamlan: merchant dashboard plus branded hosted checkout pages.",
   "scripts": {
     "dev": "node scripts/dev-server.js",
     "test": "node scripts/smoke-test.js"

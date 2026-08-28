@@ -1,11 +1,8 @@
-# Eilaji Pay — payment-link platform
+# Payment-link platform — Dr. Abdulrahman Alnamlan
 
-A payment-link platform in the shape of SADAD's: a merchant dashboard where you
-create branded links, and a hosted checkout page per link that a customer opens
-from WhatsApp, an Instagram bio, or a printed QR code.
-
-Built for **Dr. Abdulrahman Alnamlan's** consultation services, with the existing
-Eilaji Premium subscription kept as a third link.
+A payment-link platform in the shape of SADAD's: a merchant dashboard where the
+clinic creates branded links, and a hosted checkout page per link that a patient
+opens from WhatsApp, an Instagram bio, or a printed QR code.
 
 > **Payments are mocked.** `api/checkout.js` decides the outcome from the card
 > number and writes a transaction record. No gateway is called, no card data
@@ -15,13 +12,20 @@ Eilaji Premium subscription kept as a third link.
 
 | Route | What it is |
 | --- | --- |
-| `/` | Platform landing page — services, payment methods, demo links |
+| `/` | Landing page — services, payment methods, the clinic's links |
 | `/dashboard` | Merchant dashboard — links, transactions, link builder (passcode) |
 | `/p/<slug>` | Hosted checkout page for one link |
-| `/eilaji` | The original Tap-backed Eilaji subscription page, kept as-is |
 
 Every page is bilingual Arabic/English with a full RTL/LTR flip, and the choice
 is remembered across pages.
+
+### Seeded links
+
+| Slug | Pricing | Amount |
+| --- | --- | --- |
+| `consultation` | three plans | 250 / 150 / 600 QAR |
+| `online-visit` | fixed | 180 QAR |
+| `custom` | payer chooses | 100 QAR suggested |
 
 ## Services covered
 
@@ -59,17 +63,22 @@ Apple Pay, Google Pay, and the wallet always capture; they take no card number.
 index.html          landing page
 dashboard.html      merchant dashboard
 pay.html            hosted checkout
-eilaji.html         original Tap subscription page
 assets/             shared stylesheet, bilingual switch, country dial codes
 api/links.js        list + create links          (passcode)
 api/link.js         read + update + delete one   (read is public)
 api/checkout.js     mock payment authorization   (public)
 api/payments.js     transaction list             (passcode)
-api/create-charge.js, api/verify-payment.js      legacy Tap handlers
 lib/store.js        storage: Vercel KV, or process memory
 lib/http.js         auth, CORS, body parsing, slugs
 scripts/dev-server.js, scripts/smoke-test.js
 ```
+
+### Unrelated files kept from before
+
+`eilaji.html` (served at `/eilaji`) and the Tap handlers `api/create-charge.js`
+and `api/verify-payment.js` belong to the earlier Eilaji subscription page and
+are nothing to do with this platform. They are left in place so the existing
+deployment does not break; delete them once that page is retired.
 
 ## Storage
 
@@ -83,7 +92,8 @@ meaningful number of links.
 
 1. **Rotate the Tap key.** A live `sk_live_…` secret was committed to this repo's
    history and must be treated as compromised — rotate it in the Tap dashboard.
-   The handlers now read `process.env.TAP_SECRET`, so set that in Vercel.
+   The legacy handlers now read `process.env.TAP_SECRET`, so set that in Vercel
+   if that page is still in use.
 2. **Set `MERCHANT_PASSCODE`.** The `demo1234` fallback is refused when
    `NODE_ENV=production`, so the dashboard is unreachable until you set one. A
    single shared passcode is demo-grade; real merchant accounts need real auth.

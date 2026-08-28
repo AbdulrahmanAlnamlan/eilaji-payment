@@ -89,5 +89,5 @@ const server = http.createServer(async function (req, res) {
 });
 
 server.listen(PORT, function () {
-  console.log('Eilaji Pay dev server on http://localhost:' + PORT);
+  console.log('Payment-link dev server on http://localhost:' + PORT);
 });
